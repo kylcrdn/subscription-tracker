@@ -1,23 +1,78 @@
 import React, { useState } from "react";
+import {
+  doSignInWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "../../../firebase/auth";
+import { useAuth } from "../../../contexts/authContext";
 
 export default function LoginPage() {
+  const { userLoggedIn } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = (e) => {
+  // Check if user is logged in
+  React.useEffect(() => {
+    console.log("User logged in status:", userLoggedIn);
+    if (userLoggedIn) {
+      console.log("User is now logged in! Redirect to home would happen here.");
+    }
+  }, [userLoggedIn]);
+
+  // Implement the sign-in with error handling
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempted with:", email, password);
-    // Add your login logic here
+    console.log("Attempting to sign in with:", { email });
+
+    if (!isSigningIn) {
+      setIsSigningIn(true);
+      setErrorMessage(""); // Clear previous errors
+
+      try {
+        const result = await doSignInWithEmailAndPassword(email, password);
+        console.log("Sign-in successful!", result);
+        console.log("Email:", email);
+      } catch (err) {
+        console.error("Sign-in failed:", err);
+        console.error("Error message:", err.message);
+        console.error("Error code:", err.code);
+        setErrorMessage(
+          err.message || "Failed to sign in. Please check your credentials."
+        );
+        setIsSigningIn(false);
+      }
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Google login clicked");
-    // Add your Google OAuth logic here
+  // Implement the sign-in with Google
+  const onGoogleSignIn = (e) => {
+    e.preventDefault();
+    console.log("Attempting to sign in with Google");
+
+    if (!isSigningIn) {
+      setIsSigningIn(true);
+      setErrorMessage(""); // Clear previous errors
+
+      doSignInWithGoogle()
+        .then((result) => {
+          console.log("Google sign-in successful!", result);
+        })
+        .catch((err) => {
+          console.error("Google sign-in failed:", err);
+          console.error("Error message:", err.message);
+          console.error("Error code:", err.code);
+          setErrorMessage(err.message || "Failed to sign in with Google.");
+          setIsSigningIn(false);
+        });
+    }
   };
 
+  // Handle navigation to register page (placeholder for now)
   const handleRegister = () => {
-    console.log("Register clicked");
-    // Add navigation to register page
+    console.log("📝 Register button clicked - would navigate to /register");
+    alert("Register page not yet implemented. Check console for details.");
   };
 
   return (
@@ -29,6 +84,11 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-8">
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+              {errorMessage}
+            </div>
+          )}
           <div className="space-y-6">
             <div>
               <label
@@ -65,7 +125,7 @@ export default function LoginPage() {
             </div>
 
             <button
-              onClick={handleLogin}
+              onClick={onSubmit}
               className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
             >
               Sign in
@@ -82,7 +142,7 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={handleGoogleLogin}
+            onClick={onGoogleSignIn}
             className="w-full flex items-center justify-center gap-3 bg-gray-700 border border-gray-600 text-white py-2.5 rounded-lg font-medium hover:bg-gray-600 transition"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -110,7 +170,8 @@ export default function LoginPage() {
             Don't have an account?{" "}
             <button
               onClick={handleRegister}
-              className="text-blue-400 font-medium hover:text-blue-300"
+              disabled={isSigningIn}
+              className="text-blue-400 font-medium hover:text-blue-300 disabled:opacity-50"
             >
               Register
             </button>

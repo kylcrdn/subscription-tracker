@@ -2,6 +2,7 @@ import { useState } from "react";
 import SubscriptionCard from "./components/SubscriptionCard";
 import "./App.css";
 import LoginPage from "./components/auth/login/loginPage";
+import RegisterPage from "./components/auth/register/RegisterPage";
 
 function App() {
   // const [subscriptions, setSubscriptions] = useState([
@@ -45,7 +46,8 @@ function App() {
     //     </div>
     //   </div>
     // </div>
-    <LoginPage />
+    // <LoginPage />
+    <RegisterPage />
   );
 }
 
