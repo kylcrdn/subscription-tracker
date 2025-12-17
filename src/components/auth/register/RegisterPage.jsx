@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { doCreateUserWithEmailAndPassword } from "../../../firebase/auth";
+import {
+  doCreateUserWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "../../../firebase/auth";
 import { useAuth } from "../../../contexts/authContext";
 
 export default function RegisterPage() {
@@ -33,7 +36,7 @@ export default function RegisterPage() {
 
       try {
         const result = await doCreateUserWithEmailAndPassword(email, password);
-        console.log("✅ Registration successful!", result);
+        console.log("Registration successful!", result);
         console.log("Email:", email);
         setUserLoggedIn(true); // Show success message
         // Optional: Reset form
@@ -60,12 +63,16 @@ export default function RegisterPage() {
       setIsRegistering(true);
       setErrorMessage("");
 
-      // Simulate API call
-      setTimeout(() => {
-        console.log("Google registration successful!");
-        setUserLoggedIn(true);
-        setIsRegistering(false);
-      }, 1500);
+      doSignInWithGoogle()
+        .then((result) => {
+          console.log("Google sign-in successful!", result);
+        })
+        .catch((err) => {
+          console.error("Google sign-in failed:", err);
+          console.error("Error message:", err.message);
+          console.error("Error code:", err.code);
+          setErrorMessage(err.message || "Failed to sign in with Google.");
+        });
     }
   };
 

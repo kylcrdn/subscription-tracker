@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
 /**
  * authContext folder inside context folder to CENTRALIZE AUTHENTICATION logic and state
  */

@@ -71,7 +71,7 @@ export default function LoginPage() {
 
   // Handle navigation to register page (placeholder for now)
   const handleRegister = () => {
-    console.log("📝 Register button clicked - would navigate to /register");
+    console.log("Register button clicked - would navigate to /register");
     alert("Register page not yet implemented. Check console for details.");
   };
 
