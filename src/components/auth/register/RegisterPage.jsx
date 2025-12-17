@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { doCreateUserWithEmailAndPassword } from "../../../firebase/auth";
+import { useAuth } from "../../../contexts/authContext";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -11,7 +13,7 @@ export default function RegisterPage() {
   // Simulate registration with error handling
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔄 Attempting to register with:", { email });
+    console.log("Attempting to register with:", { email });
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -29,20 +31,30 @@ export default function RegisterPage() {
       setIsRegistering(true);
       setErrorMessage("");
 
-      // Simulate API call
-      setTimeout(() => {
-        console.log("✅ Registration successful!");
+      try {
+        const result = await doCreateUserWithEmailAndPassword(email, password);
+        console.log("✅ Registration successful!", result);
         console.log("Email:", email);
-        setUserLoggedIn(true);
-        setIsRegistering(false);
-      }, 1500);
+        setUserLoggedIn(true); // Show success message
+        // Optional: Reset form
+        // setEmail("");
+        // setPassword("");
+        // setConfirmPassword("");
+      } catch (err) {
+        console.error("Registration failed:", err);
+        console.error("Error message:", err.message);
+        console.error("Error code:", err.code);
+        setErrorMessage(err.message || "Failed to register. Please try again.");
+      } finally {
+        setIsRegistering(false); // Always reset loading state
+      }
     }
   };
 
   // Simulate Google sign-in
   const onGoogleSignIn = (e) => {
     e.preventDefault();
-    console.log("🔄 Attempting to register with Google");
+    console.log("Attempting to register with Google");
 
     if (!isRegistering) {
       setIsRegistering(true);
@@ -50,7 +62,7 @@ export default function RegisterPage() {
 
       // Simulate API call
       setTimeout(() => {
-        console.log("✅ Google registration successful!");
+        console.log("Google registration successful!");
         setUserLoggedIn(true);
         setIsRegistering(false);
       }, 1500);
@@ -59,7 +71,7 @@ export default function RegisterPage() {
 
   // Handle navigation to login page
   const handleLogin = () => {
-    console.log("📝 Login button clicked - would navigate to /login");
+    console.log("Login button clicked - would navigate to /login");
     alert("Login page not yet implemented. Check console for details.");
   };
 
@@ -84,7 +96,7 @@ export default function RegisterPage() {
           {/* Success message when logged in */}
           {userLoggedIn && (
             <div className="mb-4 p-3 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm">
-              ✅ Successfully registered!
+              Successfully registered!
             </div>
           )}
 
