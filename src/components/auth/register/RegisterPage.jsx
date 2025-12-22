@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/authContext";
 import {
   doCreateUserWithEmailAndPassword,
   doSignInWithGoogle,
+  doSignOut,
 } from "../../../firebase/auth";
-import { useAuth } from "../../../contexts/authContext";
 
 export default function RegisterPage() {
   // Form state
@@ -15,12 +17,17 @@ export default function RegisterPage() {
 
   // Get auth state from context
   const { userLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
-  // IMPLEMENT NAVIGATION USING useEffect
+  // Redirect to home if already logged in
+  useEffect(() => {
+    if (userLoggedIn) {
+      navigate("/home");
+    }
+  }, [userLoggedIn, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("Attempting to register with:", { email });
 
     // Validation
     if (password !== confirmPassword) {
@@ -28,7 +35,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // Set password length
     if (password.length < 6) {
       setErrorMessage("Password must be at least 6 characters");
       return;
@@ -39,36 +45,23 @@ export default function RegisterPage() {
       setErrorMessage("");
 
       try {
-        const result = await doCreateUserWithEmailAndPassword(email, password);
-        console.log("Registration successful!", result);
-        console.log("Email:", email);
-      } catch (err) {
-        console.error("Registration failed:", err);
-        console.error("Error message:", err.message);
-        console.error("Error code:", err.code);
-        setErrorMessage(err.message || "Failed to register. Please try again.");
-      } finally {
-        setIsRegistering(false); // Always reset loading state
-      }
-    }
-  };
+        // Create user account
+        await doCreateUserWithEmailAndPassword(email, password);
 
-  // Google sign-in
-  const onGoogleSignIn = async (e) => {
-    e.preventDefault();
-    console.log("Attempting to register with Google");
+        // Sign-out immediately after registration
+        await doSignOut();
 
-    if (!isRegistering) {
-      setIsRegistering(true);
-      setErrorMessage("");
-
-      try {
-        await doSignInWithGoogle();
+        // Redirect to login page
+        navigate("/login");
       } catch (error) {
-        let message = "Failed to sign in with Google";
+        let message = "Failed to register. Please try again.";
 
-        if (error.code === "auth/popup-close-by-user") {
-          message = "Sign-in is cancelled.";
+        if (error.code === "auth/email-already-in-use") {
+          message = "This email is already registered. Try logging in instead.";
+        } else if (error.code === "auth/invalid-email") {
+          message = "Invalid email address.";
+        } else if (error.code === "auth/weak-password") {
+          message = "Password is too weak. Use at least 6 characters.";
         }
 
         setErrorMessage(message);
@@ -77,10 +70,27 @@ export default function RegisterPage() {
     }
   };
 
-  // Handle navigation to login page
-  const handleLogin = () => {
-    console.log("Login button clicked - would navigate to /login");
-    alert("Login page not yet implemented. Check console for details.");
+  // Google sign-in
+  const onGoogleSignIn = async (e) => {
+    e.preventDefault();
+
+    if (!isRegistering) {
+      setIsRegistering(true);
+      setErrorMessage("");
+
+      try {
+        await doSignInWithGoogle();
+      } catch (error) {
+        let message = "Failed to sign in with Google.";
+
+        if (error.code === "auth/popup-closed-by-user") {
+          message = "Sign-in cancelled.";
+        }
+
+        setErrorMessage(message);
+        setIsRegistering(false);
+      }
+    }
   };
 
   return (
@@ -101,7 +111,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <div className="space-y-6">
+          <form onSubmit={onSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -163,13 +173,13 @@ export default function RegisterPage() {
             </div>
 
             <button
-              onClick={onSubmit}
+              type="submit"
               disabled={isRegistering}
               className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRegistering ? "Creating account..." : "Create account"}
             </button>
-          </div>
+          </form>
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
@@ -209,7 +219,8 @@ export default function RegisterPage() {
           <div className="mt-6 text-center text-sm text-gray-400">
             Already have an account?{" "}
             <button
-              onClick={handleLogin}
+              onClick={() => navigate("/login")}
+              type="button"
               disabled={isRegistering}
               className="text-blue-400 font-medium hover:text-blue-300 disabled:opacity-50"
             >

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { useAuth } from "./contexts/authContext/index";
-import { doSignOut } from "./firebase/auth";
-import SubscriptionCard from "./components/SubscriptionCard";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext";
+import { doSignOut } from "../../firebase/auth";
+import SubscriptionCard from "./SubscriptionCard";
 
 export default function HomePage() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // Sample subscriptions - you'll later replace this with Firebase data
   const [subscriptions, setSubscriptions] = useState([
@@ -87,28 +89,6 @@ export default function HomePage() {
         prev.filter((item) => item.id !== subscription.id)
       );
     }
-  };
-
-  const handleSaveSubscription = (subscriptionData) => {
-    if (editingSubscription) {
-      // Edit existing
-      setSubscriptions((prev) =>
-        prev.map((item) =>
-          item.id === editingSubscription.id
-            ? { ...subscriptionData, id: item.id }
-            : item
-        )
-      );
-    } else {
-      // Add new
-      const newSubscription = {
-        ...subscriptionData,
-        id: Date.now(), // Simple ID generation - use proper ID in production
-      };
-      setSubscriptions((prev) => [...prev, newSubscription]);
-    }
-    setIsModalOpen(false);
-    setEditingSubscription(null);
   };
 
   return (
@@ -291,18 +271,6 @@ export default function HomePage() {
           </div>
         )}
       </main>
-
-      {/* Add/Edit Modal */}
-      {isModalOpen && (
-        <AddSubscriptionModal
-          subscription={editingSubscription}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingSubscription(null);
-          }}
-          onSave={handleSaveSubscription}
-        />
-      )}
     </div>
   );
 }
