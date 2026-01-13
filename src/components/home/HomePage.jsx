@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { doSignOut } from "../../firebase/auth";
 import SubscriptionCard from "./SubscriptionCard";
+import SubscriptionModal from "./SubscriptionModal";
 
 export default function HomePage() {
   const { currentUser } = useAuth();
@@ -45,6 +46,7 @@ export default function HomePage() {
     },
   ]);
 
+  // Edit a subscription
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
 
@@ -89,6 +91,25 @@ export default function HomePage() {
         prev.filter((item) => item.id !== subscription.id)
       );
     }
+  };
+
+  const handleSaveSubscription = (subscriptionData) => {
+    if (editingSubscription) {
+      // Update existing subscription
+      setSubscriptions((prev) =>
+        prev.map((sub) =>
+          sub.id === editingSubscription.id ? subscriptionData : sub
+        )
+      );
+    } else {
+      // Add new subscription
+      setSubscriptions((prev) => [...prev, subscriptionData]);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingSubscription(null);
   };
 
   return (
@@ -271,6 +292,14 @@ export default function HomePage() {
           </div>
         )}
       </main>
+
+      {/* Modal */}
+      <SubscriptionModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSubscription}
+        subscription={editingSubscription}
+      />
     </div>
   );
 }
