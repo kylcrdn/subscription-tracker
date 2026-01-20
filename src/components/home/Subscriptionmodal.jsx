@@ -17,33 +17,22 @@ export default function SubscriptionModal({
     category: "",
   });
 
-  // Pre-fill form when editing
+  // Pre-fill form when editing - only depend on isOpen and subscription.id
   useEffect(() => {
-    if (subscription) {
-      setFormData({
-        name: subscription.name || "",
-        logo: subscription.logo || "",
-        color: subscription.color || "#3B82F6",
-        dueDate: subscription.dueDate || "",
-        price: subscription.price || "",
-        currency: subscription.currency || "€",
-        billing: subscription.billing || "Monthly",
-        category: subscription.category || "",
-      });
-    } else {
-      // Reset form for new subscription
-      setFormData({
-        name: "",
-        logo: "",
-        color: "#3B82F6",
-        dueDate: "",
-        price: "",
-        currency: "€",
-        billing: "Monthly",
-        category: "",
-      });
-    }
-  }, [subscription, isOpen]);
+    if (!isOpen) return;
+
+    setFormData({
+      name: subscription?.name ?? "",
+      logo: subscription?.logo ?? "",
+      color: subscription?.color ?? "#3B82F6",
+      dueDate: subscription?.dueDate ?? "",
+      price: subscription?.price ?? "",
+      currency: subscription?.currency ?? "€",
+      billing: subscription?.billing ?? "Monthly",
+      category: subscription?.category ?? "",
+    });
+  }, [isOpen, subscription?.id]);
+  // Only re-run when modal opens or subscription ID changes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
