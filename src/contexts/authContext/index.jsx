@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { auth } from "../../firebase/firebase";
+import { auth } from "../../firebase/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
 /**
  * authContext folder inside context folder to CENTRALIZE AUTHENTICATION logic and state
@@ -25,20 +25,20 @@ export function AuthProvider({ children }) {
    * listens for login/logout and tells who the current user is, including on page refresh
    */
   useEffect(() => {
+    async function initializeUser(user) {
+      if (user) {
+        setCurrentUser({ ...user });
+        setUserLoggedIn(true);
+      } else {
+        setCurrentUser(null);
+        setUserLoggedIn(false);
+      }
+      setLoading(false);
+    }
+
     const unsubscribe = onAuthStateChanged(auth, initializeUser);
     return unsubscribe;
   }, []);
-
-  async function initializeUser(user) {
-    if (user) {
-      setCurrentUser({ ...user });
-      setUserLoggedIn(true);
-    } else {
-      setCurrentUser(null);
-      setUserLoggedIn(false);
-    }
-    setLoading(false);
-  }
 
   // expose the value obj
   const value = {

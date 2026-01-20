@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "./Firebase";
 
 // creating a new account
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
