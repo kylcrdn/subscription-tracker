@@ -7,7 +7,10 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
     <div className="bg-gray-900 rounded-lg p-4 flex items-center justify-between hover:bg-gray-800 transition-colors">
       {/* Left side */}
       <div className="flex items-center gap-3">
-        <div className="bg-blue-600 rounded-lg p-2 w-12 h-12 flex items-center justify-center">
+        <div
+          className="rounded-lg p-2 w-12 h-12 flex items-center justify-center"
+          style={{ backgroundColor: subscription.color }}
+        >
           <span className="text-white font-bold text-sm">
             {subscription.logo}
           </span>
@@ -22,11 +25,14 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
       {/* Right side */}
       <div className="flex items-center gap-4">
         <div className="text-right">
-          <p className="text-white font-semibold">{subscription.price}</p>
+          <p className="text-white font-semibold">
+            {subscription.currency}
+            {subscription.price.toFixed(2)}
+          </p>
           <p className="text-gray-400 text-sm">{subscription.billing}</p>
         </div>
 
-        {/* Three-dot menu (no icon library) */}
+        {/* Three-dot menu */}
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
