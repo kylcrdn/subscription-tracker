@@ -29,7 +29,7 @@ export default function SubscriptionModal({
       setErrors({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, subscription?.id])
+  }, [isOpen, subscription?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
