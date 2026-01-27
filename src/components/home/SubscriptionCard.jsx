@@ -26,8 +26,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
       <div className="flex items-center gap-4">
         <div className="text-right">
           <p className="text-white font-semibold">
-            {subscription.currency}
-            {subscription.price.toFixed(2)}
+            €{subscription.price.toFixed(2)}
           </p>
           <p className="text-gray-400 text-sm">{subscription.billing}</p>
         </div>
