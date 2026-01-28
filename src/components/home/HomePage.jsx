@@ -9,42 +9,11 @@ export default function HomePage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  // Sample subscriptions - you'll later replace this with Firebase data
-  const [subscriptions, setSubscriptions] = useState([
-    {
-      id: 1,
-      name: "Netflix",
-      logo: "NF",
-      color: "#E50914",
-      dueDate: "7 days from now",
-      price: 15.99,
-      currency: "€",
-      billing: "Monthly",
-      category: "Entertainment",
-    },
-    {
-      id: 2,
-      name: "Spotify",
-      logo: "SP",
-      color: "#1DB954",
-      dueDate: "3 days from now",
-      price: 9.99,
-      currency: "€",
-      billing: "Monthly",
-      category: "Music",
-    },
-    {
-      id: 3,
-      name: "Adobe Creative Cloud",
-      logo: "AC",
-      color: "#FF0000",
-      dueDate: "14 days from now",
-      price: 54.99,
-      currency: "€",
-      billing: "Monthly",
-      category: "Software",
-    },
-  ]);
+  // Subscriptions state - starts empty
+  const [subscriptions, setSubscriptions] = useState([]);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Edit a subscription
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -119,7 +88,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 SubTracker
               </h1>
               <p className="text-sm text-gray-400 mt-0.5">
@@ -137,10 +106,55 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search Bar and Add Button */}
+        <div className="flex justify-end gap-3 mb-8">
+          <div className="relative w-64">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+            />
+          </div>
+          <button
+            onClick={handleAddSubscription}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add
+          </button>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Total Monthly */}
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300">
+          <div className="bg-linear-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
                 Monthly
@@ -164,14 +178,10 @@ export default function HomePage() {
             <div className="text-3xl font-bold text-white mb-1">
               €{totalMonthly.toFixed(2)}
             </div>
-            <div className="text-xs text-gray-500">
-              {subscriptions.length} active subscription
-              {subscriptions.length !== 1 ? "s" : ""}
-            </div>
           </div>
 
           {/* Total Yearly */}
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300">
+          <div className="bg-linear-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
                 Yearly
@@ -200,15 +210,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Add New Button */}
-          <button
-            onClick={handleAddSubscription}
-            className="bg-gradient-to-br from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 border border-blue-400/20 rounded-2xl p-6 transition-all duration-300 group hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <div className="flex flex-col items-center justify-center h-full">
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-3 group-hover:bg-white/20 transition-colors">
+          {/* Active Subscriptions */}
+          <div className="bg-linear-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-purple-500/30 transition-all duration-300">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
+                Active Subs
+              </span>
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-4 h-4 text-purple-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -217,16 +227,15 @@ export default function HomePage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 4v16m8-8H4"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
               </div>
-              <span className="text-white font-semibold">Add Subscription</span>
-              <span className="text-blue-100 text-sm mt-1">
-                Track a new service
-              </span>
             </div>
-          </button>
+            <div className="text-3xl font-bold text-white mb-1">
+              {subscriptions.length}
+            </div>
+          </div>
         </div>
 
         {/* Subscriptions List */}
