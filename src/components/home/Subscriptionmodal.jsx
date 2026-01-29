@@ -1,13 +1,74 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
+// Popular subscription services for autocomplete
+const POPULAR_SERVICES = [
+  { name: "Netflix", domain: "netflix.com" },
+  { name: "Spotify", domain: "spotify.com" },
+  { name: "Disney+", domain: "disneyplus.com" },
+  { name: "Amazon Prime", domain: "amazon.com" },
+  { name: "YouTube Premium", domain: "youtube.com" },
+  { name: "Apple Music", domain: "apple.com" },
+  { name: "HBO Max", domain: "hbomax.com" },
+  { name: "Hulu", domain: "hulu.com" },
+  { name: "Adobe Creative Cloud", domain: "adobe.com" },
+  { name: "Microsoft 365", domain: "microsoft.com" },
+  { name: "Google One", domain: "google.com" },
+  { name: "Dropbox", domain: "dropbox.com" },
+  { name: "iCloud", domain: "icloud.com" },
+  { name: "GitHub", domain: "github.com" },
+  { name: "LinkedIn Premium", domain: "linkedin.com" },
+  { name: "Slack", domain: "slack.com" },
+  { name: "Notion", domain: "notion.so" },
+  { name: "Figma", domain: "figma.com" },
+  { name: "Canva", domain: "canva.com" },
+  { name: "ChatGPT Plus", domain: "openai.com" },
+  { name: "Claude Pro", domain: "anthropic.com" },
+  { name: "Twitch", domain: "twitch.tv" },
+  { name: "PlayStation Plus", domain: "playstation.com" },
+  { name: "Xbox Game Pass", domain: "xbox.com" },
+  { name: "Nintendo Online", domain: "nintendo.com" },
+  { name: "Crunchyroll", domain: "crunchyroll.com" },
+  { name: "Paramount+", domain: "paramountplus.com" },
+  { name: "Peacock", domain: "peacocktv.com" },
+  { name: "ESPN+", domain: "espn.com" },
+  { name: "Audible", domain: "audible.com" },
+  { name: "Kindle Unlimited", domain: "kindle.com" },
+  { name: "NordVPN", domain: "nordvpn.com" },
+  { name: "ExpressVPN", domain: "expressvpn.com" },
+  { name: "1Password", domain: "1password.com" },
+  { name: "LastPass", domain: "lastpass.com" },
+  { name: "Grammarly", domain: "grammarly.com" },
+  { name: "Duolingo", domain: "duolingo.com" },
+  { name: "Headspace", domain: "headspace.com" },
+  { name: "Calm", domain: "calm.com" },
+  { name: "Strava", domain: "strava.com" },
+  { name: "Peloton", domain: "onepeloton.com" },
+  { name: "Tidal", domain: "tidal.com" },
+  { name: "Deezer", domain: "deezer.com" },
+  { name: "SoundCloud", domain: "soundcloud.com" },
+  { name: "Medium", domain: "medium.com" },
+  { name: "Substack", domain: "substack.com" },
+  { name: "Patreon", domain: "patreon.com" },
+];
+
+// Logo API helper
+const getLogoUrl = (domain) => {
+  if (!domain) return "";
+  const cleanDomain = domain
+    .replace(/^(https?:\/\/)?(www\.)?/, "")
+    .split("/")[0]
+    .toLowerCase()
+    .trim();
+  return `https://logos-api.apistemic.com/domain:${cleanDomain}`;
+};
+
 export default function SubscriptionModal({
   isOpen,
   onClose,
   onSave,
   subscription,
 }) {
-  // Initialize form data based on whether we're editing or creating
   const getInitialFormData = () => ({
     name: subscription?.name ?? "",
     icon: subscription?.icon ?? "",
@@ -20,13 +81,21 @@ export default function SubscriptionModal({
   const [formData, setFormData] = useState(getInitialFormData);
   const [errors, setErrors] = useState({});
   const [iconPreview, setIconPreview] = useState(subscription?.icon ?? "");
+  const [brandSearch, setBrandSearch] = useState("");
+  const [logoError, setLogoError] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [failedLogos, setFailedLogos] = useState(new Set());
 
-  // Reset form when modal opens or subscription changes
+  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setFormData(getInitialFormData());
       setIconPreview(subscription?.icon ?? "");
       setErrors({});
+      setBrandSearch("");
+      setLogoError(false);
+      setShowSuggestions(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, subscription?.id]);
@@ -34,83 +103,75 @@ export default function SubscriptionModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          icon: "Please select a valid image file",
-        }));
-        return;
-      }
+  // Handle brand search with autocomplete
+  const handleBrandSearch = (e) => {
+    const value = e.target.value;
+    setBrandSearch(value);
+    setLogoError(false);
 
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          icon: "Image size should be less than 2MB",
-        }));
-        return;
-      }
+    if (value.trim()) {
+      // Filter matching services
+      const matches = POPULAR_SERVICES.filter(
+        (service) =>
+          service.name.toLowerCase().includes(value.toLowerCase()) ||
+          service.domain.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredServices(matches.slice(0, 6));
+      setShowSuggestions(matches.length > 0);
 
-      // Read and convert to base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setFormData((prev) => ({ ...prev, icon: base64String }));
-        setIconPreview(base64String);
-        setErrors((prev) => ({ ...prev, icon: "" }));
-      };
-      reader.readAsDataURL(file);
+      // Check if input looks like a domain (contains a dot)
+      if (value.includes(".")) {
+        const logoUrl = getLogoUrl(value);
+        setIconPreview(logoUrl);
+        setFormData((prev) => ({ ...prev, icon: logoUrl }));
+      }
+    } else {
+      setFilteredServices([]);
+      setShowSuggestions(false);
+      setIconPreview("");
+      setFormData((prev) => ({ ...prev, icon: "" }));
     }
   };
 
+  // Select a service from suggestions
+  const handleSelectService = (service) => {
+    setBrandSearch(service.domain);
+    const logoUrl = getLogoUrl(service.domain);
+    setIconPreview(logoUrl);
+    setFormData((prev) => ({ ...prev, icon: logoUrl }));
+    setShowSuggestions(false);
+  };
+
+  // Remove icon
   const handleRemoveIcon = () => {
     setFormData((prev) => ({ ...prev, icon: "" }));
     setIconPreview("");
-    // Reset file input
-    const fileInput = document.getElementById("service-icon");
-    if (fileInput) fileInput.value = "";
+    setBrandSearch("");
+    setLogoError(false);
   };
+
+  const handleLogoError = () => setLogoError(true);
+  const handleLogoLoad = () => setLogoError(false);
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Service name is required";
-    }
-
-    if (!formData.price || parseFloat(formData.price) <= 0) {
+    if (!formData.name.trim()) newErrors.name = "Service name is required";
+    if (!formData.price || parseFloat(formData.price) <= 0)
       newErrors.price = "Valid price is required";
-    }
-
-    if (!formData.dueDate.trim()) {
-      newErrors.dueDate = "Due date is required";
-    }
-
-    if (!formData.category.trim()) {
-      newErrors.category = "Category is required";
-    }
-
+    if (!formData.dueDate.trim()) newErrors.dueDate = "Due date is required";
+    if (!formData.category.trim()) newErrors.category = "Category is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     onSave({
       ...formData,
@@ -120,7 +181,6 @@ export default function SubscriptionModal({
         : `sub_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
     });
 
-    // Reset form and close
     setFormData({
       name: "",
       icon: "",
@@ -130,18 +190,15 @@ export default function SubscriptionModal({
       category: "",
     });
     setIconPreview("");
+    setBrandSearch("");
     setErrors({});
     onClose();
   };
 
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
+      if (e.key === "Escape" && isOpen) onClose();
     };
-
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
@@ -155,17 +212,14 @@ export default function SubscriptionModal({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2
               id="modal-title"
@@ -184,7 +238,6 @@ export default function SubscriptionModal({
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -196,7 +249,6 @@ export default function SubscriptionModal({
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
@@ -214,38 +266,36 @@ export default function SubscriptionModal({
                 onChange={handleChange}
                 placeholder="What are you subscribed to?"
                 required
-                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field")}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity("Please fill out this field")
+                }
                 onInput={(e) => e.target.setCustomValidity("")}
-                aria-invalid={errors.name ? "true" : "false"}
-                aria-describedby={errors.name ? "name-error" : undefined}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.name ? "border-red-500" : "border-gray-700"
                 } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
               />
               {errors.name && (
-                <p id="name-error" className="text-red-400 text-xs mt-1">
-                  {errors.name}
-                </p>
+                <p className="text-red-400 text-xs mt-1">{errors.name}</p>
               )}
             </div>
 
-            {/* Icon Upload */}
+            {/* Service Icon */}
             <div>
-              <label
-                htmlFor="service-icon"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
-                Service Icon
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Service Icon (optional)
               </label>
+
               <div className="flex items-center gap-4">
                 {/* Preview */}
                 <div className="flex-shrink-0">
-                  {iconPreview ? (
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-700 bg-gray-800">
+                  {iconPreview && !logoError ? (
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-700 bg-white">
                       <img
                         src={iconPreview}
                         alt="Service icon preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain p-1"
+                        onError={handleLogoError}
+                        onLoad={handleLogoLoad}
                       />
                       <button
                         type="button"
@@ -287,31 +337,55 @@ export default function SubscriptionModal({
                   )}
                 </div>
 
-                {/* Upload Button */}
-                <div className="flex-1">
-                  <label
-                    htmlFor="service-icon"
-                    className="block w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm text-center cursor-pointer hover:bg-gray-800 transition-all"
-                  >
-                    {iconPreview ? "Change Icon" : "Upload Icon"}
-                  </label>
+                {/* Search Input */}
+                <div className="flex-1 relative">
                   <input
-                    id="service-icon"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    aria-describedby={errors.icon ? "icon-error" : "icon-help"}
+                    type="text"
+                    value={brandSearch}
+                    onChange={handleBrandSearch}
+                    onFocus={() =>
+                      brandSearch && filteredServices.length > 0 && setShowSuggestions(true)
+                    }
+                    placeholder="Search: Netflix, Spotify..."
+                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                   />
-                  {errors.icon ? (
-                    <p id="icon-error" className="text-red-400 text-xs mt-1">
-                      {errors.icon}
-                    </p>
-                  ) : (
-                    <p id="icon-help" className="text-xs text-gray-500 mt-1">
-                      PNG, JPG, or GIF (max 2MB)
-                    </p>
+
+                  {/* Autocomplete Suggestions */}
+                  {showSuggestions && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+                      {filteredServices
+                        .filter((service) => !failedLogos.has(service.domain))
+                        .map((service) => (
+                          <button
+                            key={service.domain}
+                            type="button"
+                            onClick={() => handleSelectService(service)}
+                            className="w-full px-3 py-2.5 text-left text-sm text-white hover:bg-blue-600 flex items-center gap-3 transition-colors cursor-pointer"
+                          >
+                            <img
+                              src={getLogoUrl(service.domain)}
+                              alt=""
+                              className="w-8 h-8 object-contain bg-white rounded p-0.5"
+                              onError={() => {
+                                setFailedLogos((prev) => new Set([...prev, service.domain]));
+                              }}
+                            />
+                            <div className="flex-1">
+                              <span className="font-medium">{service.name}</span>
+                              <span className="text-gray-400 text-xs block">
+                                {service.domain}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                    </div>
                   )}
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    {logoError
+                      ? "Logo not found, try adding .com"
+                      : "Type a service name or domain (e.g. netflix.com)"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -338,19 +412,17 @@ export default function SubscriptionModal({
                   step="0.01"
                   min="0.01"
                   required
-                  onInvalid={(e) => e.target.setCustomValidity("Please enter a valid price")}
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity("Please enter a valid price")
+                  }
                   onInput={(e) => e.target.setCustomValidity("")}
-                  aria-invalid={errors.price ? "true" : "false"}
-                  aria-describedby={errors.price ? "price-error" : undefined}
                   className={`w-full pl-9 pr-4 py-3 bg-gray-900/50 border ${
                     errors.price ? "border-red-500" : "border-gray-700"
                   } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
                 />
               </div>
               {errors.price && (
-                <p id="price-error" className="text-red-400 text-xs mt-1">
-                  {errors.price}
-                </p>
+                <p className="text-red-400 text-xs mt-1">{errors.price}</p>
               )}
             </div>
 
@@ -389,22 +461,18 @@ export default function SubscriptionModal({
                 value={formData.dueDate}
                 onChange={handleChange}
                 required
-                onInvalid={(e) => e.target.setCustomValidity("Please select a date")}
-                onInput={(e) => e.target.setCustomValidity("")}
-                aria-invalid={errors.dueDate ? "true" : "false"}
-                aria-describedby={
-                  errors.dueDate ? "dueDate-error" : "dueDate-help"
+                onInvalid={(e) =>
+                  e.target.setCustomValidity("Please select a date")
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.dueDate ? "border-red-500" : "border-gray-700"
                 } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
               />
               {errors.dueDate ? (
-                <p id="dueDate-error" className="text-red-400 text-xs mt-1">
-                  {errors.dueDate}
-                </p>
+                <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
               ) : (
-                <p id="dueDate-help" className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Select the next billing date
                 </p>
               )}
@@ -426,18 +494,16 @@ export default function SubscriptionModal({
                 onChange={handleChange}
                 placeholder="e.g. Streaming, Fitness, Software"
                 required
-                onInvalid={(e) => e.target.setCustomValidity("Please enter a category")}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity("Please enter a category")
+                }
                 onInput={(e) => e.target.setCustomValidity("")}
-                aria-invalid={errors.category ? "true" : "false"}
-                aria-describedby={errors.category ? "category-error" : undefined}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.category ? "border-red-500" : "border-gray-700"
                 } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
               />
               {errors.category && (
-                <p id="category-error" className="text-red-400 text-xs mt-1">
-                  {errors.category}
-                </p>
+                <p className="text-red-400 text-xs mt-1">{errors.category}</p>
               )}
             </div>
 
@@ -460,6 +526,14 @@ export default function SubscriptionModal({
           </form>
         </div>
       </div>
+
+      {/* Click outside to close suggestions */}
+      {showSuggestions && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowSuggestions(false)}
+        />
+      )}
     </div>
   );
 }

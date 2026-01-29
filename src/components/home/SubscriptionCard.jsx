@@ -2,18 +2,35 @@ import { useState } from "react";
 
 export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  // Get initials from subscription name for fallback
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="bg-gray-900 rounded-lg p-4 flex items-center justify-between hover:bg-gray-800 transition-colors">
       {/* Left side */}
       <div className="flex items-center gap-3">
-        <div
-          className="rounded-lg p-2 w-12 h-12 flex items-center justify-center"
-          style={{ backgroundColor: subscription.color }}
-        >
-          <span className="text-white font-bold text-sm">
-            {subscription.logo}
-          </span>
+        <div className="rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden bg-gray-700">
+          {subscription.icon && !imageError ? (
+            <img
+              src={subscription.icon}
+              alt={`${subscription.name} icon`}
+              className="w-full h-full object-contain bg-white"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <span className="text-white font-bold text-sm">
+              {getInitials(subscription.name)}
+            </span>
+          )}
         </div>
 
         <div>
