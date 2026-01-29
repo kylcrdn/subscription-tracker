@@ -96,6 +96,10 @@ export default function SubscriptionModal({
       newErrors.dueDate = "Due date is required";
     }
 
+    if (!formData.category.trim()) {
+      newErrors.category = "Category is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -208,7 +212,10 @@ export default function SubscriptionModal({
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Netflix"
+                placeholder="What are you subscribed to?"
+                required
+                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field")}
+                onInput={(e) => e.target.setCustomValidity("")}
                 aria-invalid={errors.name ? "true" : "false"}
                 aria-describedby={errors.name ? "name-error" : undefined}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
@@ -327,9 +334,12 @@ export default function SubscriptionModal({
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  placeholder="15.99"
+                  placeholder="0.00"
                   step="0.01"
-                  min="0"
+                  min="0.01"
+                  required
+                  onInvalid={(e) => e.target.setCustomValidity("Please enter a valid price")}
+                  onInput={(e) => e.target.setCustomValidity("")}
                   aria-invalid={errors.price ? "true" : "false"}
                   aria-describedby={errors.price ? "price-error" : undefined}
                   className={`w-full pl-9 pr-4 py-3 bg-gray-900/50 border ${
@@ -361,7 +371,6 @@ export default function SubscriptionModal({
               >
                 <option value="Monthly">Monthly</option>
                 <option value="Yearly">Yearly</option>
-                <option value="Weekly">Weekly</option>
               </select>
             </div>
 
@@ -379,6 +388,9 @@ export default function SubscriptionModal({
                 name="dueDate"
                 value={formData.dueDate}
                 onChange={handleChange}
+                required
+                onInvalid={(e) => e.target.setCustomValidity("Please select a date")}
+                onInput={(e) => e.target.setCustomValidity("")}
                 aria-invalid={errors.dueDate ? "true" : "false"}
                 aria-describedby={
                   errors.dueDate ? "dueDate-error" : "dueDate-help"
@@ -404,7 +416,7 @@ export default function SubscriptionModal({
                 htmlFor="service-category"
                 className="block text-sm font-medium text-gray-300 mb-2"
               >
-                Category
+                Category *
               </label>
               <input
                 id="service-category"
@@ -412,9 +424,21 @@ export default function SubscriptionModal({
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                placeholder="Entertainment"
-                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                placeholder="e.g. Streaming, Fitness, Software"
+                required
+                onInvalid={(e) => e.target.setCustomValidity("Please enter a category")}
+                onInput={(e) => e.target.setCustomValidity("")}
+                aria-invalid={errors.category ? "true" : "false"}
+                aria-describedby={errors.category ? "category-error" : undefined}
+                className={`w-full px-4 py-3 bg-gray-900/50 border ${
+                  errors.category ? "border-red-500" : "border-gray-700"
+                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
               />
+              {errors.category && (
+                <p id="category-error" className="text-red-400 text-xs mt-1">
+                  {errors.category}
+                </p>
+              )}
             </div>
 
             {/* Buttons */}

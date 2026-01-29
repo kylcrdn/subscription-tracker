@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { doSignOut } from "../../firebase/auth";
+import {
+  subscribeToSubscriptions,
+  addSubscription,
+  updateSubscription,
+  deleteSubscription,
+} from "../../firebase/firestore";
 import SubscriptionCard from "./SubscriptionCard";
-import SubscriptionModal from "./SubscriptionModal";
+import SubscriptionModal from "./Subscriptionmodal";
 
 export default function HomePage() {
   const { currentUser } = useAuth();
@@ -11,6 +17,7 @@ export default function HomePage() {
 
   // Subscriptions state - starts empty
   const [subscriptions, setSubscriptions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +25,18 @@ export default function HomePage() {
   // Edit a subscription
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
+
+  // Subscribe to Firestore updates when user is logged in
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    const unsubscribe = subscribeToSubscriptions(currentUser.uid, (subs) => {
+      setSubscriptions(subs);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser?.uid]);
 
   // Calculate total monthly spending
   const totalMonthly = subscriptions.reduce((sum, sub) => {
@@ -52,27 +71,33 @@ export default function HomePage() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteSubscription = (subscription) => {
+  const handleDeleteSubscription = async (subscription) => {
     if (
       window.confirm(`Are you sure you want to delete ${subscription.name}?`)
     ) {
-      setSubscriptions((prev) =>
-        prev.filter((item) => item.id !== subscription.id)
-      );
+      try {
+        await deleteSubscription(currentUser.uid, subscription.id);
+      } catch (error) {
+        console.error("Error deleting subscription:", error);
+      }
     }
   };
 
-  const handleSaveSubscription = (subscriptionData) => {
-    if (editingSubscription) {
-      // Update existing subscription
-      setSubscriptions((prev) =>
-        prev.map((sub) =>
-          sub.id === editingSubscription.id ? subscriptionData : sub
-        )
-      );
-    } else {
-      // Add new subscription
-      setSubscriptions((prev) => [...prev, subscriptionData]);
+  const handleSaveSubscription = async (subscriptionData) => {
+    try {
+      if (editingSubscription) {
+        // Update existing subscription in Firestore
+        await updateSubscription(
+          currentUser.uid,
+          editingSubscription.id,
+          subscriptionData
+        );
+      } else {
+        // Add new subscription to Firestore
+        await addSubscription(currentUser.uid, subscriptionData);
+      }
+    } catch (error) {
+      console.error("Error saving subscription:", error);
     }
   };
 
@@ -245,7 +270,11 @@ export default function HomePage() {
           </h2>
         </div>
 
-        {subscriptions.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          </div>
+        ) : subscriptions.length === 0 ? (
           <div className="bg-gray-800/30 border border-gray-700/50 rounded-2xl p-12 text-center">
             <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
               <svg
