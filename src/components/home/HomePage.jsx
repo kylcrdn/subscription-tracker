@@ -90,7 +90,7 @@ export default function HomePage() {
         await updateSubscription(
           currentUser.uid,
           editingSubscription.id,
-          subscriptionData
+          subscriptionData,
         );
       } else {
         // Add new subscription to Firestore
