@@ -1,10 +1,46 @@
 import { useState } from "react";
 
+const Icon = ({ children, className = "w-5 h-5", ...props }) => (
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    {children}
+  </svg>
+);
+
+const MoreIcon = () => (
+  <Icon className="w-5 h-5">
+    <circle cx="12" cy="5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+  </Icon>
+);
+
+const EditIcon = () => (
+  <Icon className="w-4 h-4">
+    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </Icon>
+);
+
+const TrashIcon = () => (
+  <Icon className="w-4 h-4">
+    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+    <path d="M10 11v6M14 11v6" />
+  </Icon>
+);
+
 export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  // Get initials from subscription name for fallback
   const getInitials = (name) => {
     return name
       .split(" ")
@@ -15,19 +51,19 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   };
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 flex items-center justify-between hover:bg-gray-800 transition-colors">
+    <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between hover:bg-gray-800/80 transition-all duration-200">
       {/* Left side */}
       <div className="flex items-center gap-3">
-        <div className="rounded-lg w-12 h-12 flex items-center justify-center overflow-hidden bg-gray-700">
+        <div className="rounded-xl w-11 h-11 flex items-center justify-center overflow-hidden bg-gray-800 shrink-0">
           {subscription.icon && !imageError ? (
             <img
               src={subscription.icon}
               alt={`${subscription.name} icon`}
-              className="w-full h-full object-contain bg-white"
+              className="w-full h-full object-cover"
               onError={() => setImageError(true)}
             />
           ) : (
-            <span className="text-white font-bold text-sm">
+            <span className="text-gray-300 font-semibold text-sm">
               {getInitials(subscription.name)}
             </span>
           )}
@@ -35,7 +71,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
 
         <div>
           <h3 className="text-white font-medium">{subscription.name}</h3>
-          <p className="text-gray-400 text-sm">{subscription.dueDate}</p>
+          <p className="text-gray-500 text-sm">{subscription.dueDate}</p>
         </div>
       </div>
 
@@ -45,17 +81,17 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
           <p className="text-white font-semibold">
             €{subscription.price.toFixed(2)}
           </p>
-          <p className="text-gray-400 text-sm">{subscription.billing}</p>
+          <p className="text-gray-500 text-sm">{subscription.billing}</p>
         </div>
 
-        {/* Three-dot menu */}
+        {/* Menu */}
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-gray-700 text-xl leading-none"
+            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
             aria-label="Menu"
           >
-            ⋮
+            <MoreIcon />
           </button>
 
           {showMenu && (
@@ -64,14 +100,15 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
                 className="fixed inset-0 z-10"
                 onClick={() => setShowMenu(false)}
               />
-              <div className="absolute right-0 mt-2 w-32 bg-gray-800 rounded-lg shadow-lg z-20 overflow-hidden">
+              <div className="absolute right-0 mt-1 w-36 bg-gray-800 border border-gray-700/50 rounded-xl shadow-xl z-20 overflow-hidden">
                 <button
                   onClick={() => {
                     onEdit(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-white hover:bg-gray-700"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors"
                 >
+                  <EditIcon />
                   Edit
                 </button>
                 <button
@@ -79,8 +116,9 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
                     onDelete(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-700"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-gray-700/50 transition-colors"
                 >
+                  <TrashIcon />
                   Delete
                 </button>
               </div>
