@@ -33,7 +33,7 @@ const getUserSubscriptionsRef = (userId) => {
  */
 export const subscribeToSubscriptions = (userId, onSuccess, onError) => {
   const subscriptionsRef = getUserSubscriptionsRef(userId);
-  const q = query(subscriptionsRef, orderBy("name"));
+  const q = query(subscriptionsRef, orderBy("createdAt", "desc"));
 
   return onSnapshot(
     q,
