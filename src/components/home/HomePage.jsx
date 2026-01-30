@@ -74,24 +74,43 @@ const ArrowUpIcon = () => (
   </Icon>
 );
 
-const StatCard = ({ label, value, subtitle, icon, hoverColor }) => (
-  <div
-    className={`bg-linear-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-${hoverColor}-500/30 transition-all duration-300`}
-  >
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
-        {label}
-      </span>
-      <div
-        className={`w-8 h-8 rounded-lg bg-${hoverColor}-500/10 flex items-center justify-center`}
-      >
-        {icon}
+const colorStyles = {
+  blue: {
+    border: "hover:border-blue-500/30",
+    bg: "bg-blue-500/10",
+  },
+  cyan: {
+    border: "hover:border-cyan-500/30",
+    bg: "bg-cyan-500/10",
+  },
+  purple: {
+    border: "hover:border-purple-500/30",
+    bg: "bg-purple-500/10",
+  },
+};
+
+const StatCard = ({ label, value, subtitle, icon, hoverColor }) => {
+  const colors = colorStyles[hoverColor] || colorStyles.blue;
+
+  return (
+    <div
+      className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 ${colors.border} transition-all duration-300`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
+          {label}
+        </span>
+        <div
+          className={`w-8 h-8 rounded-lg ${colors.bg} flex items-center justify-center`}
+        >
+          {icon}
+        </div>
       </div>
+      <div className="text-3xl font-bold text-white mb-1">{value}</div>
+      {subtitle && <div className="text-xs text-gray-500">{subtitle}</div>}
     </div>
-    <div className="text-3xl font-bold text-white mb-1">{value}</div>
-    {subtitle && <div className="text-xs text-gray-500">{subtitle}</div>}
-  </div>
-);
+  );
+};
 
 export default function HomePage() {
   const { currentUser } = useAuth();
