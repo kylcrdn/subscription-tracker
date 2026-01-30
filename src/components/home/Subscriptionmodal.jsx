@@ -163,7 +163,7 @@ export default function SubscriptionModal({
     if (!formData.name.trim()) newErrors.name = "Service name is required";
     if (!formData.price || parseFloat(formData.price) <= 0)
       newErrors.price = "Valid price is required";
-    if (!formData.dueDate.trim()) newErrors.dueDate = "Due date is required";
+    if (!formData.dueDate.trim()) newErrors.dueDate = "Date created is required";
     if (!formData.category.trim()) newErrors.category = "Category is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -452,13 +452,13 @@ export default function SubscriptionModal({
               </select>
             </div>
 
-            {/* Due Date */}
+            {/* Date Created */}
             <div>
               <label
                 htmlFor="service-dueDate"
                 className="block text-sm font-medium text-gray-300 mb-2"
               >
-                Next Due Date *
+                Date Created *
               </label>
               <input
                 id="service-dueDate"
@@ -479,7 +479,7 @@ export default function SubscriptionModal({
                 <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
               ) : (
                 <p className="text-xs text-gray-500 mt-1">
-                  Select the next billing date
+                  When did this subscription start?
                 </p>
               )}
             </div>
