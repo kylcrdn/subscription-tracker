@@ -107,6 +107,22 @@ const InboxIcon = () => (
   </svg>
 );
 
+const ArrowUpIcon = () => (
+  <svg
+    className="w-5 h-5"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 15l7-7 7 7"
+    />
+  </svg>
+);
+
 const StatCard = ({ label, value, subtitle, icon, hoverColor }) => (
   <div
     className={`bg-linear-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-${hoverColor}-500/30 transition-all duration-300`}
@@ -135,6 +151,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     if (!currentUser?.uid) return;
@@ -146,6 +163,19 @@ export default function HomePage() {
 
     return () => unsubscribe();
   }, [currentUser?.uid]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const filteredSubscriptions = useMemo(() => {
     if (!searchQuery.trim()) return subscriptions;
@@ -346,6 +376,16 @@ export default function HomePage() {
         onSave={handleSaveSubscription}
         subscription={editingSubscription}
       />
+
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-gray-800 hover:bg-gray-700 border border-blue-500/50 hover:border-cyan-400 text-white rounded-full shadow-lg transition-all duration-200 z-50"
+          aria-label="Scroll to top"
+        >
+          <ArrowUpIcon />
+        </button>
+      )}
     </div>
   );
 }
