@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Icon = ({ children, className = "w-5 h-5", ...props }) => (
   <svg
@@ -40,6 +40,38 @@ const TrashIcon = () => (
 export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [daysLeft, setDaysLeft] = useState(0);
+
+  useEffect(() => {
+    const calculateDays = () => {
+      const startDate = new Date(subscription.dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let nextPayment = new Date(startDate);
+      nextPayment.setHours(0, 0, 0, 0);
+
+      const billing = subscription.billing?.toLowerCase() || "monthly";
+
+      while (nextPayment <= today) {
+        if (billing.includes("year")) {
+          nextPayment.setFullYear(nextPayment.getFullYear() + 1);
+        } else if (billing.includes("week")) {
+          nextPayment.setDate(nextPayment.getDate() + 7);
+        } else {
+          nextPayment.setMonth(nextPayment.getMonth() + 1);
+        }
+      }
+
+      const diffTime = nextPayment - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      setDaysLeft(diffDays);
+    };
+
+    calculateDays();
+    const interval = setInterval(calculateDays, 60000);
+    return () => clearInterval(interval);
+  }, [subscription.dueDate, subscription.billing]);
 
   const getInitials = (name) => {
     return name
@@ -122,6 +154,11 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
 
       {/* Right side */}
       <div className="flex items-center gap-4">
+        <div className="text-right">
+          <p className="text-gray-400 text-sm">
+            {daysLeft} days left
+          </p>
+        </div>
         <div className="text-right">
           <p className="text-white font-semibold">
             €{subscription.price.toFixed(2)}
