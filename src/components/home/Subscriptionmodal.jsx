@@ -119,7 +119,7 @@ export default function SubscriptionModal({
       const matches = POPULAR_SERVICES.filter(
         (service) =>
           service.name.toLowerCase().includes(value.toLowerCase()) ||
-          service.domain.toLowerCase().includes(value.toLowerCase())
+          service.domain.toLowerCase().includes(value.toLowerCase()),
       );
       setFilteredServices(matches.slice(0, 6));
       setShowSuggestions(matches.length > 0);
@@ -163,7 +163,7 @@ export default function SubscriptionModal({
     if (!formData.name.trim()) newErrors.name = "Service name is required";
     if (!formData.price || parseFloat(formData.price) <= 0)
       newErrors.price = "Valid price is required";
-    if (!formData.dueDate.trim()) newErrors.dueDate = "Due date is required";
+    if (!formData.dueDate.trim()) newErrors.dueDate = "Date created is required";
     if (!formData.category.trim()) newErrors.category = "Category is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -344,7 +344,9 @@ export default function SubscriptionModal({
                     value={brandSearch}
                     onChange={handleBrandSearch}
                     onFocus={() =>
-                      brandSearch && filteredServices.length > 0 && setShowSuggestions(true)
+                      brandSearch &&
+                      filteredServices.length > 0 &&
+                      setShowSuggestions(true)
                     }
                     placeholder="Search: Netflix, Spotify..."
                     className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
@@ -367,11 +369,15 @@ export default function SubscriptionModal({
                               alt=""
                               className="w-8 h-8 object-contain bg-white rounded p-0.5"
                               onError={() => {
-                                setFailedLogos((prev) => new Set([...prev, service.domain]));
+                                setFailedLogos(
+                                  (prev) => new Set([...prev, service.domain]),
+                                );
                               }}
                             />
                             <div className="flex-1">
-                              <span className="font-medium">{service.name}</span>
+                              <span className="font-medium">
+                                {service.name}
+                              </span>
                               <span className="text-gray-400 text-xs block">
                                 {service.domain}
                               </span>
@@ -446,13 +452,13 @@ export default function SubscriptionModal({
               </select>
             </div>
 
-            {/* Due Date */}
+            {/* Date Created */}
             <div>
               <label
                 htmlFor="service-dueDate"
                 className="block text-sm font-medium text-gray-300 mb-2"
               >
-                Next Due Date *
+                Date Created *
               </label>
               <input
                 id="service-dueDate"
@@ -473,7 +479,7 @@ export default function SubscriptionModal({
                 <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
               ) : (
                 <p className="text-xs text-gray-500 mt-1">
-                  Select the next billing date
+                  When did this subscription start?
                 </p>
               )}
             </div>
