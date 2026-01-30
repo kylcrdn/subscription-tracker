@@ -86,6 +86,7 @@ export default function SubscriptionModal({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredServices, setFilteredServices] = useState([]);
   const [failedLogos, setFailedLogos] = useState(new Set());
+  const [selectOpen, setSelectOpen] = useState(false);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -440,16 +441,23 @@ export default function SubscriptionModal({
               >
                 Billing Cycle
               </label>
-              <select
-                id="service-billing"
-                name="billing"
-                value={formData.billing}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-              >
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
+              <div className={`select-wrapper ${selectOpen ? "open" : ""}`}>
+                <select
+                  id="service-billing"
+                  name="billing"
+                  value={formData.billing}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setTimeout(() => setSelectOpen(false), 150);
+                  }}
+                  onClick={() => setSelectOpen(!selectOpen)}
+                  onBlur={() => setTimeout(() => setSelectOpen(false), 100)}
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                >
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
             </div>
 
             {/* Date Created */}
