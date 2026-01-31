@@ -15,8 +15,93 @@ import {
   where,
   writeBatch,
   getDocs,
+  setDoc,
+  getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./Firebase";
+
+// ============= USER PROFILE FUNCTIONS =============
+
+/**
+ * Create or update user profile in Firestore
+ * This should be called when a user signs up or signs in for the first time
+ * @param {string} userId - The authenticated user's ID
+ * @param {Object} userData - User data (email, displayName, etc.)
+ */
+export const createUserProfile = async (userId, userData) => {
+  try {
+    const userRef = doc(db, "users", userId);
+
+    // Check if user already exists
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      // Create new user profile
+      await setDoc(userRef, {
+        email: userData.email || null,
+        displayName: userData.displayName || null,
+        photoURL: userData.photoURL || null,
+        emailNotifications: true, // Enable email notifications by default
+        reminderDays: 3, // Default to 3 days before renewal
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      console.log(`User profile created for ${userId}`);
+    } else {
+      // Update existing user profile with latest data
+      await updateDoc(userRef, {
+        email: userData.email || userSnap.data().email,
+        displayName: userData.displayName || userSnap.data().displayName,
+        photoURL: userData.photoURL || userSnap.data().photoURL,
+        updatedAt: serverTimestamp(),
+      });
+      console.log(`User profile updated for ${userId}`);
+    }
+  } catch (error) {
+    console.error("Error creating/updating user profile:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get user profile from Firestore
+ * @param {string} userId - The authenticated user's ID
+ * @returns {Object|null} User profile data or null if not found
+ */
+export const getUserProfile = async (userId) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+      return { id: userSnap.id, ...userSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    throw error;
+  }
+};
+
+/**
+ * Update user notification preferences
+ * @param {string} userId - The authenticated user's ID
+ * @param {Object} preferences - Notification preferences
+ */
+export const updateUserPreferences = async (userId, preferences) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      ...preferences,
+      updatedAt: serverTimestamp(),
+    });
+    console.log(`User preferences updated for ${userId}`);
+  } catch (error) {
+    console.error("Error updating user preferences:", error);
+    throw error;
+  }
+};
 
 /**
  * Get reference to a user's subscriptions collection

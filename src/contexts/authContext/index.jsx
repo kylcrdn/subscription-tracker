@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { createUserProfile } from "../../firebase/firestore";
 /**
  * authContext folder inside context folder to CENTRALIZE AUTHENTICATION logic and state
  */
@@ -27,6 +28,18 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function initializeUser(user) {
       if (user) {
+        // Create or update user profile in Firestore
+        try {
+          await createUserProfile(user.uid, {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+          });
+        } catch (error) {
+          console.error("Error creating user profile:", error);
+          // Don't block user login if profile creation fails
+        }
+
         setCurrentUser({ ...user });
         setUserLoggedIn(true);
       } else {
