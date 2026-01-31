@@ -210,6 +210,8 @@ export const generateNotification = async (
   await addDoc(notificationsRef, {
     subscriptionId: subscription.id,
     subscriptionName: subscription.name,
+    dueDate: subscription.dueDate, // Store for recalculation
+    billing: subscription.billing, // Store for recalculation
     renewalDate: renewalDate.toISOString(),
     sendAt: sendAt.toISOString(),
     notifyDaysBefore,

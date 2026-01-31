@@ -55,20 +55,45 @@ export default function NotificationBell({ userId }) {
     }
   };
 
-  const formatRenewalDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+  const formatRenewalDate = (notification) => {
+    // Recalculate current next renewal date for accuracy
+    const renewal = calculateNextRenewal(notification.dueDate, notification.billing);
+    return renewal.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
   };
 
-  const getDaysUntilRenewal = (renewalDate) => {
-    const renewal = new Date(renewalDate);
+  // Calculate current next renewal date (same logic as SubscriptionCard)
+  const calculateNextRenewal = (dueDate, billing) => {
+    const startDate = new Date(dueDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    renewal.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+
+    let nextRenewal = new Date(startDate);
+
+    if (billing === "Monthly") {
+      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+      while (nextRenewal <= today) {
+        nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+      }
+    } else if (billing === "Yearly") {
+      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+      while (nextRenewal <= today) {
+        nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+      }
+    }
+
+    return nextRenewal;
+  };
+
+  const getDaysUntilRenewal = (notification) => {
+    // Recalculate current next renewal date for accuracy
+    const renewal = calculateNextRenewal(notification.dueDate, notification.billing);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const diffTime = renewal - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -125,11 +150,15 @@ export default function NotificationBell({ userId }) {
                   </p>
                 </div>
               ) : (
-                notifications.map((notification) => {
-                  const daysUntil = getDaysUntilRenewal(
-                    notification.renewalDate
-                  );
-                  return (
+                notifications
+                  .map((notification) => {
+                    // Recalculate days until next renewal
+                    const daysUntil = getDaysUntilRenewal(notification);
+                    return { notification, daysUntil };
+                  })
+                  // Only show notifications within notification window (e.g., 3 days or less)
+                  .filter(({ daysUntil }) => daysUntil >= 0 && daysUntil <= 3)
+                  .map(({ notification, daysUntil }) => (
                     <div
                       key={notification.id}
                       className={`px-4 py-3 border-b border-gray-700/30 hover:bg-gray-700/30 transition-colors ${
@@ -149,7 +178,7 @@ export default function NotificationBell({ userId }) {
                                 : `Renews in ${daysUntil} days`}
                           </p>
                           <p className="text-gray-500 text-xs mt-0.5">
-                            {formatRenewalDate(notification.renewalDate)}
+                            {formatRenewalDate(notification)}
                           </p>
                         </div>
                         <button
@@ -161,8 +190,7 @@ export default function NotificationBell({ userId }) {
                         </button>
                       </div>
                     </div>
-                  );
-                })
+                  ))
               )}
             </div>
           </div>

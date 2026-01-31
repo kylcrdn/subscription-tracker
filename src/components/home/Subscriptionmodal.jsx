@@ -52,15 +52,23 @@ const POPULAR_SERVICES = [
   { name: "Patreon", domain: "patreon.com" },
 ];
 
-// Logo API helper
-const getLogoUrl = (domain) => {
+// Logo API helper - uses Clearbit (free, comprehensive, updated)
+// Falls back to Google S2 if Clearbit fails
+const getLogoUrl = (domain, useFallback = false) => {
   if (!domain) return "";
   const cleanDomain = domain
     .replace(/^(https?:\/\/)?(www\.)?/, "")
     .split("/")[0]
     .toLowerCase()
     .trim();
-  return `https://logos-api.apistemic.com/domain:${cleanDomain}`;
+
+  // Primary: Clearbit Logo API - free, high-quality, comprehensive brand coverage
+  if (!useFallback) {
+    return `https://logo.clearbit.com/${cleanDomain}`;
+  }
+
+  // Fallback: Google S2 Favicons - always works but lower resolution
+  return `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=128`;
 };
 
 export default function SubscriptionModal({
@@ -156,7 +164,19 @@ export default function SubscriptionModal({
     setLogoError(false);
   };
 
-  const handleLogoError = () => setLogoError(true);
+  // Handle logo error - try Google fallback before giving up
+  const handleLogoError = () => {
+    // If current icon is using Clearbit, try Google fallback
+    if (iconPreview && iconPreview.includes("clearbit.com")) {
+      const domain = brandSearch || iconPreview.split("clearbit.com/")[1];
+      const fallbackUrl = getLogoUrl(domain, true);
+      setIconPreview(fallbackUrl);
+      setFormData((prev) => ({ ...prev, icon: fallbackUrl }));
+    } else {
+      setLogoError(true);
+    }
+  };
+
   const handleLogoLoad = () => setLogoError(false);
 
   const validateForm = () => {
@@ -369,10 +389,22 @@ export default function SubscriptionModal({
                               src={getLogoUrl(service.domain)}
                               alt=""
                               className="w-8 h-8 object-contain bg-white rounded p-0.5"
-                              onError={() => {
-                                setFailedLogos(
-                                  (prev) => new Set([...prev, service.domain]),
-                                );
+                              onError={(e) => {
+                                // Try Google fallback if Clearbit fails
+                                if (
+                                  e.target.src.includes("clearbit.com")
+                                ) {
+                                  e.target.src = getLogoUrl(
+                                    service.domain,
+                                    true,
+                                  );
+                                } else {
+                                  // Both failed, hide this suggestion
+                                  setFailedLogos(
+                                    (prev) =>
+                                      new Set([...prev, service.domain]),
+                                  );
+                                }
                               }}
                             />
                             <div className="flex-1">

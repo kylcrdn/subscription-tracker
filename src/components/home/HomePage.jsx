@@ -122,6 +122,7 @@ export default function HomePage() {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -154,13 +155,35 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const filteredSubscriptions = useMemo(() => {
-    if (!searchQuery.trim()) return subscriptions;
-    const query = searchQuery.toLowerCase();
-    return subscriptions.filter((sub) =>
-      sub.name?.toLowerCase().includes(query),
+  const uniqueCategories = useMemo(() => {
+    const categories = new Set(
+      subscriptions
+        .map((sub) => sub.category?.trim())
+        .filter((cat) => cat && cat.length > 0),
     );
-  }, [subscriptions, searchQuery]);
+    return Array.from(categories).sort();
+  }, [subscriptions]);
+
+  const filteredSubscriptions = useMemo(() => {
+    let filtered = subscriptions;
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (sub) => sub.category?.trim() === selectedCategory,
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((sub) =>
+        sub.name?.toLowerCase().includes(query),
+      );
+    }
+
+    return filtered;
+  }, [subscriptions, searchQuery, selectedCategory]);
 
   const { totalMonthly, totalYearly } = useMemo(() => {
     const monthly = subscriptions.reduce((sum, sub) => {
@@ -272,15 +295,27 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Search Bar and Add Button */}
+        {/* Search Bar, Category Filter and Add Button */}
         <div className="flex justify-end gap-3 mb-8">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all cursor-pointer"
+          >
+            <option value="all">All Categories</option>
+            {uniqueCategories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
           <div className="relative w-64">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <SearchIcon />
             </div>
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
