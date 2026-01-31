@@ -50,6 +50,51 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
       .slice(0, 2);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const getDaysUntilRenewal = () => {
+    if (!subscription.dueDate) return null;
+
+    const startDate = new Date(subscription.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Calculate the next renewal date based on billing cycle
+    // Always start with at least one billing cycle from creation date
+    let nextRenewal = new Date(startDate);
+
+    if (subscription.billing === "Monthly") {
+      // Add at least 1 month, then keep adding until we get a future date
+      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+      while (nextRenewal <= today) {
+        nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+      }
+    } else if (subscription.billing === "Yearly") {
+      // Add at least 1 year, then keep adding until we get a future date
+      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+      while (nextRenewal <= today) {
+        nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+      }
+    }
+
+    // Calculate days difference
+    const diffTime = nextRenewal - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays;
+  };
+
+  const daysRemaining = getDaysUntilRenewal();
+
   return (
     <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between hover:bg-gray-800/80 transition-all duration-200">
       {/* Left side */}
@@ -71,7 +116,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
 
         <div>
           <h3 className="text-white font-medium">{subscription.name}</h3>
-          <p className="text-gray-500 text-sm">{subscription.dueDate}</p>
+          <p className="text-gray-500 text-sm">{formatDate(subscription.dueDate)}</p>
         </div>
       </div>
 
@@ -83,6 +128,29 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
           </p>
           <p className="text-gray-500 text-sm">{subscription.billing}</p>
         </div>
+
+        {daysRemaining !== null && (
+          <div className="text-right min-w-25">
+            <p
+              className={`text-sm font-medium ${
+                daysRemaining === 0
+                  ? "text-red-400"
+                  : daysRemaining <= 3
+                    ? "text-orange-400"
+                    : daysRemaining <= 7
+                      ? "text-yellow-400"
+                      : "text-cyan-400"
+              }`}
+            >
+              {daysRemaining === 0
+                ? "Renews today"
+                : daysRemaining === 1
+                  ? "Tomorrow"
+                  : `${daysRemaining} days`}
+            </p>
+            <p className="text-gray-500 text-xs">until renewal</p>
+          </div>
+        )}
 
         {/* Menu */}
         <div className="relative">

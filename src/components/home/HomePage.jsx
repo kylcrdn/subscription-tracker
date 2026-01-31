@@ -10,6 +10,7 @@ import {
 } from "../../firebase/firestore";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
+import ConfirmDialog from "./ConfirmDialog";
 import toast from "react-hot-toast";
 
 const Icon = ({ children, className = "w-4 h-4", ...props }) => (
@@ -123,6 +124,10 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    subscription: null,
+  });
 
   useEffect(() => {
     if (!currentUser?.uid) return;
@@ -191,11 +196,16 @@ export default function HomePage() {
     setEditingSubscription(null);
   };
 
-  const handleDeleteSubscription = async (subscription) => {
-    if (
-      !window.confirm(`Are you sure you want to delete ${subscription.name}?`)
-    )
-      return;
+  const handleDeleteSubscription = (subscription) => {
+    setConfirmDialog({
+      isOpen: true,
+      subscription,
+    });
+  };
+
+  const confirmDelete = async () => {
+    const subscription = confirmDialog.subscription;
+    if (!subscription) return;
 
     try {
       await deleteSubscription(currentUser.uid, subscription.id);
@@ -204,6 +214,13 @@ export default function HomePage() {
       console.error("Error deleting subscription:", error);
       toast.error("Failed to delete subscription. Please try again.");
     }
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      subscription: null,
+    });
   };
 
   const handleSaveSubscription = async (subscriptionData) => {
@@ -352,6 +369,17 @@ export default function HomePage() {
         onClose={closeModal}
         onSave={handleSaveSubscription}
         subscription={editingSubscription}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={confirmDelete}
+        title="Delete Subscription"
+        message={`Are you sure you want to delete ${confirmDialog.subscription?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmStyle="danger"
       />
 
       {showScrollTop && (
