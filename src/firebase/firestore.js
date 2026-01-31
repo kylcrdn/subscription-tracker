@@ -12,6 +12,9 @@ import {
   query,
   onSnapshot,
   orderBy,
+  where,
+  writeBatch,
+  getDocs,
 } from "firebase/firestore";
 import { db } from "./Firebase";
 
@@ -66,6 +69,12 @@ export const addSubscription = async (userId, subscriptionData) => {
     createdAt: new Date().toISOString(),
   });
 
+  // Generate notification for this subscription
+  await generateNotification(userId, {
+    ...dataWithoutId,
+    id: docRef.id,
+  });
+
   return docRef.id;
 };
 
@@ -75,13 +84,30 @@ export const addSubscription = async (userId, subscriptionData) => {
  * @param {string} subscriptionId - The subscription document ID
  * @param {Object} subscriptionData - The updated subscription data
  */
-export const updateSubscription = async (userId, subscriptionId, subscriptionData) => {
-  const subscriptionRef = doc(db, "users", userId, "subscriptions", subscriptionId);
+export const updateSubscription = async (
+  userId,
+  subscriptionId,
+  subscriptionData
+) => {
+  const subscriptionRef = doc(
+    db,
+    "users",
+    userId,
+    "subscriptions",
+    subscriptionId
+  );
   const { id: _id, ...dataWithoutId } = subscriptionData;
 
   await updateDoc(subscriptionRef, {
     ...dataWithoutId,
     updatedAt: new Date().toISOString(),
+  });
+
+  // Delete old notifications and generate new ones
+  await deleteNotificationsBySubscription(userId, subscriptionId);
+  await generateNotification(userId, {
+    ...dataWithoutId,
+    id: subscriptionId,
   });
 };
 
@@ -91,6 +117,190 @@ export const updateSubscription = async (userId, subscriptionId, subscriptionDat
  * @param {string} subscriptionId - The subscription document ID
  */
 export const deleteSubscription = async (userId, subscriptionId) => {
-  const subscriptionRef = doc(db, "users", userId, "subscriptions", subscriptionId);
+  const subscriptionRef = doc(
+    db,
+    "users",
+    userId,
+    "subscriptions",
+    subscriptionId
+  );
   await deleteDoc(subscriptionRef);
+
+  // Delete associated notifications (don't fail if this errors)
+  try {
+    await deleteNotificationsBySubscription(userId, subscriptionId);
+  } catch (error) {
+    console.warn("Could not delete notifications for subscription:", error);
+    // Don't throw - subscription deletion succeeded
+  }
+};
+
+// ============= NOTIFICATION FUNCTIONS =============
+
+/**
+ * Get reference to a user's notifications collection
+ * @param {string} userId - The authenticated user's ID
+ * @returns {CollectionReference} Firestore collection reference
+ */
+const getUserNotificationsRef = (userId) => {
+  return collection(db, "users", userId, "notifications");
+};
+
+/**
+ * Calculate the next renewal date for a subscription
+ * @param {string} dueDate - The subscription start date
+ * @param {string} billing - Monthly or Yearly
+ * @returns {Date} The next renewal date
+ */
+const calculateNextRenewal = (dueDate, billing) => {
+  const startDate = new Date(dueDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0);
+
+  let nextRenewal = new Date(startDate);
+
+  if (billing === "Monthly") {
+    nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+    while (nextRenewal <= today) {
+      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
+    }
+  } else if (billing === "Yearly") {
+    nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+    while (nextRenewal <= today) {
+      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
+    }
+  }
+
+  return nextRenewal;
+};
+
+/**
+ * Generate notification for a subscription
+ * @param {string} userId - The authenticated user's ID
+ * @param {Object} subscription - The subscription data
+ * @param {number} notifyDaysBefore - Days before renewal to notify (default: 3)
+ */
+export const generateNotification = async (
+  userId,
+  subscription,
+  notifyDaysBefore = 3
+) => {
+  const renewalDate = calculateNextRenewal(
+    subscription.dueDate,
+    subscription.billing
+  );
+
+  // Calculate sendAt = renewalDate - notifyDaysBefore
+  const sendAt = new Date(renewalDate);
+  sendAt.setDate(sendAt.getDate() - notifyDaysBefore);
+
+  const notificationsRef = getUserNotificationsRef(userId);
+
+  await addDoc(notificationsRef, {
+    subscriptionId: subscription.id,
+    subscriptionName: subscription.name,
+    renewalDate: renewalDate.toISOString(),
+    sendAt: sendAt.toISOString(),
+    notifyDaysBefore,
+    read: false,
+    dismissed: false,
+    createdAt: new Date().toISOString(),
+  });
+};
+
+/**
+ * Subscribe to real-time notifications for a user
+ * @param {string} userId - The authenticated user's ID
+ * @param {Function} onSuccess - Callback with notifications array
+ * @returns {Function} Unsubscribe function
+ */
+export const subscribeToNotifications = (userId, onSuccess) => {
+  const notificationsRef = getUserNotificationsRef(userId);
+  const today = new Date().toISOString();
+
+  // Get notifications that should be sent today or earlier and not dismissed
+  const q = query(
+    notificationsRef,
+    where("sendAt", "<=", today),
+    where("dismissed", "==", false),
+    orderBy("sendAt", "desc")
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const notifications = snapshot.docs.map((document) => ({
+      id: document.id,
+      ...document.data(),
+    }));
+    onSuccess(notifications);
+  });
+};
+
+/**
+ * Mark a notification as read
+ * @param {string} userId - The authenticated user's ID
+ * @param {string} notificationId - The notification document ID
+ */
+export const markNotificationAsRead = async (userId, notificationId) => {
+  const notificationRef = doc(
+    db,
+    "users",
+    userId,
+    "notifications",
+    notificationId
+  );
+  await updateDoc(notificationRef, {
+    read: true,
+    readAt: new Date().toISOString(),
+  });
+};
+
+/**
+ * Dismiss a notification
+ * @param {string} userId - The authenticated user's ID
+ * @param {string} notificationId - The notification document ID
+ */
+export const dismissNotification = async (userId, notificationId) => {
+  const notificationRef = doc(
+    db,
+    "users",
+    userId,
+    "notifications",
+    notificationId
+  );
+  await updateDoc(notificationRef, {
+    dismissed: true,
+    dismissedAt: new Date().toISOString(),
+  });
+};
+
+/**
+ * Delete all notifications for a specific subscription
+ * @param {string} userId - The authenticated user's ID
+ * @param {string} subscriptionId - The subscription document ID
+ */
+const deleteNotificationsBySubscription = async (userId, subscriptionId) => {
+  try {
+    const notificationsRef = getUserNotificationsRef(userId);
+    const q = query(
+      notificationsRef,
+      where("subscriptionId", "==", subscriptionId)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return; // No notifications to delete
+    }
+
+    const batch = writeBatch(db);
+    snapshot.docs.forEach((document) => {
+      batch.delete(document.ref);
+    });
+    await batch.commit();
+  } catch (error) {
+    console.error("Error deleting notifications:", error);
+    // Re-throw to be handled by caller if needed
+    throw error;
+  }
 };

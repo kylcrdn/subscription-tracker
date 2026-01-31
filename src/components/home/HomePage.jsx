@@ -11,6 +11,7 @@ import {
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "./ConfirmDialog";
+import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
 
 const Icon = ({ children, className = "w-4 h-4", ...props }) => (
@@ -257,12 +258,15 @@ export default function HomePage() {
                 {currentUser?.email}
               </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-blue-500/50 hover:border-cyan-400 rounded-lg transition-all duration-200 hover:bg-gray-800/50"
-            >
-              Sign Out
-            </button>
+            <div className="flex items-center gap-3">
+              <NotificationBell userId={currentUser?.uid} />
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-blue-500/50 hover:border-cyan-400 rounded-lg transition-all duration-200 hover:bg-gray-800/50"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>

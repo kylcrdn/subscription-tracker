@@ -1,0 +1,177 @@
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { subscribeToNotifications, dismissNotification } from "../../firebase/firestore";
+
+const Icon = ({ children, className = "w-5 h-5", ...props }) => (
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    {children}
+  </svg>
+);
+
+const BellIcon = () => (
+  <Icon>
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 01-3.46 0" />
+  </Icon>
+);
+
+const CloseIcon = () => (
+  <Icon className="w-4 h-4">
+    <path d="M18 6L6 18M6 6l12 12" />
+  </Icon>
+);
+
+export default function NotificationBell({ userId }) {
+  const [notifications, setNotifications] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const unsubscribe = subscribeToNotifications(userId, (notifs) => {
+      setNotifications(notifs);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [userId]);
+
+  const handleDismiss = async (e, notificationId) => {
+    e.stopPropagation();
+    try {
+      await dismissNotification(userId, notificationId);
+    } catch (error) {
+      console.error("Error dismissing notification:", error);
+    }
+  };
+
+  const formatRenewalDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const getDaysUntilRenewal = (renewalDate) => {
+    const renewal = new Date(renewalDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    renewal.setHours(0, 0, 0, 0);
+
+    const diffTime = renewal - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays;
+  };
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setShowDropdown(!showDropdown)}
+        className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+        aria-label="Notifications"
+      >
+        <BellIcon />
+        {unreadCount > 0 && (
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        )}
+      </button>
+
+      {showDropdown && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setShowDropdown(false)}
+          />
+          <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700/50 rounded-xl shadow-2xl z-20 overflow-hidden">
+            {/* Header */}
+            <div className="px-4 py-3 border-b border-gray-700/50">
+              <h3 className="text-white font-semibold">Notifications</h3>
+              {unreadCount > 0 && (
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {unreadCount} unread
+                </p>
+              )}
+            </div>
+
+            {/* Notifications List */}
+            <div className="max-h-96 overflow-y-auto">
+              {loading ? (
+                <div className="px-4 py-8 text-center text-gray-400">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto" />
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="px-4 py-8 text-center text-gray-400">
+                  <BellIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-medium text-white mb-1">
+                    No notifications
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    You&apos;ll be notified 3 days before renewals
+                  </p>
+                </div>
+              ) : (
+                notifications.map((notification) => {
+                  const daysUntil = getDaysUntilRenewal(
+                    notification.renewalDate
+                  );
+                  return (
+                    <div
+                      key={notification.id}
+                      className={`px-4 py-3 border-b border-gray-700/30 hover:bg-gray-700/30 transition-colors ${
+                        !notification.read ? "bg-blue-500/5" : ""
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium text-sm truncate">
+                            {notification.subscriptionName}
+                          </p>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {daysUntil === 0
+                              ? "Renews today!"
+                              : daysUntil === 1
+                                ? "Renews tomorrow"
+                                : `Renews in ${daysUntil} days`}
+                          </p>
+                          <p className="text-gray-500 text-xs mt-0.5">
+                            {formatRenewalDate(notification.renewalDate)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => handleDismiss(e, notification.id)}
+                          className="text-gray-500 hover:text-white p-1 rounded hover:bg-gray-700/50 transition-colors shrink-0"
+                          aria-label="Dismiss"
+                        >
+                          <CloseIcon />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+NotificationBell.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
