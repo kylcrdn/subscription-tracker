@@ -353,17 +353,15 @@ export default function HomePage() {
             )}
           </div>
         ) : (
-          <div className="max-h-[500px] overflow-y-auto pr-4">
-            <div className="grid grid-cols-1 gap-4">
-              {filteredSubscriptions.map((subscription) => (
-                <SubscriptionCard
-                  key={subscription.id}
-                  subscription={subscription}
-                  onEdit={openModal}
-                  onDelete={handleDeleteSubscription}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-1 gap-4">
+            {filteredSubscriptions.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                onEdit={openModal}
+                onDelete={handleDeleteSubscription}
+              />
+            ))}
           </div>
         )}
       </main>

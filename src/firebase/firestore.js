@@ -69,11 +69,16 @@ export const addSubscription = async (userId, subscriptionData) => {
     createdAt: new Date().toISOString(),
   });
 
-  // Generate notification for this subscription
-  await generateNotification(userId, {
-    ...dataWithoutId,
-    id: docRef.id,
-  });
+  // Generate notification for this subscription (don't fail if this errors)
+  try {
+    await generateNotification(userId, {
+      ...dataWithoutId,
+      id: docRef.id,
+    });
+  } catch (error) {
+    console.warn("Could not generate notification for subscription:", error);
+    // Don't throw - subscription creation succeeded
+  }
 
   return docRef.id;
 };
@@ -103,12 +108,17 @@ export const updateSubscription = async (
     updatedAt: new Date().toISOString(),
   });
 
-  // Delete old notifications and generate new ones
-  await deleteNotificationsBySubscription(userId, subscriptionId);
-  await generateNotification(userId, {
-    ...dataWithoutId,
-    id: subscriptionId,
-  });
+  // Delete old notifications and generate new ones (don't fail if this errors)
+  try {
+    await deleteNotificationsBySubscription(userId, subscriptionId);
+    await generateNotification(userId, {
+      ...dataWithoutId,
+      id: subscriptionId,
+    });
+  } catch (error) {
+    console.warn("Could not update notifications for subscription:", error);
+    // Don't throw - subscription update succeeded
+  }
 };
 
 /**
