@@ -10,6 +10,7 @@ import {
 } from "../../firebase/firestore";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
+import toast from "react-hot-toast";
 
 const Icon = ({ children, className = "w-4 h-4", ...props }) => (
   <svg
@@ -198,8 +199,10 @@ export default function HomePage() {
 
     try {
       await deleteSubscription(currentUser.uid, subscription.id);
+      toast.success(`${subscription.name} deleted successfully!`);
     } catch (error) {
       console.error("Error deleting subscription:", error);
+      toast.error("Failed to delete subscription. Please try again.");
     }
   };
 
@@ -211,11 +214,15 @@ export default function HomePage() {
           editingSubscription.id,
           subscriptionData,
         );
+        toast.success(`${subscriptionData.name} updated successfully!`);
       } else {
         await addSubscription(currentUser.uid, subscriptionData);
+        toast.success(`${subscriptionData.name} added successfully!`);
       }
     } catch (error) {
       console.error("Error saving subscription:", error);
+      const action = editingSubscription ? "update" : "add";
+      toast.error(`Failed to ${action} subscription. Please try again.`);
     }
   };
 

@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./contexts/authContext";
 import LoginPage from "./components/auth/login/LoginPage";
 import RegisterPage from "./components/auth/register/RegisterPage";
 import HomePage from "./components/home/HomePage";
+import { Toaster } from "react-hot-toast";
 
 // Protected Route - only accessible when logged in
 function ProtectedRoute({ children }) {
@@ -38,6 +39,29 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "#1f2937",
+              color: "#fff",
+              border: "1px solid #374151",
+            },
+            success: {
+              iconTheme: {
+                primary: "#3b82f6",
+                secondary: "#fff",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
         <Routes>
           {/* Public routes - redirect to /home if already logged in */}
           <Route
