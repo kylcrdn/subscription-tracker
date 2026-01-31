@@ -112,7 +112,9 @@ export default function NotificationBell({ userId }) {
       >
         <BellIcon />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full">
+            {unreadCount}
+          </span>
         )}
       </button>
 
@@ -137,7 +139,10 @@ export default function NotificationBell({ userId }) {
             <div className="max-h-96 overflow-y-auto">
               {loading ? (
                 <div className="px-4 py-8 text-center text-gray-400">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto" />
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-3" />
+                  <p className="text-sm text-gray-400">
+                    Checking for notifications...
+                  </p>
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="px-4 py-8 text-center text-gray-400">
