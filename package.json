@@ -13,7 +13,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
-    "firebase": "^12.7.0",
+    "firebase": "^12.8.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -34,10 +34,14 @@
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
     "tailwindcss": "^4.1.18",
+<<<<<<< HEAD
     "vite": "npm:rolldown-vite@7.2.5",
     "vitest": "^4.0.18"
+=======
+    "vite": "^5.0.0"
+>>>>>>> d028cb6 (fixed from laptop)
   },
   "overrides": {
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vite": "^5.0.0"
   }
 }
