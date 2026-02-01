@@ -4,6 +4,7 @@ import { useAuth } from "../../../../contexts/authContext";
 import {
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
+  doPasswordReset,
 } from "../../../../firebase/auth";
 
 export default function LoginPage() {
@@ -11,6 +12,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
 
   // Get auth state from context
   const { userLoggedIn } = useAuth();
@@ -87,6 +92,28 @@ export default function LoginPage() {
     }
   };
 
+  // Handle password reset
+  const onPasswordReset = async (e) => {
+    e.preventDefault();
+    setIsResetting(true);
+    setResetMessage("");
+
+    try {
+      await doPasswordReset(resetEmail);
+      setResetMessage("success");
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+        setResetMessage("No account found with this email.");
+      } else if (error.code === "auth/invalid-email") {
+        setResetMessage("Invalid email address.");
+      } else {
+        setResetMessage("Failed to send reset email. Please try again.");
+      }
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="w-full max-w-md p-8">
@@ -143,6 +170,17 @@ export default function LoginPage() {
                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => {
+                  setShowResetPassword(true);
+                  setResetEmail(email);
+                  setResetMessage("");
+                }}
+                className="mt-2 text-sm text-blue-400 hover:text-blue-300"
+              >
+                Forgot password?
+              </button>
             </div>
 
             <button
@@ -202,6 +240,75 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Password Reset Modal */}
+      {showResetPassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Reset Password
+            </h2>
+
+            {resetMessage === "success" ? (
+              <div>
+                <p className="text-green-400 mb-4">
+                  If an account exists with this email, you'll receive a password reset link.
+                </p>
+                <p className="text-gray-400 text-sm mb-4">
+                  Note: If you signed up with Google, use "Continue with Google" instead - no password reset needed.
+                </p>
+                <button
+                  onClick={() => setShowResetPassword(false)}
+                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+                >
+                  Back to Login
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={onPasswordReset}>
+                <p className="text-gray-400 text-sm mb-4">
+                  Enter your email and we'll send you a link to reset your
+                  password.
+                </p>
+
+                {resetMessage && resetMessage !== "success" && (
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                    {resetMessage}
+                  </div>
+                )}
+
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                  disabled={isResetting}
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 mb-4"
+                  placeholder="you@example.com"
+                />
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword(false)}
+                    disabled={isResetting}
+                    className="flex-1 bg-gray-700 text-white py-2.5 rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isResetting}
+                    className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                  >
+                    {isResetting ? "Sending..." : "Send Reset Link"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
