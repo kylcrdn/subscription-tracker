@@ -319,9 +319,10 @@ export const subscribeToNotifications = (userId, onSuccess) => {
   // Get notifications that should be sent today or earlier and not dismissed
   const q = query(
     notificationsRef,
-    where("sendAt", "<=", today),
     where("dismissed", "==", false),
-    orderBy("sendAt", "desc")
+    where("sendAt", "<=", today)
+    // Temporarily removed orderBy to test if basic query works
+    // orderBy("sendAt", "desc")
   );
 
   return onSnapshot(q, (snapshot) => {
@@ -329,6 +330,8 @@ export const subscribeToNotifications = (userId, onSuccess) => {
       id: document.id,
       ...document.data(),
     }));
+    // Sort in JavaScript instead
+    notifications.sort((a, b) => new Date(b.sendAt) - new Date(a.sendAt));
     onSuccess(notifications);
   });
 };

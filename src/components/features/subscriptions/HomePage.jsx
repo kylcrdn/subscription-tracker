@@ -1,16 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/authContext";
-import { doSignOut } from "../../firebase/auth";
+import { useAuth } from "../../../contexts/authContext";
+import { doSignOut } from "../../../firebase/auth";
 import {
   subscribeToSubscriptions,
   addSubscription,
   updateSubscription,
   deleteSubscription,
-} from "../../firebase/firestore";
+} from "../../../firebase/firestore";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
-import ConfirmDialog from "./ConfirmDialog";
+import ConfirmDialog from "../../common/ConfirmDialog";
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
 

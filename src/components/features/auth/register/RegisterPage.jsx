@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../contexts/authContext";
+import { useAuth } from "../../../../contexts/authContext";
 import {
-  doSignInWithEmailAndPassword,
+  doCreateUserWithEmailAndPassword,
   doSignInWithGoogle,
-} from "../../../firebase/auth";
+  doSignOut,
+} from "../../../../firebase/auth";
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   // Get auth state from context
@@ -23,66 +26,69 @@ export default function LoginPage() {
     }
   }, [userLoggedIn, navigate]);
 
-  // Handle sign-in with email and password
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isSigningIn) {
-      setIsSigningIn(true);
+    // Validation
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters");
+      return;
+    }
+
+    if (!isRegistering) {
+      setIsRegistering(true);
       setErrorMessage("");
 
       try {
-        await doSignInWithEmailAndPassword(email, password);
-        // Don't manually navigate - useEffect will handle it when userLoggedIn changes
-      } catch (error) {
-        // Handle specific Firebase error codes
-        let message = "Failed to sign in. Please try again.";
+        // Create user account
+        await doCreateUserWithEmailAndPassword(email, password);
 
-        if (error.code === "auth/user-not-found") {
-          message = "No account found with this email.";
-        } else if (error.code === "auth/wrong-password") {
-          message = "Incorrect password.";
+        // Sign-out immediately after registration
+        await doSignOut();
+
+        // Redirect to login page
+        navigate("/login");
+      } catch (error) {
+        let message = "Failed to register. Please try again.";
+
+        if (error.code === "auth/email-already-in-use") {
+          message = "This email is already registered. Try logging in instead.";
         } else if (error.code === "auth/invalid-email") {
           message = "Invalid email address.";
-        } else if (error.code === "auth/user-disabled") {
-          message = "This account has been disabled.";
-        } else if (error.code === "auth/too-many-requests") {
-          message = "Too many failed attempts. Try again later.";
-        } else if (error.code === "auth/invalid-credential") {
-          message = "Invalid email or password.";
+        } else if (error.code === "auth/weak-password") {
+          message = "Password is too weak. Use at least 6 characters.";
         }
 
         setErrorMessage(message);
-        setIsSigningIn(false);
+        setIsRegistering(false);
       }
     }
   };
 
-  // Handle Google sign-in
+  // Google sign-in
   const onGoogleSignIn = async (e) => {
     e.preventDefault();
 
-    if (!isSigningIn) {
-      setIsSigningIn(true);
+    if (!isRegistering) {
+      setIsRegistering(true);
       setErrorMessage("");
 
       try {
         await doSignInWithGoogle();
-        // Don't manually navigate - useEffect will handle it
       } catch (error) {
         let message = "Failed to sign in with Google.";
 
         if (error.code === "auth/popup-closed-by-user") {
           message = "Sign-in cancelled.";
-        } else if (
-          error.code === "auth/account-exists-with-different-credential"
-        ) {
-          message =
-            "An account already exists with this email using a different sign-in method.";
         }
 
         setErrorMessage(message);
-        setIsSigningIn(false);
+        setIsRegistering(false);
       }
     }
   };
@@ -92,20 +98,19 @@ export default function LoginPage() {
       <div className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-semibold text-white mb-2">
-            Welcome Back
+            Create Account
           </h1>
-          <p className="text-gray-400">Sign in to your account</p>
+          <p className="text-gray-400">Sign up to get started</p>
         </div>
 
         <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-8">
-          {/* Error Message */}
+          {/* Display error message */}
           {errorMessage && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
               {errorMessage}
             </div>
           )}
 
-          {/* Login Form */}
           <form onSubmit={onSubmit} className="space-y-6">
             <div>
               <label
@@ -120,7 +125,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isSigningIn}
+                disabled={isRegistering}
                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="you@example.com"
               />
@@ -139,7 +144,29 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isSigningIn}
+                disabled={isRegistering}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder="••••••••"
+              />
+              <p className="mt-1 text-xs text-gray-400">
+                Must be at least 6 characters
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                disabled={isRegistering}
                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
@@ -147,10 +174,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isSigningIn}
+              disabled={isRegistering}
               className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSigningIn ? "Signing in..." : "Sign in"}
+              {isRegistering ? "Creating account..." : "Create account"}
             </button>
           </form>
 
@@ -165,7 +192,7 @@ export default function LoginPage() {
 
           <button
             onClick={onGoogleSignIn}
-            disabled={isSigningIn}
+            disabled={isRegistering}
             className="w-full flex items-center justify-center gap-3 bg-gray-700 border border-gray-600 text-white py-2.5 rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -186,18 +213,18 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            {isSigningIn ? "Signing in..." : "Continue with Google"}
+            {isRegistering ? "Creating account..." : "Continue with Google"}
           </button>
 
           <div className="mt-6 text-center text-sm text-gray-400">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <button
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
               type="button"
-              disabled={isSigningIn}
+              disabled={isRegistering}
               className="text-blue-400 font-medium hover:text-blue-300 disabled:opacity-50"
             >
-              Sign up
+              Sign in
             </button>
           </div>
         </div>

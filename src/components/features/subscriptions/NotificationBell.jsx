@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { subscribeToNotifications, dismissNotification } from "../../firebase/firestore";
+import { subscribeToNotifications, dismissNotification } from "../../../firebase/firestore";
 
 const Icon = ({ children, className = "w-5 h-5", ...props }) => (
   <svg

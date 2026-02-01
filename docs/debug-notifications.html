@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Notifications</title>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFirestore, collection, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Your Firebase config (from src/firebase/Firebase.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDN-zZUiHm8dOpI-qhD0YrmVYxFqSZuVgA",
+            authDomain: "subscription-tracker-400c0.firebaseapp.com",
+            projectId: "subscription-tracker-400c0",
+            storageBucket: "subscription-tracker-400c0.firebasestorage.app",
+            messagingSenderId: "821038498308",
+            appId: "1:821038498308:web:e4d77b58ebfb63e24dd5fc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('✅ User authenticated:', user.email);
+                console.log('User ID:', user.uid);
+
+                const today = new Date().toISOString();
+                console.log('Today (ISO):', today);
+
+                try {
+                    const notificationsRef = collection(db, 'users', user.uid, 'notifications');
+
+                    // Test query WITHOUT orderBy first
+                    console.log('\n📋 Testing query WITHOUT orderBy:');
+                    const q1 = query(
+                        notificationsRef,
+                        where('sendAt', '<=', today),
+                        where('dismissed', '==', false)
+                    );
+
+                    const snapshot1 = await getDocs(q1);
+                    console.log('Notifications found (no orderBy):', snapshot1.size);
+                    snapshot1.forEach(doc => {
+                        const data = doc.data();
+                        console.log('- ID:', doc.id);
+                        console.log('  Name:', data.subscriptionName);
+                        console.log('  sendAt:', data.sendAt);
+                        console.log('  dismissed:', data.dismissed);
+                        console.log('  read:', data.read);
+                    });
+
+                    // Test query WITH orderBy
+                    console.log('\n📋 Testing query WITH orderBy:');
+                    const q2 = query(
+                        notificationsRef,
+                        where('sendAt', '<=', today),
+                        where('dismissed', '==', false),
+                        orderBy('sendAt', 'desc')
+                    );
+
+                    const snapshot2 = await getDocs(q2);
+                    console.log('Notifications found (with orderBy):', snapshot2.size);
+                    snapshot2.forEach(doc => {
+                        const data = doc.data();
+                        console.log('- ID:', doc.id);
+                        console.log('  Name:', data.subscriptionName);
+                        console.log('  sendAt:', data.sendAt);
+                        console.log('  dismissed:', data.dismissed);
+                        console.log('  read:', data.read);
+                    });
+
+                    // Test: Get ALL notifications
+                    console.log('\n📋 Getting ALL notifications (no filters):');
+                    const allSnapshot = await getDocs(notificationsRef);
+                    console.log('Total notifications in database:', allSnapshot.size);
+                    allSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        console.log('- ID:', doc.id);
+                        console.log('  Name:', data.subscriptionName);
+                        console.log('  sendAt:', data.sendAt);
+                        console.log('  dismissed:', data.dismissed);
+                        console.log('  read:', data.read);
+                        console.log('  sendAt <= today?', data.sendAt <= today);
+                    });
+
+                } catch (error) {
+                    console.error('❌ Error querying notifications:', error);
+                    console.error('Error code:', error.code);
+                    console.error('Error message:', error.message);
+
+                    if (error.code === 'failed-precondition') {
+                        console.error('\n⚠️  INDEX NOT READY - Wait a few minutes and try again');
+                    }
+                }
+            } else {
+                console.log('❌ No user authenticated');
+                console.log('Please sign in to your app first, then run this debug page');
+            }
+        });
+    </script>
+</head>
+<body style="background: #000; color: #0f0; font-family: monospace; padding: 20px;">
+    <h1>🔍 Notification Debug Console</h1>
+    <p>Open browser console (F12) to see results</p>
+    <p>Make sure you're logged in to the app first!</p>
+</body>
+</html>

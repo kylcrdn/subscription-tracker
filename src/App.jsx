@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/authContext";
-import LoginPage from "./components/auth/login/LoginPage";
-import RegisterPage from "./components/auth/register/RegisterPage";
-import HomePage from "./components/home/HomePage";
+import LoginPage from "./components/features/auth/login/LoginPage";
+import RegisterPage from "./components/features/auth/register/RegisterPage";
+import HomePage from "./components/features/subscriptions/HomePage";
 import { Toaster } from "react-hot-toast";
 
 // Protected Route - only accessible when logged in
