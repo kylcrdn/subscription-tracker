@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./contexts/authContext";
 import LoginPage from "./components/features/auth/login/LoginPage";
 import RegisterPage from "./components/features/auth/register/RegisterPage";
 import HomePage from "./components/features/subscriptions/HomePage";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
 // Protected Route - only accessible when logged in
@@ -39,6 +40,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ErrorBoundary>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -114,6 +116,7 @@ function App() {
             }
           />
         </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );
