@@ -50,12 +50,21 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
       .slice(0, 2);
   };
 
+  const TIMEZONE = "Europe/Madrid";
+
+  const getSpainDate = (date = new Date()) => {
+    const spainDateStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+    const [year, month, day] = spainDateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
+    return date.toLocaleDateString("es-ES", {
+      timeZone: TIMEZONE,
       day: "numeric",
+      month: "short",
       year: "numeric",
     });
   };
@@ -63,30 +72,24 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   const getDaysUntilRenewal = () => {
     if (!subscription.dueDate) return null;
 
-    const startDate = new Date(subscription.dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    startDate.setHours(0, 0, 0, 0);
+    const today = getSpainDate();
+    const startDate = getSpainDate(new Date(subscription.dueDate));
 
     // Calculate the next renewal date based on billing cycle
-    // Always start with at least one billing cycle from creation date
     let nextRenewal = new Date(startDate);
 
     if (subscription.billing === "Monthly") {
-      // Add at least 1 month, then keep adding until we get a future date
       nextRenewal.setMonth(nextRenewal.getMonth() + 1);
       while (nextRenewal <= today) {
         nextRenewal.setMonth(nextRenewal.getMonth() + 1);
       }
     } else if (subscription.billing === "Yearly") {
-      // Add at least 1 year, then keep adding until we get a future date
       nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
       while (nextRenewal <= today) {
         nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
       }
     }
 
-    // Calculate days difference
     const diffTime = nextRenewal - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
