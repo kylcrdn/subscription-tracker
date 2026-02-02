@@ -61,7 +61,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
+    return date.toLocaleDateString("en-GB", {
       timeZone: TIMEZONE,
       day: "numeric",
       month: "short",
