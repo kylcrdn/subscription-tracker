@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { subscribeToNotifications, dismissNotification } from "../../../firebase/firestore";
+import {
+  subscribeToNotifications,
+  dismissNotification,
+} from "../../../firebase/firestore";
 
 const Icon = ({ children, className = "w-5 h-5", ...props }) => (
   <svg
@@ -57,7 +60,10 @@ export default function NotificationBell({ userId }) {
 
   const formatRenewalDate = (notification) => {
     // Recalculate current next renewal date for accuracy
-    const renewal = calculateNextRenewal(notification.dueDate, notification.billing);
+    const renewal = calculateNextRenewal(
+      notification.dueDate,
+      notification.billing,
+    );
     return renewal.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -91,7 +97,10 @@ export default function NotificationBell({ userId }) {
 
   const getDaysUntilRenewal = (notification) => {
     // Recalculate current next renewal date for accuracy
-    const renewal = calculateNextRenewal(notification.dueDate, notification.billing);
+    const renewal = calculateNextRenewal(
+      notification.dueDate,
+      notification.billing,
+    );
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -146,7 +155,6 @@ export default function NotificationBell({ userId }) {
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="px-4 py-8 text-center text-gray-400">
-                  <BellIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm font-medium text-white mb-1">
                     No notifications
                   </p>
