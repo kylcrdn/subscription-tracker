@@ -12,6 +12,7 @@ import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "../../common/ConfirmDialog";
 import CategoryPieChartModal from "./CategoryPieChartModal";
+import MonthlyExpensesChartModal from "./MonthlyExpensesChartModal";
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
 
@@ -132,6 +133,7 @@ export default function HomePage() {
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showCategoryChart, setShowCategoryChart] = useState(false);
+  const [showYearlyChart, setShowYearlyChart] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     subscription: null,
@@ -217,6 +219,27 @@ export default function HomePage() {
     return Object.entries(categoryMap)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
+  }, [subscriptions]);
+
+  const monthlyExpensesData = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const subInfo = subscriptions.map((sub) => {
+      const start = new Date(sub.dueDate);
+      const startYear = start.getFullYear();
+      const startMonth = start.getMonth();
+      const activeFrom =
+        startYear < currentYear ? 0 : startYear === currentYear ? startMonth : 12;
+      return { price: sub.price, billing: sub.billing, activeFrom };
+    });
+    return Array.from({ length: 12 }, (_, month) => ({
+      month,
+      total: subInfo.reduce((sum, sub) => {
+        if (month < sub.activeFrom) return sum;
+        if (sub.billing === "Monthly") return sum + sub.price;
+        if (sub.billing === "Yearly") return sum + sub.price / 12;
+        return sum;
+      }, 0),
+    }));
   }, [subscriptions]);
 
   const handleLogout = async () => {
@@ -361,9 +384,10 @@ export default function HomePage() {
           <StatCard
             label="Yearly"
             value={`€${totalYearly.toFixed(2)}`}
-            subtitle={`€${(totalYearly / 12).toFixed(2)} per month average`}
+            subtitle="Click to view monthly trend"
             icon={<ChartIcon />}
             hoverColor="cyan"
+            onClick={() => setShowYearlyChart(true)}
           />
           <StatCard
             label="Active Subs"
@@ -432,6 +456,13 @@ export default function HomePage() {
         isOpen={showCategoryChart}
         onClose={() => setShowCategoryChart(false)}
         categoryData={categoryData}
+      />
+
+      <MonthlyExpensesChartModal
+        isOpen={showYearlyChart}
+        onClose={() => setShowYearlyChart(false)}
+        monthlyData={monthlyExpensesData}
+        totalYearly={totalYearly}
       />
 
       <ConfirmDialog
