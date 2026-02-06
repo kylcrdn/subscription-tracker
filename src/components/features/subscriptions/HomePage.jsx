@@ -11,6 +11,7 @@ import {
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "../../common/ConfirmDialog";
+import CategoryPieChartModal from "./CategoryPieChartModal";
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
 
@@ -92,12 +93,16 @@ const colorStyles = {
   },
 };
 
-const StatCard = ({ label, value, subtitle, icon, hoverColor }) => {
+const StatCard = ({ label, value, subtitle, icon, hoverColor, onClick }) => {
   const colors = colorStyles[hoverColor] || colorStyles.blue;
 
   return (
     <div
-      className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 ${colors.border} transition-all duration-300`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
+      className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 ${colors.border} transition-all duration-300 ${onClick ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : ""}`}
     >
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
@@ -126,6 +131,7 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showCategoryChart, setShowCategoryChart] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     subscription: null,
@@ -199,6 +205,18 @@ export default function HomePage() {
     }, 0);
 
     return { totalMonthly: monthly, totalYearly: yearly };
+  }, [subscriptions]);
+
+  const categoryData = useMemo(() => {
+    const categoryMap = {};
+    subscriptions.forEach((sub) => {
+      const category = sub.category?.trim() || "Uncategorized";
+      const monthlyCost = sub.billing === "Yearly" ? sub.price / 12 : sub.price;
+      categoryMap[category] = (categoryMap[category] || 0) + monthlyCost;
+    });
+    return Object.entries(categoryMap)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
   }, [subscriptions]);
 
   const handleLogout = async () => {
@@ -335,8 +353,10 @@ export default function HomePage() {
           <StatCard
             label="Monthly"
             value={`€${totalMonthly.toFixed(2)}`}
+            subtitle="Click to view category split"
             icon={<CurrencyIcon />}
             hoverColor="blue"
+            onClick={() => setShowCategoryChart(true)}
           />
           <StatCard
             label="Yearly"
@@ -406,6 +426,12 @@ export default function HomePage() {
         onClose={closeModal}
         onSave={handleSaveSubscription}
         subscription={editingSubscription}
+      />
+
+      <CategoryPieChartModal
+        isOpen={showCategoryChart}
+        onClose={() => setShowCategoryChart(false)}
+        categoryData={categoryData}
       />
 
       <ConfirmDialog
