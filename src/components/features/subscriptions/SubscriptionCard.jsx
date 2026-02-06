@@ -37,7 +37,7 @@ const TrashIcon = () => (
   </Icon>
 );
 
-export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
+export default function SubscriptionCard({ subscription, onEdit, onDelete, selectionMode, selected, onToggleSelect }) {
   const [showMenu, setShowMenu] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -196,6 +196,25 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
             </>
           )}
         </div>
+
+        {/* Selection checkbox */}
+        {selectionMode && (
+          <button
+            onClick={() => onToggleSelect(subscription.id)}
+            className="ml-2 flex items-center justify-center w-6 h-6 rounded border-2 transition-colors shrink-0"
+            style={{
+              borderColor: selected ? "#3b82f6" : "#4b5563",
+              backgroundColor: selected ? "#3b82f6" : "transparent",
+            }}
+            aria-label={selected ? "Deselect subscription" : "Select subscription"}
+          >
+            {selected && (
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

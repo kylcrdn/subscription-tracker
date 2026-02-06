@@ -134,6 +134,8 @@ export default function HomePage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showCategoryChart, setShowCategoryChart] = useState(false);
   const [showYearlyChart, setShowYearlyChart] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     subscription: null,
@@ -268,24 +270,60 @@ export default function HomePage() {
     });
   };
 
-  const confirmDelete = async () => {
-    const subscription = confirmDialog.subscription;
-    if (!subscription) return;
-
-    try {
-      await deleteSubscription(currentUser.uid, subscription.id);
-      toast.success(`${subscription.name} deleted successfully!`);
-    } catch (error) {
-      console.error("Error deleting subscription:", error);
-      toast.error("Failed to delete subscription. Please try again.");
-    }
-  };
-
   const closeConfirmDialog = () => {
     setConfirmDialog({
       isOpen: false,
       subscription: null,
     });
+  };
+
+  const toggleSelectId = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    setConfirmDialog({
+      isOpen: true,
+      subscription: { id: "__bulk__", name: `${selectedIds.size} subscription${selectedIds.size > 1 ? "s" : ""}` },
+    });
+  };
+
+  const confirmDelete = async () => {
+    const sub = confirmDialog.subscription;
+    if (!sub) return;
+
+    if (sub.id === "__bulk__") {
+      try {
+        await Promise.all(
+          Array.from(selectedIds).map((id) => deleteSubscription(currentUser.uid, id)),
+        );
+        toast.success(`${selectedIds.size} subscription${selectedIds.size > 1 ? "s" : ""} deleted!`);
+        exitSelectionMode();
+      } catch (error) {
+        console.error("Error deleting subscriptions:", error);
+        toast.error("Failed to delete some subscriptions.");
+      }
+      return;
+    }
+
+    try {
+      await deleteSubscription(currentUser.uid, sub.id);
+      toast.success(`${sub.name} deleted successfully!`);
+    } catch (error) {
+      console.error("Error deleting subscription:", error);
+      toast.error("Failed to delete subscription. Please try again.");
+    }
   };
 
   const handleSaveSubscription = async (subscriptionData) => {
@@ -398,9 +436,43 @@ export default function HomePage() {
         </div>
 
         {/* Subscriptions List */}
-        <h2 className="text-xl font-bold text-white mb-4">
-          Your Subscriptions
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white">
+            Your Subscriptions
+          </h2>
+          {!selectionMode && filteredSubscriptions.length > 0 && (
+            <button
+              onClick={() => setSelectionMode(true)}
+              className="text-gray-400 hover:text-red-400 p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+              aria-label="Select subscriptions to delete"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                <path d="M10 11v6M14 11v6" />
+              </svg>
+            </button>
+          )}
+          {selectionMode && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">
+                {selectedIds.size} selected
+              </span>
+              <button
+                onClick={handleBulkDelete}
+                disabled={selectedIds.size === 0}
+                className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
+              >
+                Delete
+              </button>
+              <button
+                onClick={exitSelectionMode}
+                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -439,6 +511,9 @@ export default function HomePage() {
                 subscription={subscription}
                 onEdit={openModal}
                 onDelete={handleDeleteSubscription}
+                selectionMode={selectionMode}
+                selected={selectedIds.has(subscription.id)}
+                onToggleSelect={toggleSelectId}
               />
             ))}
           </div>
