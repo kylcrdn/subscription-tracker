@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {
   subscribeToNotifications,
   dismissNotification,
+  markNotificationAsRead,
 } from "../../../firebase/firestore";
 
 const Icon = ({ children, className = "w-5 h-5", ...props }) => (
@@ -110,12 +111,31 @@ export default function NotificationBell({ userId }) {
     return diffDays;
   };
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Filter to only notifications actually within the display window
+  const visibleNotifications = notifications.filter((n) => {
+    const days = getDaysUntilRenewal(n);
+    return days >= 0 && days <= 3;
+  });
+
+  const unreadCount = visibleNotifications.filter((n) => !n.read).length;
+
+  const handleToggleDropdown = () => {
+    const opening = !showDropdown;
+    setShowDropdown(opening);
+    if (opening) {
+      // Mark all visible unread notifications as read
+      visibleNotifications
+        .filter((n) => !n.read)
+        .forEach((n) => {
+          markNotificationAsRead(userId, n.id).catch(console.error);
+        });
+    }
+  };
 
   return (
     <div className="relative">
       <button
-        onClick={() => setShowDropdown(!showDropdown)}
+        onClick={handleToggleDropdown}
         className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
         aria-label="Notifications"
       >
@@ -153,7 +173,7 @@ export default function NotificationBell({ userId }) {
                     Checking for notifications...
                   </p>
                 </div>
-              ) : notifications.length === 0 ? (
+              ) : visibleNotifications.length === 0 ? (
                 <div className="px-4 py-8 text-center text-gray-400">
                   <p className="text-sm font-medium text-white mb-1">
                     No notifications
@@ -163,14 +183,11 @@ export default function NotificationBell({ userId }) {
                   </p>
                 </div>
               ) : (
-                notifications
+                visibleNotifications
                   .map((notification) => {
-                    // Recalculate days until next renewal
                     const daysUntil = getDaysUntilRenewal(notification);
                     return { notification, daysUntil };
                   })
-                  // Only show notifications within notification window (e.g., 3 days or less)
-                  .filter(({ daysUntil }) => daysUntil >= 0 && daysUntil <= 3)
                   .map(({ notification, daysUntil }) => (
                     <div
                       key={notification.id}
