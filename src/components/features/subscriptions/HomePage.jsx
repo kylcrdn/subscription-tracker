@@ -8,6 +8,7 @@ import {
   updateSubscription,
   deleteSubscription,
 } from "../../../firebase/firestore";
+import { checkAndNotifyDiscord } from "../../../services/discord";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "../../common/ConfirmDialog";
@@ -147,6 +148,7 @@ export default function HomePage() {
     const unsubscribe = subscribeToSubscriptions(currentUser.uid, (subs) => {
       setSubscriptions(subs);
       setLoading(false);
+      checkAndNotifyDiscord(subs);
     });
 
     return () => unsubscribe();

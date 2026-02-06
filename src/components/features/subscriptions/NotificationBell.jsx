@@ -114,7 +114,7 @@ export default function NotificationBell({ userId }) {
   // Filter to only notifications actually within the display window
   const visibleNotifications = notifications.filter((n) => {
     const days = getDaysUntilRenewal(n);
-    return days >= 0 && days <= 3;
+    return days >= 0 && days <= 7;
   });
 
   const unreadCount = visibleNotifications.filter((n) => !n.read).length;
@@ -179,7 +179,7 @@ export default function NotificationBell({ userId }) {
                     No notifications
                   </p>
                   <p className="text-xs text-gray-500">
-                    You&apos;ll be notified 3 days before renewals
+                    You&apos;ll be notified 7 days before renewals
                   </p>
                 </div>
               ) : (

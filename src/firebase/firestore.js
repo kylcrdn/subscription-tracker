@@ -247,7 +247,7 @@ const getUserNotificationsRef = (userId) => {
  * @param {string} billing - Monthly or Yearly
  * @returns {Date} The next renewal date
  */
-const calculateNextRenewal = (dueDate, billing) => {
+export const calculateNextRenewal = (dueDate, billing) => {
   const startDate = new Date(dueDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -279,7 +279,7 @@ const calculateNextRenewal = (dueDate, billing) => {
 export const generateNotification = async (
   userId,
   subscription,
-  notifyDaysBefore = 3
+  notifyDaysBefore = 7
 ) => {
   const renewalDate = calculateNextRenewal(
     subscription.dueDate,
