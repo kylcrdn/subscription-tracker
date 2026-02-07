@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/authContext";
 import { doSignOut } from "../../../firebase/auth";
@@ -12,8 +12,8 @@ import { checkAndNotifyDiscord } from "../../../services/discord";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "../../common/ConfirmDialog";
-import CategoryPieChartModal from "./CategoryPieChartModal";
-import MonthlyExpensesChartModal from "./MonthlyExpensesChartModal";
+const CategoryPieChartModal = lazy(() => import("./CategoryPieChartModal"));
+const MonthlyExpensesChartModal = lazy(() => import("./MonthlyExpensesChartModal"));
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
 
@@ -529,18 +529,26 @@ export default function HomePage() {
         subscription={editingSubscription}
       />
 
-      <CategoryPieChartModal
-        isOpen={showCategoryChart}
-        onClose={() => setShowCategoryChart(false)}
-        categoryData={categoryData}
-      />
+      {showCategoryChart && (
+        <Suspense fallback={null}>
+          <CategoryPieChartModal
+            isOpen={showCategoryChart}
+            onClose={() => setShowCategoryChart(false)}
+            categoryData={categoryData}
+          />
+        </Suspense>
+      )}
 
-      <MonthlyExpensesChartModal
-        isOpen={showYearlyChart}
-        onClose={() => setShowYearlyChart(false)}
-        monthlyData={monthlyExpensesData}
-        totalYearly={totalYearly}
-      />
+      {showYearlyChart && (
+        <Suspense fallback={null}>
+          <MonthlyExpensesChartModal
+            isOpen={showYearlyChart}
+            onClose={() => setShowYearlyChart(false)}
+            monthlyData={monthlyExpensesData}
+            totalYearly={totalYearly}
+          />
+        </Suspense>
+      )}
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
