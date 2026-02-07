@@ -1,14 +1,11 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/authContext";
 import { doSignOut } from "../../../firebase/auth";
-import {
-  subscribeToSubscriptions,
-  addSubscription,
-  updateSubscription,
-  deleteSubscription,
-} from "../../../firebase/firestore";
-import { checkAndNotifyDiscord } from "../../../services/discord";
+import { useSubscriptions } from "../../../hooks/useSubscriptions";
+import { useSubscriptionFilters } from "../../../hooks/useSubscriptionFilters";
+import { useSubscriptionStats } from "../../../hooks/useSubscriptionStats";
+import { useScrollToTop } from "../../../hooks/useScrollToTop";
 import SubscriptionCard from "./SubscriptionCard";
 import SubscriptionModal from "./SubscriptionModal";
 import ConfirmDialog from "../../common/ConfirmDialog";
@@ -126,13 +123,18 @@ export default function HomePage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [subscriptions, setSubscriptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  // Custom hooks
+  const { subscriptions, loading, handleAdd, handleUpdate, handleDelete, handleBulkDelete } =
+    useSubscriptions(currentUser?.uid);
+  const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory, uniqueCategories, filteredSubscriptions } =
+    useSubscriptionFilters(subscriptions);
+  const { totalMonthly, totalYearly, categoryData, monthlyExpensesData } =
+    useSubscriptionStats(subscriptions);
+  const { showScrollTop, scrollToTop } = useScrollToTop();
+
+  // UI state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [showCategoryChart, setShowCategoryChart] = useState(false);
   const [showYearlyChart, setShowYearlyChart] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -141,110 +143,6 @@ export default function HomePage() {
     isOpen: false,
     subscription: null,
   });
-
-  useEffect(() => {
-    if (!currentUser?.uid) return;
-
-    const unsubscribe = subscribeToSubscriptions(currentUser.uid, (subs) => {
-      setSubscriptions(subs);
-      setLoading(false);
-      checkAndNotifyDiscord(subs);
-    });
-
-    return () => unsubscribe();
-  }, [currentUser?.uid]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const uniqueCategories = useMemo(() => {
-    const categories = new Set(
-      subscriptions
-        .map((sub) => sub.category?.trim())
-        .filter((cat) => cat && cat.length > 0),
-    );
-    return Array.from(categories).sort();
-  }, [subscriptions]);
-
-  const filteredSubscriptions = useMemo(() => {
-    let filtered = subscriptions;
-
-    // Filter by category
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter(
-        (sub) => sub.category?.trim() === selectedCategory,
-      );
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((sub) =>
-        sub.name?.toLowerCase().includes(query),
-      );
-    }
-
-    return filtered;
-  }, [subscriptions, searchQuery, selectedCategory]);
-
-  const { totalMonthly, totalYearly } = useMemo(() => {
-    const monthly = subscriptions.reduce((sum, sub) => {
-      if (sub.billing === "Monthly") return sum + sub.price;
-      if (sub.billing === "Yearly") return sum + sub.price / 12;
-      return sum;
-    }, 0);
-
-    const yearly = subscriptions.reduce((sum, sub) => {
-      if (sub.billing === "Monthly") return sum + sub.price * 12;
-      if (sub.billing === "Yearly") return sum + sub.price;
-      return sum;
-    }, 0);
-
-    return { totalMonthly: monthly, totalYearly: yearly };
-  }, [subscriptions]);
-
-  const categoryData = useMemo(() => {
-    const categoryMap = {};
-    subscriptions.forEach((sub) => {
-      const category = sub.category?.trim() || "Uncategorized";
-      const monthlyCost = sub.billing === "Yearly" ? sub.price / 12 : sub.price;
-      categoryMap[category] = (categoryMap[category] || 0) + monthlyCost;
-    });
-    return Object.entries(categoryMap)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value);
-  }, [subscriptions]);
-
-  const monthlyExpensesData = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const subInfo = subscriptions.map((sub) => {
-      const start = new Date(sub.dueDate);
-      const startYear = start.getFullYear();
-      const startMonth = start.getMonth();
-      const activeFrom =
-        startYear < currentYear ? 0 : startYear === currentYear ? startMonth : 12;
-      return { price: sub.price, billing: sub.billing, activeFrom };
-    });
-    return Array.from({ length: 12 }, (_, month) => ({
-      month,
-      total: subInfo.reduce((sum, sub) => {
-        if (month < sub.activeFrom) return sum;
-        if (sub.billing === "Monthly") return sum + sub.price;
-        if (sub.billing === "Yearly") return sum + sub.price / 12;
-        return sum;
-      }, 0),
-    }));
-  }, [subscriptions]);
 
   const handleLogout = async () => {
     try {
@@ -293,7 +191,7 @@ export default function HomePage() {
     setSelectedIds(new Set());
   };
 
-  const handleBulkDelete = () => {
+  const openBulkDeleteDialog = () => {
     if (selectedIds.size === 0) return;
     setConfirmDialog({
       isOpen: true,
@@ -307,10 +205,7 @@ export default function HomePage() {
 
     if (sub.id === "__bulk__") {
       try {
-        await Promise.all(
-          Array.from(selectedIds).map((id) => deleteSubscription(currentUser.uid, id)),
-        );
-        toast.success(`${selectedIds.size} subscription${selectedIds.size > 1 ? "s" : ""} deleted!`);
+        await handleBulkDelete(selectedIds);
         exitSelectionMode();
       } catch (error) {
         console.error("Error deleting subscriptions:", error);
@@ -320,8 +215,7 @@ export default function HomePage() {
     }
 
     try {
-      await deleteSubscription(currentUser.uid, sub.id);
-      toast.success(`${sub.name} deleted successfully!`);
+      await handleDelete(sub.id, sub.name);
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast.error("Failed to delete subscription. Please try again.");
@@ -331,15 +225,9 @@ export default function HomePage() {
   const handleSaveSubscription = async (subscriptionData) => {
     try {
       if (editingSubscription) {
-        await updateSubscription(
-          currentUser.uid,
-          editingSubscription.id,
-          subscriptionData,
-        );
-        toast.success(`${subscriptionData.name} updated successfully!`);
+        await handleUpdate(editingSubscription.id, subscriptionData);
       } else {
-        await addSubscription(currentUser.uid, subscriptionData);
-        toast.success(`${subscriptionData.name} added successfully!`);
+        await handleAdd(subscriptionData);
       }
     } catch (error) {
       console.error("Error saving subscription:", error);
@@ -460,7 +348,7 @@ export default function HomePage() {
                 {selectedIds.size} selected
               </span>
               <button
-                onClick={handleBulkDelete}
+                onClick={openBulkDeleteDialog}
                 disabled={selectedIds.size === 0}
                 className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
               >
