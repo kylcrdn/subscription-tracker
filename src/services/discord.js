@@ -1,5 +1,5 @@
 /**
- * Discord webhook notification service (optional feature).
+ * Discord webhook notification service.
  *
  * When a Discord webhook URL is configured in .env (VITE_DISCORD_WEBHOOK_URL),
  * this service sends renewal reminders as rich embeds to a Discord channel.
@@ -68,11 +68,7 @@ function markAsSent(sentKey) {
  */
 async function sendDiscordEmbed(subscription, daysUntil, renewalDate) {
   const urgencyColor =
-    daysUntil === 0
-      ? 0xff0000
-      : daysUntil === 1
-        ? 0xff9900
-        : 0x667eea;
+    daysUntil === 0 ? 0xff0000 : daysUntil === 1 ? 0xff9900 : 0x667eea;
 
   const title =
     daysUntil === 0
@@ -85,11 +81,19 @@ async function sendDiscordEmbed(subscription, daysUntil, renewalDate) {
     title,
     color: urgencyColor,
     fields: [
-      { name: "💰 Amount", value: `€${subscription.price || subscription.amount}`, inline: true },
+      {
+        name: "💰 Amount",
+        value: `€${subscription.price || subscription.amount}`,
+        inline: true,
+      },
       { name: "🔄 Billing Cycle", value: subscription.billing, inline: true },
       {
         name: "📅 Renewal Date",
-        value: renewalDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        value: renewalDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
         inline: true,
       },
     ],
@@ -98,7 +102,10 @@ async function sendDiscordEmbed(subscription, daysUntil, renewalDate) {
   };
 
   if (subscription.description) {
-    embed.fields.push({ name: "📝 Description", value: subscription.description });
+    embed.fields.push({
+      name: "📝 Description",
+      value: subscription.description,
+    });
   }
 
   const response = await fetch(WEBHOOK_URL, {
