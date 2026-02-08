@@ -1,6 +1,26 @@
+/**
+ * Discord webhook notification service (optional feature).
+ *
+ * When a Discord webhook URL is configured in .env (VITE_DISCORD_WEBHOOK_URL),
+ * this service sends renewal reminders as rich embeds to a Discord channel.
+ *
+ * Notification thresholds: messages are sent at 7, 3, 1, and 0 days before renewal.
+ *
+ * Deduplication strategy:
+ *  - A "discord_sent" object in localStorage tracks which notifications were already
+ *    sent today, keyed by subscriptionId + daysUntil + renewalDate.
+ *  - Old entries are cleaned up automatically each day.
+ *  - Editing a subscription changes its renewal date, which resets the dedup key
+ *    so the notification fires again with the updated info.
+ *
+ * This service is called automatically by the useSubscriptions hook every time
+ * subscription data is loaded from Firestore.
+ */
 import { calculateNextRenewal } from "../firebase/firestore";
 
 const WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL;
+
+/** Days before renewal when Discord notifications should be sent */
 const NOTIFY_AT_DAYS = [7, 3, 1, 0];
 
 /**

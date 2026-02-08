@@ -1,15 +1,34 @@
+/**
+ * Line chart modal showing monthly expenses for the current year (Jan–Dec).
+ * Opened by clicking the "Yearly" stat card on the dashboard.
+ *
+ * The chart is rendered as a pure SVG (no charting library):
+ *  - Solid cyan line for past/current months (actual data)
+ *  - Dashed cyan line for future months (projected data)
+ *  - Gradient fill under the actual line
+ *  - Value labels above each data point
+ *
+ * Data comes from useSubscriptionStats → monthlyExpensesData: [{ month, total }].
+ * This component is lazy-loaded via React.lazy in HomePage.
+ */
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// SVG viewBox dimensions and margins for the chart layout
 const W = 620;
 const H = 340;
 const M = { top: 40, right: 30, bottom: 40, left: 72 };
-const PW = W - M.left - M.right;
-const PH = H - M.top - M.bottom;
-const PAD_X = 24;
-const TICK_COUNT = 4;
+const PW = W - M.left - M.right;   // plot width (inside margins)
+const PH = H - M.top - M.bottom;   // plot height (inside margins)
+const PAD_X = 24;                   // horizontal padding inside the plot
+const TICK_COUNT = 4;               // number of Y-axis grid lines
 
+/**
+ * Rounds the maximum Y value up to a "nice" number so that axis ticks
+ * fall on clean intervals (e.g. 50, 100, 200, 500...).
+ */
 function niceMax(value) {
   if (value <= 0) return 50;
   const rough = value / TICK_COUNT;
@@ -35,17 +54,22 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
   const yMax = niceMax(Math.max(...monthlyData.map((d) => d.total)));
   const yTicks = Array.from({ length: TICK_COUNT + 1 }, (_, i) => (yMax / TICK_COUNT) * i);
 
+  // Coordinate mapping: convert month index / value to SVG x/y positions
   const x = (month) => M.left + PAD_X + (month / 11) * (PW - 2 * PAD_X);
   const y = (val) => M.top + PH - (val / yMax) * PH;
 
+  // Build an SVG polyline path string from an array of data points
   const buildPath = (data) =>
     data.map((d, i) => `${i === 0 ? "M" : "L"} ${x(d.month)} ${y(d.total)}`).join(" ");
 
+  // Split data into actual (past + current month) and projected (current month onward).
+  // They overlap at the current month so the lines connect seamlessly.
   const actual = monthlyData.slice(0, currentMonth + 1);
   const projected = monthlyData.slice(currentMonth);
   const actualPath = buildPath(actual);
   const projectedPath = buildPath(projected);
 
+  // Closed path for the gradient fill area under the actual line
   const areaPath =
     actualPath +
     ` L ${x(currentMonth)} ${M.top + PH}` +

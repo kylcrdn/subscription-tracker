@@ -1,6 +1,18 @@
 /**
- * Firestore service for managing user subscriptions
- * Data structure: users/{userId}/subscriptions/{subscriptionId}
+ * Firestore database service — the main data layer for the entire app.
+ *
+ * Firestore data structure:
+ *   users/{userId}                          — user profile (email, preferences)
+ *   users/{userId}/subscriptions/{subId}    — individual subscription documents
+ *   users/{userId}/notifications/{notifId}  — renewal reminder notifications
+ *
+ * Key patterns used here:
+ *  - Real-time listeners (onSnapshot) for subscriptions and notifications,
+ *    so the UI updates instantly when data changes.
+ *  - Notification side-effects: whenever a subscription is added/updated/deleted,
+ *    the corresponding notifications are regenerated. These side-effects are
+ *    wrapped in try/catch so the primary CRUD operation still succeeds if
+ *    the notification step fails.
  */
 
 import {
@@ -253,6 +265,8 @@ export const calculateNextRenewal = (dueDate, billing) => {
   today.setHours(0, 0, 0, 0);
   startDate.setHours(0, 0, 0, 0);
 
+  // Start from the subscription's original start date and keep advancing
+  // by one billing period until the renewal date is in the future.
   let nextRenewal = new Date(startDate);
 
   if (billing === "Monthly") {
@@ -316,13 +330,13 @@ export const subscribeToNotifications = (userId, onSuccess) => {
   const notificationsRef = getUserNotificationsRef(userId);
   const today = new Date().toISOString();
 
-  // Get notifications that should be sent today or earlier and not dismissed
+  // Only fetch notifications whose sendAt is today or earlier and haven't been dismissed.
+  // Note: orderBy was removed from the Firestore query to avoid requiring a composite index;
+  // sorting is done in JavaScript below instead.
   const q = query(
     notificationsRef,
     where("dismissed", "==", false),
     where("sendAt", "<=", today)
-    // Temporarily removed orderBy to test if basic query works
-    // orderBy("sendAt", "desc")
   );
 
   return onSnapshot(q, (snapshot) => {
@@ -330,7 +344,6 @@ export const subscribeToNotifications = (userId, onSuccess) => {
       id: document.id,
       ...document.data(),
     }));
-    // Sort in JavaScript instead
     notifications.sort((a, b) => new Date(b.sendAt) - new Date(a.sendAt));
     onSuccess(notifications);
   });

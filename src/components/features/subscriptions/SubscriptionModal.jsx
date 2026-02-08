@@ -1,7 +1,21 @@
+/**
+ * Add/Edit subscription modal.
+ *
+ * Features:
+ *  - Form fields: name, icon, price, billing cycle (Monthly/Yearly), start date, category.
+ *  - Icon picker with autocomplete: type a service name (e.g. "Netflix") or a domain
+ *    (e.g. "netflix.com") to auto-fetch the logo.
+ *  - Logo lookup strategy:
+ *      1. Clearbit Logo API (primary — high-quality brand logos)
+ *      2. Google S2 Favicons (fallback — lower resolution but always works)
+ *  - The POPULAR_SERVICES list below powers the autocomplete dropdown.
+ *  - Form resets each time the modal opens (controlled by the isOpen/subscription props).
+ *  - Closes on Escape key or clicking the backdrop.
+ */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-// Popular subscription services for autocomplete
+/** Well-known services for autocomplete suggestions. Add new entries here to expand the list. */
 const POPULAR_SERVICES = [
   { name: "Netflix", domain: "netflix.com" },
   { name: "Spotify", domain: "spotify.com" },
@@ -52,8 +66,11 @@ const POPULAR_SERVICES = [
   { name: "Patreon", domain: "patreon.com" },
 ];
 
-// Logo API helper - uses Clearbit (free, comprehensive, updated)
-// Falls back to Google S2 if Clearbit fails
+/**
+ * Builds a logo URL for a given domain.
+ * @param {string} domain — e.g. "netflix.com"
+ * @param {boolean} useFallback — if true, uses Google S2 instead of Clearbit
+ */
 const getLogoUrl = (domain, useFallback = false) => {
   if (!domain) return "";
   const cleanDomain = domain
@@ -117,7 +134,8 @@ export default function SubscriptionModal({
     }
   };
 
-  // Handle brand search with autocomplete
+  // As the user types, filter POPULAR_SERVICES for matching names/domains.
+  // If the input contains a dot (looks like a domain), immediately fetch the logo.
   const handleBrandSearch = (e) => {
     const value = e.target.value;
     setBrandSearch(value);
@@ -164,7 +182,8 @@ export default function SubscriptionModal({
     setLogoError(false);
   };
 
-  // Handle logo error - try Google fallback before giving up
+  // If Clearbit fails to load, swap to the Google S2 fallback URL.
+  // If both fail, show the "logo not found" state.
   const handleLogoError = () => {
     // If current icon is using Clearbit, try Google fallback
     if (iconPreview && iconPreview.includes("clearbit.com")) {

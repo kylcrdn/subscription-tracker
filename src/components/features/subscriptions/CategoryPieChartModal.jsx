@@ -1,6 +1,18 @@
+/**
+ * Pie chart modal showing the monthly cost split by category.
+ * Opened by clicking the "Monthly" stat card on the dashboard.
+ *
+ * The chart is rendered as a pure SVG (no charting library) using basic
+ * trigonometry to compute arc paths. If there's only one category, a
+ * simple circle is drawn instead of a single-slice arc.
+ *
+ * Data comes from useSubscriptionStats → categoryData: [{ name, value }].
+ * This component is lazy-loaded via React.lazy in HomePage.
+ */
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 
+/** Color palette for pie slices — cycles if there are more categories than colors */
 const COLORS = [
   "#FF6384",
   "#FFCE56",
@@ -36,6 +48,9 @@ export default function CategoryPieChartModal({
   const cy = size / 2;
   const radius = size / 2 - 8;
 
+  // Build SVG path data for each pie slice.
+  // Each slice starts where the previous one ended (startAngle = previous endAngle).
+  // The arc starts at -PI/2 (12 o'clock) and goes clockwise.
   const slices = categoryData.reduce((acc, d, i) => {
     const startAngle = acc.length > 0
       ? acc[acc.length - 1].endAngle
@@ -44,11 +59,13 @@ export default function CategoryPieChartModal({
     const sliceAngle = percentage * 2 * Math.PI;
     const endAngle = startAngle + sliceAngle;
 
+    // Single-category edge case: render as a full circle (no arc path needed)
     if (categoryData.length === 1) {
       acc.push({ ...d, color: COLORS[0], percentage, path: null, endAngle });
       return acc;
     }
 
+    // Convert polar coordinates to cartesian for the SVG arc command
     const x1 = cx + radius * Math.cos(startAngle);
     const y1 = cy + radius * Math.sin(startAngle);
     const x2 = cx + radius * Math.cos(endAngle);

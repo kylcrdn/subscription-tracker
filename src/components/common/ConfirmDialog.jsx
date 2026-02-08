@@ -1,3 +1,13 @@
+/**
+ * Reusable confirmation dialog modal.
+ * Used throughout the app when a destructive action requires user confirmation
+ * (e.g. deleting a subscription or bulk-deleting multiple subscriptions).
+ *
+ * Props:
+ *  - confirmStyle: "danger" (red button) or "primary" (blue button)
+ *  - All text (title, message, button labels) is customizable via props.
+ *  - Closes on Escape key or clicking the backdrop.
+ */
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 

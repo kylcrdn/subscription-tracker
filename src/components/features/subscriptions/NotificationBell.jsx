@@ -1,3 +1,18 @@
+/**
+ * Notification bell icon with dropdown — shown in the header.
+ *
+ * How it works:
+ *  1. Subscribes to real-time Firestore notifications (only undismissed ones whose
+ *     sendAt <= now).
+ *  2. Filters client-side to only show notifications within 0–7 days of renewal.
+ *  3. Displays an unread count badge on the bell icon.
+ *  4. When the dropdown opens, all visible unread notifications are auto-marked as read.
+ *  5. Each notification can be individually dismissed (permanently hidden).
+ *
+ * Note: Renewal dates are recalculated client-side (same logic as SubscriptionCard)
+ * to always reflect the current next renewal, even if the stored notification
+ * references an older date.
+ */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
@@ -72,7 +87,8 @@ export default function NotificationBell({ userId }) {
     });
   };
 
-  // Calculate current next renewal date (same logic as SubscriptionCard)
+  // Duplicated from firestore.js / SubscriptionCard — advances from the start
+  // date by one billing period at a time until the renewal is in the future.
   const calculateNextRenewal = (dueDate, billing) => {
     const startDate = new Date(dueDate);
     const today = new Date();
@@ -111,7 +127,7 @@ export default function NotificationBell({ userId }) {
     return diffDays;
   };
 
-  // Filter to only notifications actually within the display window
+  // Only show notifications for subscriptions renewing within the next 7 days
   const visibleNotifications = notifications.filter((n) => {
     const days = getDaysUntilRenewal(n);
     return days >= 0 && days <= 7;
@@ -119,11 +135,11 @@ export default function NotificationBell({ userId }) {
 
   const unreadCount = visibleNotifications.filter((n) => !n.read).length;
 
+  // When the dropdown opens, automatically mark all unread notifications as read
   const handleToggleDropdown = () => {
     const opening = !showDropdown;
     setShowDropdown(opening);
     if (opening) {
-      // Mark all visible unread notifications as read
       visibleNotifications
         .filter((n) => !n.read)
         .forEach((n) => {

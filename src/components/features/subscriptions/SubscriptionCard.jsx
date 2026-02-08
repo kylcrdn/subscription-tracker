@@ -1,3 +1,14 @@
+/**
+ * Single subscription row in the dashboard list.
+ *
+ * Displays the service icon (or initials fallback), name, start date, price,
+ * billing cycle, days-until-renewal badge, and a 3-dot menu for edit/delete.
+ *
+ * When the parent activates "selection mode", each card also shows a checkbox
+ * for bulk-delete operations.
+ *
+ * Note: All dates use the Europe/Madrid timezone for consistency.
+ */
 import { useState } from "react";
 
 const Icon = ({ children, className = "w-5 h-5", ...props }) => (
@@ -52,6 +63,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
 
   const TIMEZONE = "Europe/Madrid";
 
+  /** Converts a Date to midnight in Europe/Madrid, avoiding UTC offset issues. */
   const getSpainDate = (date = new Date()) => {
     const spainDateStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
     const [year, month, day] = spainDateStr.split("-").map(Number);
@@ -132,6 +144,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
           <p className="text-gray-500 text-sm">{subscription.billing}</p>
         </div>
 
+        {/* Color-coded urgency: red (today), orange (<=3d), yellow (<=7d), cyan (>7d) */}
         {daysRemaining !== null && (
           <div className="text-right min-w-25">
             <p
@@ -165,6 +178,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
             <MoreIcon />
           </button>
 
+          {/* Invisible full-screen overlay closes the menu when clicking outside */}
           {showMenu && (
             <>
               <div

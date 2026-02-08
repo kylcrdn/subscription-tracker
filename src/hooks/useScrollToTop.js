@@ -1,3 +1,8 @@
+/**
+ * Hook that controls the "scroll to top" floating button visibility.
+ * Shows the button once the user scrolls past `threshold` pixels (default 200).
+ * Returns { showScrollTop, scrollToTop } for the consuming component.
+ */
 import { useState, useEffect } from "react";
 
 export function useScrollToTop(threshold = 200) {

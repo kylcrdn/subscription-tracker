@@ -1,3 +1,20 @@
+/**
+ * Registration page — supports email/password sign-up and Google OAuth.
+ *
+ * Registration flow (email/password):
+ *  1. User fills in email, password, and confirm password.
+ *  2. Client-side validation runs (password match + minimum length).
+ *  3. Firebase creates the account.
+ *  4. The user is immediately signed out and redirected to /login so they can
+ *     log in explicitly. This ensures the AuthProvider's onAuthStateChanged
+ *     flow runs cleanly on first login.
+ *
+ * Registration flow (Google):
+ *  - Google OAuth creates the account and logs in at the same time.
+ *  - The useEffect redirect sends the user to /home automatically.
+ *
+ * Error handling: Firebase error codes are mapped to user-friendly messages.
+ */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../contexts/authContext";
@@ -8,18 +25,16 @@ import {
 } from "../../../../firebase/auth";
 
 export default function RegisterPage() {
-  // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Get auth state from context
   const { userLoggedIn } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to home if already logged in
+  // Redirect to /home if user is already logged in (e.g. after Google sign-up)
   useEffect(() => {
     if (userLoggedIn) {
       navigate("/home");
@@ -45,13 +60,11 @@ export default function RegisterPage() {
       setErrorMessage("");
 
       try {
-        // Create user account
         await doCreateUserWithEmailAndPassword(email, password);
 
-        // Sign-out immediately after registration
+        // Sign out immediately so the user must explicitly log in.
+        // This ensures a clean first-login flow through AuthProvider.
         await doSignOut();
-
-        // Redirect to login page
         navigate("/login");
       } catch (error) {
         let message = "Failed to register. Please try again.";

@@ -1,34 +1,41 @@
+/**
+ * Global authentication context.
+ * Provides the current user's auth state to the entire component tree via React Context.
+ *
+ * Usage in any component:
+ *   const { currentUser, userLoggedIn, loading } = useAuth();
+ *
+ * How it works:
+ *  1. AuthProvider wraps the app (see App.jsx).
+ *  2. On mount, it subscribes to Firebase's onAuthStateChanged listener.
+ *  3. When a user logs in/out (or on page refresh), the listener fires and updates state.
+ *  4. On first login, a Firestore user profile document is created (see firestore.js).
+ *  5. Children are not rendered until the initial auth check completes (while loading === true).
+ */
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { createUserProfile } from "../../firebase/firestore";
-/**
- * authContext folder inside context folder to CENTRALIZE AUTHENTICATION logic and state
- */
 
-// create the AuthContext
 const AuthContext = React.createContext();
 
-// expose the auth hook
+/** Hook to access auth state from any component. */
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// component for the AuthProvider
 export function AuthProvider({ children }) {
-  // state variables for user login
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  /**
-   * subscribe to the authstatechange event.
-   * listens for login/logout and tells who the current user is, including on page refresh
-   */
   useEffect(() => {
+    /**
+     * Called by Firebase whenever the auth state changes (login, logout, page refresh).
+     * Creates/updates the user's Firestore profile, then updates React state.
+     */
     async function initializeUser(user) {
       if (user) {
-        // Create or update user profile in Firestore
         try {
           await createUserProfile(user.uid, {
             email: user.email,
@@ -37,7 +44,6 @@ export function AuthProvider({ children }) {
           });
         } catch (error) {
           console.error("Error creating user profile:", error);
-          // Don't block user login if profile creation fails
         }
 
         setCurrentUser({ ...user });
@@ -53,13 +59,13 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  // expose the value obj
   const value = {
     currentUser,
     userLoggedIn,
     loading,
   };
 
+  // Children are only rendered after the initial auth check completes
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}

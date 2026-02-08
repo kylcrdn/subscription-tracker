@@ -1,3 +1,20 @@
+/**
+ * Root application component — sets up routing, auth, error handling, and toast notifications.
+ *
+ * Component tree (top-down):
+ *   BrowserRouter → AuthProvider → ErrorBoundary → Toaster + Routes
+ *
+ * Route protection:
+ *  - ProtectedRoute: wraps pages that require login (redirects to /login if not authenticated).
+ *  - PublicRoute: wraps login/register pages (redirects to /home if already logged in).
+ *
+ * Routes:
+ *   /login    → LoginPage    (public)
+ *   /register → RegisterPage (public)
+ *   /home     → HomePage     (protected — the main dashboard)
+ *   /         → redirects to /home
+ *   *         → 404 page
+ */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/authContext";
 import LoginPage from "./components/features/auth/login/LoginPage";
@@ -6,7 +23,7 @@ import HomePage from "./components/features/subscriptions/HomePage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
 
-// Protected Route - only accessible when logged in
+/** Renders children only if the user is logged in; otherwise redirects to /login. */
 function ProtectedRoute({ children }) {
   const { userLoggedIn, loading } = useAuth();
 
@@ -21,7 +38,7 @@ function ProtectedRoute({ children }) {
   return userLoggedIn ? children : <Navigate to="/login" />;
 }
 
-// Public Route - redirects to home if already logged in
+/** Renders children only if the user is NOT logged in; otherwise redirects to /home. */
 function PublicRoute({ children }) {
   const { userLoggedIn, loading } = useAuth();
 

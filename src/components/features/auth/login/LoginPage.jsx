@@ -1,3 +1,14 @@
+/**
+ * Login page — supports email/password sign-in, Google OAuth, and password reset.
+ *
+ * Navigation flow:
+ *  - On successful sign-in, the useAuth context updates userLoggedIn → useEffect redirects to /home.
+ *  - "Forgot password?" opens an inline modal that sends a Firebase password reset email.
+ *  - "Sign up" navigates to /register.
+ *
+ * Error handling: Firebase error codes are mapped to user-friendly messages.
+ * The isSigningIn flag prevents duplicate submissions while a request is in flight.
+ */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../contexts/authContext";
@@ -17,18 +28,17 @@ export default function LoginPage() {
   const [resetMessage, setResetMessage] = useState("");
   const [isResetting, setIsResetting] = useState(false);
 
-  // Get auth state from context
   const { userLoggedIn } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to home if already logged in
+  // Redirect to /home once auth state confirms the user is logged in
   useEffect(() => {
     if (userLoggedIn) {
       navigate("/home");
     }
   }, [userLoggedIn, navigate]);
 
-  // Handle sign-in with email and password
+  // Email/password sign-in — navigation is handled by the useEffect above
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -40,7 +50,7 @@ export default function LoginPage() {
         await doSignInWithEmailAndPassword(email, password);
         // Don't manually navigate - useEffect will handle it when userLoggedIn changes
       } catch (error) {
-        // Handle specific Firebase error codes
+        // Map Firebase error codes to user-friendly messages
         let message = "Failed to sign in. Please try again.";
 
         if (error.code === "auth/user-not-found") {

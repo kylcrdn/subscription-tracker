@@ -1,4 +1,10 @@
-// contains all the functions for authentication
+/**
+ * Authentication helper functions.
+ * Wraps Firebase Auth methods into simple, reusable functions consumed by:
+ *  - LoginPage  (sign in, Google sign in, password reset)
+ *  - RegisterPage (create account, Google sign in)
+ *  - HomePage (sign out)
+ */
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -8,30 +14,25 @@ import {
 } from "firebase/auth";
 import { auth } from "./Firebase";
 
-// creating a new account
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
 
-// sign-in
 export const doSignInWithEmailAndPassword = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
 
-// sign-in with a Google account
+/** Opens a Google OAuth popup. The returned result contains the user credential. */
 export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
-  // this is IMPORTANT so that a popup will show that you can sign-in with your google account
   const result = await signInWithPopup(auth, provider);
   return result;
 };
 
-// sign-out
 export const doSignOut = () => {
   return auth.signOut();
 };
 
-// password reset
 export const doPasswordReset = (email) => {
   return sendPasswordResetEmail(auth, email);
 };

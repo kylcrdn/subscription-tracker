@@ -1,3 +1,13 @@
+/**
+ * React Error Boundary — catches uncaught JavaScript errors anywhere in its
+ * child component tree and displays a fallback UI instead of crashing the whole app.
+ *
+ * This is a class component because React error boundaries require the
+ * getDerivedStateFromError and componentDidCatch lifecycle methods, which
+ * are not available in function components.
+ *
+ * Wraps the entire app in App.jsx.
+ */
 import { Component } from "react";
 
 class ErrorBoundary extends Component {

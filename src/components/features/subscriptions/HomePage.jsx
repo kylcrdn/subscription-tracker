@@ -1,3 +1,21 @@
+/**
+ * Main dashboard page — the core of the application once logged in.
+ *
+ * Architecture overview:
+ *  - Data & CRUD:   useSubscriptions     → real-time Firestore data + add/update/delete handlers
+ *  - Filtering:     useSubscriptionFilters → client-side search + category filtering
+ *  - Stats:         useSubscriptionStats  → computes totals and chart data (memoized)
+ *  - Scroll:        useScrollToTop        → floating "back to top" button
+ *
+ * UI sections (top to bottom):
+ *  1. Sticky header with user email, notification bell, and sign-out button
+ *  2. Toolbar with category dropdown, search input, and "Add" button
+ *  3. Three stat cards (monthly cost, yearly cost, active count) — clicking opens chart modals
+ *  4. Subscription list with per-card edit/delete menus and optional bulk-select mode
+ *  5. Modals: SubscriptionModal (add/edit), CategoryPieChartModal, MonthlyExpensesChartModal, ConfirmDialog
+ *
+ * Chart modals are lazy-loaded (React.lazy + Suspense) to keep the initial bundle small.
+ */
 import { useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/authContext";
@@ -13,6 +31,8 @@ const CategoryPieChartModal = lazy(() => import("./CategoryPieChartModal"));
 const MonthlyExpensesChartModal = lazy(() => import("./MonthlyExpensesChartModal"));
 import NotificationBell from "./NotificationBell";
 import toast from "react-hot-toast";
+
+// ---- Inline SVG icon components (avoids an icon library dependency) ----
 
 const Icon = ({ children, className = "w-4 h-4", ...props }) => (
   <svg
@@ -92,6 +112,7 @@ const colorStyles = {
   },
 };
 
+/** Reusable stat card shown in the dashboard grid. Optionally clickable to open a chart modal. */
 const StatCard = ({ label, value, subtitle, icon, hoverColor, onClick }) => {
   const colors = colorStyles[hoverColor] || colorStyles.blue;
 
@@ -123,7 +144,7 @@ export default function HomePage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  // Custom hooks
+  // Data hooks — each hook has a single responsibility (see hooks/ folder for details)
   const { subscriptions, loading, handleAdd, handleUpdate, handleDelete, handleBulkDelete } =
     useSubscriptions(currentUser?.uid);
   const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory, uniqueCategories, filteredSubscriptions } =
@@ -132,7 +153,7 @@ export default function HomePage() {
     useSubscriptionStats(subscriptions);
   const { showScrollTop, scrollToTop } = useScrollToTop();
 
-  // UI state
+  // Local UI state for modals, selection mode, and confirm dialog
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [showCategoryChart, setShowCategoryChart] = useState(false);
@@ -199,6 +220,7 @@ export default function HomePage() {
     });
   };
 
+  // Handles both single and bulk deletes — distinguished by the sentinel id "__bulk__"
   const confirmDelete = async () => {
     const sub = confirmDialog.subscription;
     if (!sub) return;

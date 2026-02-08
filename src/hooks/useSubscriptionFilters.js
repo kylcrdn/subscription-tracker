@@ -1,3 +1,13 @@
+/**
+ * Hook for client-side search and category filtering.
+ * All filtering is done in memory (via useMemo) — no extra Firestore queries needed.
+ *
+ * Returns:
+ *  - searchQuery / setSearchQuery — text input state for name search
+ *  - selectedCategory / setSelectedCategory — dropdown state ("all" or a category name)
+ *  - uniqueCategories — sorted list of all categories present in the data (for the dropdown)
+ *  - filteredSubscriptions — the subscriptions list after both filters are applied
+ */
 import { useState, useMemo } from "react";
 
 export function useSubscriptionFilters(subscriptions) {
