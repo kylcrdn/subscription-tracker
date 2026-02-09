@@ -78,19 +78,19 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="expenses-title">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="fixed inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-2xl p-8">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close">
+        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-2xl p-8">
+          <button onClick={onClose} className="absolute top-4 right-4 text-content-dim hover:text-content transition-colors" aria-label="Close">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
           <div className="text-center mb-6">
-            <h2 id="expenses-title" className="text-xl font-bold text-white">Monthly Expenses</h2>
-            <p className="text-sm text-gray-400">(Jan &ndash; Dec {currentYear})</p>
+            <h2 id="expenses-title" className="text-xl font-bold text-content">Monthly Expenses</h2>
+            <p className="text-sm text-content-dim">(Jan &ndash; Dec {currentYear})</p>
           </div>
 
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
@@ -103,7 +103,7 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
 
             {/* Grid */}
             {yTicks.map((v) => (
-              <line key={v} x1={M.left} y1={y(v)} x2={W - M.right} y2={y(v)} stroke="rgb(55,65,81)" strokeWidth="0.5" strokeDasharray={v === 0 ? "0" : "4 3"} />
+              <line key={v} x1={M.left} y1={y(v)} x2={W - M.right} y2={y(v)} stroke="var(--th-edge)" strokeWidth="0.5" strokeDasharray={v === 0 ? "0" : "4 3"} />
             ))}
 
             {/* Area under actual */}
@@ -122,8 +122,8 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
               const past = d.month <= currentMonth;
               return (
                 <g key={d.month}>
-                  <circle cx={x(d.month)} cy={y(d.total)} r="4" fill={past ? "#22d3ee" : "rgb(31,41,55)"} stroke="#22d3ee" strokeWidth="2" opacity={past ? 1 : 0.4} />
-                  <text x={x(d.month)} y={y(d.total) - 10} textAnchor="middle" fill="white" fontSize="9" fontWeight="600" opacity={past ? 1 : 0.35}>
+                  <circle cx={x(d.month)} cy={y(d.total)} r="4" fill={past ? "#22d3ee" : "var(--th-surface)"} stroke="#22d3ee" strokeWidth="2" opacity={past ? 1 : 0.4} />
+                  <text x={x(d.month)} y={y(d.total) - 10} textAnchor="middle" fill="var(--th-content)" fontSize="9" fontWeight="600" opacity={past ? 1 : 0.35}>
                     €{d.total.toFixed(2)}
                   </text>
                 </g>
@@ -132,22 +132,22 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
 
             {/* X-axis */}
             {MONTHS.map((label, i) => (
-              <text key={label} x={x(i)} y={H - 8} textAnchor="middle" fill={i <= currentMonth ? "rgb(156,163,175)" : "rgb(75,85,99)"} fontSize="11">
+              <text key={label} x={x(i)} y={H - 8} textAnchor="middle" fill={i <= currentMonth ? "var(--th-content-dim)" : "var(--th-content-faint)"} fontSize="11">
                 {label}
               </text>
             ))}
 
             {/* Y-axis */}
             {yTicks.map((v) => (
-              <text key={v} x={M.left - 8} y={y(v) + 4} textAnchor="end" fill="rgb(156,163,175)" fontSize="11">
+              <text key={v} x={M.left - 8} y={y(v) + 4} textAnchor="end" fill="var(--th-content-dim)" fontSize="11">
                 €{v.toFixed(2)}
               </text>
             ))}
           </svg>
 
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-400">Projected Yearly Total</p>
-            <p className="text-2xl font-bold text-white">€{totalYearly.toFixed(2)}</p>
+            <p className="text-sm text-content-dim">Projected Yearly Total</p>
+            <p className="text-2xl font-bold text-content">€{totalYearly.toFixed(2)}</p>
           </div>
         </div>
       </div>

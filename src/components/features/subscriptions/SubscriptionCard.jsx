@@ -111,10 +111,10 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
   const daysRemaining = getDaysUntilRenewal();
 
   return (
-    <div className="bg-gray-900 rounded-xl p-4 flex items-center justify-between hover:bg-gray-800/80 transition-all duration-200">
+    <div className="bg-surface/60 border border-edge/40 rounded-xl p-4 flex items-center justify-between hover:bg-surface/90 hover:border-edge/50 transition-all duration-200">
       {/* Left side */}
       <div className="flex items-center gap-3">
-        <div className="rounded-xl w-11 h-11 flex items-center justify-center overflow-hidden bg-gray-800 shrink-0">
+        <div className="rounded-xl w-11 h-11 flex items-center justify-center overflow-hidden bg-surface shrink-0">
           {subscription.icon && !imageError ? (
             <img
               src={subscription.icon}
@@ -123,25 +123,25 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
               onError={() => setImageError(true)}
             />
           ) : (
-            <span className="text-gray-300 font-semibold text-sm">
+            <span className="text-content-dim font-semibold text-sm">
               {getInitials(subscription.name)}
             </span>
           )}
         </div>
 
         <div>
-          <h3 className="text-white font-medium">{subscription.name}</h3>
-          <p className="text-gray-500 text-sm">{formatDate(subscription.dueDate)}</p>
+          <h3 className="text-content font-medium">{subscription.name}</h3>
+          <p className="text-content-faint text-sm">{formatDate(subscription.dueDate)}</p>
         </div>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-4">
         <div className="text-right">
-          <p className="text-white font-semibold">
+          <p className="text-content font-semibold">
             €{subscription.price.toFixed(2)}
           </p>
-          <p className="text-gray-500 text-sm">{subscription.billing}</p>
+          <p className="text-content-faint text-sm">{subscription.billing}</p>
         </div>
 
         {/* Color-coded urgency: red (today), orange (<=3d), yellow (<=7d), cyan (>7d) */}
@@ -150,12 +150,12 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
             <p
               className={`text-sm font-medium ${
                 daysRemaining === 0
-                  ? "text-red-400"
+                  ? "text-red-500"
                   : daysRemaining <= 3
-                    ? "text-orange-400"
+                    ? "text-orange-500"
                     : daysRemaining <= 7
-                      ? "text-yellow-400"
-                      : "text-teal-400"
+                      ? "text-accent-yellow"
+                      : "text-accent-teal"
               }`}
             >
               {daysRemaining === 0
@@ -164,7 +164,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                   ? "Tomorrow"
                   : `${daysRemaining} days`}
             </p>
-            <p className="text-gray-500 text-xs">until renewal</p>
+            <p className="text-content-faint text-xs">until renewal</p>
           </div>
         )}
 
@@ -172,7 +172,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
+            className="text-content-dim hover:text-content p-2 rounded-lg hover:bg-control/50 transition-colors"
             aria-label="Menu"
           >
             <MoreIcon />
@@ -185,13 +185,13 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                 className="fixed inset-0 z-10"
                 onClick={() => setShowMenu(false)}
               />
-              <div className="absolute right-0 mt-1 w-36 bg-gray-800 border border-gray-700/50 rounded-xl shadow-xl z-20 overflow-hidden">
+              <div className="absolute right-0 mt-1 w-36 bg-surface border border-edge/50 rounded-xl shadow-xl z-20 overflow-hidden">
                 <button
                   onClick={() => {
                     onEdit(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-content-dim hover:text-content hover:bg-control/50 transition-colors"
                 >
                   <EditIcon />
                   Edit
@@ -201,7 +201,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                     onDelete(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-gray-700/50 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-red-500 hover:text-red-400 hover:bg-control/50 transition-colors"
                 >
                   <TrashIcon />
                   Delete

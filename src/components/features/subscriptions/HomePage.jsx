@@ -8,7 +8,7 @@
  *  - Scroll:        useScrollToTop        → floating "back to top" button
  *
  * UI sections (top to bottom):
- *  1. Sticky header with user email, notification bell, and sign-out button
+ *  1. Sticky header with user email, theme toggle, notification bell, and sign-out button
  *  2. Toolbar with category dropdown, search input, and "Add" button
  *  3. Three stat cards (monthly cost, yearly cost, active count) — clicking opens chart modals
  *  4. Subscription list with per-card edit/delete menus and optional bulk-select mode
@@ -31,6 +31,7 @@ const CategoryPieChartModal = lazy(() => import("./CategoryPieChartModal"));
 const MonthlyExpensesChartModal = lazy(() => import("./MonthlyExpensesChartModal"));
 const SubscriptionOverviewModal = lazy(() => import("./SubscriptionOverviewModal"));
 import NotificationBell from "./NotificationBell";
+import ThemeToggle from "../../common/ThemeToggle";
 import toast from "react-hot-toast";
 
 // ---- Inline SVG icon components (avoids an icon library dependency) ----
@@ -64,7 +65,7 @@ const PlusIcon = ({ className = "w-4 h-4" }) => (
 );
 
 const CurrencyIcon = () => (
-  <Icon className="w-4 h-4 text-emerald-400">
+  <Icon className="w-4 h-4 text-accent-emerald">
     <circle cx="12" cy="12" r="9" />
     <path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-3 1-3 2.5s1.5 2 3 2.5c1.5.5 3 1 3 2.5s-1.5 2.5-3 2.5c-1 0-2-.5-2.5-1.5" />
     <path d="M12 6v2M12 16v2" />
@@ -72,21 +73,21 @@ const CurrencyIcon = () => (
 );
 
 const ChartIcon = () => (
-  <Icon className="w-4 h-4 text-teal-400">
+  <Icon className="w-4 h-4 text-accent-green">
     <path d="M4 20h16" />
     <path d="M4 20V10l4-6 4 8 4-4 4 6v6" />
   </Icon>
 );
 
 const DocumentIcon = () => (
-  <Icon className="w-4 h-4 text-lime-400">
+  <Icon className="w-4 h-4 text-accent-teal">
     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
     <path d="M14 2v6h6M8 13h8M8 17h8" />
   </Icon>
 );
 
 const InboxIcon = () => (
-  <Icon className="w-8 h-8 text-gray-500">
+  <Icon className="w-8 h-8 text-content-faint">
     <path d="M22 12h-6l-2 3h-4l-2-3H2" />
     <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z" />
   </Icon>
@@ -100,16 +101,19 @@ const ArrowUpIcon = () => (
 
 const colorStyles = {
   emerald: {
-    border: "hover:border-emerald-500/30",
-    bg: "bg-emerald-500/10",
+    accent: "bg-emerald-500",
+    iconText: "text-accent-emerald",
+    valueText: "text-stat-emerald",
+  },
+  green: {
+    accent: "bg-green-500",
+    iconText: "text-accent-green",
+    valueText: "text-stat-green",
   },
   teal: {
-    border: "hover:border-teal-500/30",
-    bg: "bg-teal-500/10",
-  },
-  lime: {
-    border: "hover:border-lime-500/30",
-    bg: "bg-lime-500/10",
+    accent: "bg-teal-500",
+    iconText: "text-accent-teal",
+    valueText: "text-stat-teal",
   },
 };
 
@@ -123,20 +127,21 @@ const StatCard = ({ label, value, subtitle, icon, hoverColor, onClick }) => {
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
-      className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 ${colors.border} transition-all duration-300 ${onClick ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : ""}`}
+      className={`relative bg-surface/50 border border-edge/40 rounded-xl p-5 transition-all duration-200 ${onClick ? "cursor-pointer hover:bg-surface/80 hover:border-edge/50" : ""}`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">
+      <div className={`absolute top-0 left-6 right-6 h-px ${colors.accent} opacity-40`} />
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[11px] text-content-faint uppercase tracking-wider font-medium">
           {label}
         </span>
-        <div
-          className={`w-8 h-8 rounded-lg ${colors.bg} flex items-center justify-center`}
-        >
+        <div className={colors.iconText}>
           {icon}
         </div>
       </div>
-      <div className="text-3xl font-bold text-white mb-1">{value}</div>
-      {subtitle && <div className="text-xs text-gray-500">{subtitle}</div>}
+      <div className={`text-2xl font-semibold ${colors.valueText} mb-0.5`}>
+        {value}
+      </div>
+      {subtitle && <div className="text-[11px] text-content-faint">{subtitle}</div>}
     </div>
   );
 };
@@ -261,24 +266,25 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+    <div className="min-h-screen bg-linear-to-br from-canvas via-panel to-canvas">
       {/* Header */}
-      <header className="border-b border-gray-800/50 bg-gray-950 sticky top-0 z-40">
+      <header className="border-b border-edge/50 bg-canvas sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                 SubTracker
               </h1>
-              <p className="text-sm text-gray-400 mt-0.5">
+              <p className="text-sm text-content-dim mt-0.5">
                 {currentUser?.email}
               </p>
             </div>
             <div className="flex items-center gap-3">
               <NotificationBell userId={currentUser?.uid} />
+              <ThemeToggle />
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-emerald-500/50 hover:border-teal-400 rounded-lg transition-all duration-200 hover:bg-gray-800/50"
+                className="px-4 py-2 text-sm text-content-dim hover:text-content border border-emerald-500/50 hover:border-teal-400 rounded-lg transition-all duration-200 hover:bg-surface/50"
               >
                 Sign Out
               </button>
@@ -293,7 +299,7 @@ export default function HomePage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all cursor-pointer"
+            className="px-4 py-2 bg-surface/50 border border-edge rounded-lg text-content text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all cursor-pointer"
           >
             <option value="all">All Categories</option>
             {uniqueCategories.map((category) => (
@@ -303,7 +309,7 @@ export default function HomePage() {
             ))}
           </select>
           <div className="relative w-64">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-content-dim">
               <SearchIcon />
             </div>
             <input
@@ -311,7 +317,7 @@ export default function HomePage() {
               placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2 bg-surface/50 border border-edge rounded-lg text-content placeholder-content-faint text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
             />
           </div>
           <button
@@ -338,7 +344,7 @@ export default function HomePage() {
             value={`€${totalYearly.toFixed(2)}`}
             subtitle="Click to view monthly trend"
             icon={<ChartIcon />}
-            hoverColor="teal"
+            hoverColor="green"
             onClick={() => setShowYearlyChart(true)}
           />
           <StatCard
@@ -346,20 +352,20 @@ export default function HomePage() {
             value={subscriptions.length}
             subtitle="Click to view overview"
             icon={<DocumentIcon />}
-            hoverColor="lime"
+            hoverColor="teal"
             onClick={() => setShowOverview(true)}
           />
         </div>
 
         {/* Subscriptions List */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-bold text-content">
             Your Subscriptions
           </h2>
           {!selectionMode && filteredSubscriptions.length > 0 && (
             <button
               onClick={() => setSelectionMode(true)}
-              className="text-gray-400 hover:text-red-400 p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+              className="text-content-dim hover:text-red-400 p-2 rounded-lg hover:bg-surface/50 transition-colors"
               aria-label="Select subscriptions to delete"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
@@ -370,7 +376,7 @@ export default function HomePage() {
           )}
           {selectionMode && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-content-dim">
                 {selectedIds.size} selected
               </span>
               <button
@@ -382,7 +388,7 @@ export default function HomePage() {
               </button>
               <button
                 onClick={exitSelectionMode}
-                className="px-3 py-1.5 text-sm text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-lg transition-colors font-medium"
+                className="px-3 py-1.5 text-sm text-content-dim hover:text-content border border-edge hover:border-edge rounded-lg transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -395,16 +401,16 @@ export default function HomePage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
           </div>
         ) : filteredSubscriptions.length === 0 ? (
-          <div className="bg-gray-800/30 border border-gray-700/50 rounded-2xl p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-surface/30 border border-edge/50 rounded-2xl p-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-control/50 flex items-center justify-center mx-auto mb-4">
               <InboxIcon />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-content mb-2">
               {searchQuery
                 ? "No matching subscriptions"
                 : "No subscriptions yet"}
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-content-dim mb-6">
               {searchQuery
                 ? "Try a different search term"
                 : "Start tracking your subscriptions to see your spending insights"}
@@ -488,7 +494,7 @@ export default function HomePage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 bg-gray-800 hover:bg-gray-700 border border-emerald-500/50 hover:border-teal-400 text-white rounded-full shadow-lg transition-all duration-200 z-50"
+          className="fixed bottom-6 right-6 p-3 bg-surface hover:bg-control border border-emerald-500/50 hover:border-teal-400 text-content rounded-full shadow-lg transition-all duration-200 z-50"
           aria-label="Scroll to top"
         >
           <ArrowUpIcon />

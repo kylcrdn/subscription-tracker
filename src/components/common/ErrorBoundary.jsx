@@ -31,13 +31,13 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="min-h-screen flex items-center justify-center bg-panel">
           <div className="text-center p-8 max-w-md">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-2xl font-bold text-content mb-2">
               Something went wrong
             </h1>
-            <p className="text-gray-400 mb-6">
+            <p className="text-content-dim mb-6">
               An unexpected error occurred. Please try again.
             </p>
             <div className="flex gap-3 justify-center">
@@ -49,7 +49,7 @@ class ErrorBoundary extends Component {
               </button>
               <button
                 onClick={() => (window.location.href = "/home")}
-                className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                className="px-6 py-3 bg-control hover:bg-surface text-content rounded-lg transition-colors"
               >
                 Go Home
               </button>

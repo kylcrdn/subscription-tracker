@@ -2,7 +2,7 @@
  * Root application component — sets up routing, auth, error handling, and toast notifications.
  *
  * Component tree (top-down):
- *   BrowserRouter → AuthProvider → ErrorBoundary → Toaster + Routes
+ *   BrowserRouter → ThemeProvider → AuthProvider → ErrorBoundary → Toaster + Routes
  *
  * Route protection:
  *  - ProtectedRoute: wraps pages that require login (redirects to /login if not authenticated).
@@ -17,6 +17,7 @@
  */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/authContext";
+import { ThemeProvider } from "./contexts/themeContext";
 import LoginPage from "./components/features/auth/login/LoginPage";
 import RegisterPage from "./components/features/auth/register/RegisterPage";
 import HomePage from "./components/features/subscriptions/HomePage";
@@ -30,8 +31,8 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="text-content text-lg">Loading...</div>
       </div>
     );
   }
@@ -45,8 +46,8 @@ function PublicRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="text-content text-lg">Loading...</div>
       </div>
     );
   }
@@ -57,6 +58,7 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <AuthProvider>
         <ErrorBoundary>
         <Toaster
@@ -64,20 +66,20 @@ function App() {
           toastOptions={{
             duration: 3000,
             style: {
-              background: "#1f2937",
-              color: "#fff",
-              border: "1px solid #374151",
+              background: "var(--toast-bg)",
+              color: "var(--toast-text)",
+              border: "1px solid var(--toast-border)",
             },
             success: {
               iconTheme: {
                 primary: "#10b981",
-                secondary: "#fff",
+                secondary: "var(--toast-bg)",
               },
             },
             error: {
               iconTheme: {
                 primary: "#ef4444",
-                secondary: "#fff",
+                secondary: "var(--toast-bg)",
               },
             },
           }}
@@ -119,10 +121,10 @@ function App() {
           <Route
             path="*"
             element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-900">
+              <div className="min-h-screen flex items-center justify-center bg-canvas">
                 <div className="text-center">
-                  <h1 className="text-4xl font-bold text-white mb-4">404</h1>
-                  <p className="text-gray-400 mb-6">Page not found</p>
+                  <h1 className="text-4xl font-bold text-content mb-4">404</h1>
+                  <p className="text-content-dim mb-6">Page not found</p>
                   <a
                     href="/home"
                     className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors inline-block"
@@ -136,6 +138,7 @@ function App() {
         </Routes>
         </ErrorBoundary>
       </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

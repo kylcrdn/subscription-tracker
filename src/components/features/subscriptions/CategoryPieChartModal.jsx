@@ -85,17 +85,17 @@ export default function CategoryPieChartModal({
       aria-labelledby="category-chart-title"
     >
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-lg p-8 transform transition-all">
+        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-lg p-8 transform transition-all">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 text-content-dim hover:text-content transition-colors"
             aria-label="Close"
           >
             <svg
@@ -117,11 +117,11 @@ export default function CategoryPieChartModal({
           <div className="text-center mb-6">
             <h2
               id="category-chart-title"
-              className="text-xl font-bold text-white"
+              className="text-xl font-bold text-content"
             >
               Category Split
             </h2>
-            <p className="text-sm text-gray-400">(Monthly Cost)</p>
+            <p className="text-sm text-content-dim">(Monthly Cost)</p>
           </div>
 
           {/* Legend */}
@@ -132,7 +132,7 @@ export default function CategoryPieChartModal({
                   className="w-3 h-3 rounded-sm flex-shrink-0"
                   style={{ backgroundColor: slice.color }}
                 />
-                <span className="text-xs text-gray-300">
+                <span className="text-xs text-content-dim">
                   {slice.name} (€{slice.value.toFixed(2)})
                 </span>
               </div>
@@ -155,7 +155,7 @@ export default function CategoryPieChartModal({
                     key={i}
                     d={slice.path}
                     fill={slice.color}
-                    stroke="rgb(31, 41, 55)"
+                    stroke="var(--th-surface)"
                     strokeWidth="2"
                   />
                 ))
@@ -165,8 +165,8 @@ export default function CategoryPieChartModal({
 
           {/* Total */}
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-400">Total Monthly</p>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-sm text-content-dim">Total Monthly</p>
+            <p className="text-2xl font-bold text-content">
               €{total.toFixed(2)}
             </p>
           </div>

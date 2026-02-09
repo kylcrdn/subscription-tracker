@@ -49,13 +49,13 @@ export default function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
           {/* Icon */}
           <div className="flex items-center justify-center mb-4">
             <div
@@ -84,20 +84,20 @@ export default function ConfirmDialog({
           {/* Title */}
           <h2
             id="confirm-dialog-title"
-            className="text-xl font-bold text-white text-center mb-2"
+            className="text-xl font-bold text-content text-center mb-2"
           >
             {title}
           </h2>
 
           {/* Message */}
-          <p className="text-gray-400 text-center mb-6">{message}</p>
+          <p className="text-content-dim text-center mb-6">{message}</p>
 
           {/* Buttons */}
           <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium border border-gray-700"
+              className="flex-1 px-4 py-3 bg-surface hover:bg-control text-content rounded-lg transition-all duration-200 font-medium border border-edge"
             >
               {cancelText}
             </button>

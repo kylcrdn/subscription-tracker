@@ -253,17 +253,17 @@ export default function SubscriptionModal({
       aria-labelledby="modal-title"
     >
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
           <div className="flex items-center justify-between mb-6">
             <h2
               id="modal-title"
-              className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"
+              className="text-2xl font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"
             >
               {subscription ? "Edit Subscription" : "Add Subscription"}
             </h2>
@@ -271,7 +271,7 @@ export default function SubscriptionModal({
               type="button"
               onClick={onClose}
               aria-label="Close modal"
-              className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-gray-700/50 rounded-lg"
+              className="text-content-dim hover:text-content transition-colors p-1 hover:bg-control/50 rounded-lg"
             >
               <svg
                 className="w-6 h-6"
@@ -294,7 +294,7 @@ export default function SubscriptionModal({
             <div>
               <label
                 htmlFor="service-name"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Service Name *
               </label>
@@ -310,9 +310,9 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please fill out this field")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-gray-900/50 border ${
-                  errors.name ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`w-full px-4 py-3 bg-panel/50 border ${
+                  errors.name ? "border-red-500" : "border-edge"
+                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.name && (
                 <p className="text-red-400 text-xs mt-1">{errors.name}</p>
@@ -321,7 +321,7 @@ export default function SubscriptionModal({
 
             {/* Service Icon */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-content-dim mb-2">
                 Service Icon (optional)
               </label>
 
@@ -329,7 +329,7 @@ export default function SubscriptionModal({
                 {/* Preview */}
                 <div className="flex-shrink-0">
                   {iconPreview && !logoError ? (
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-700 bg-white">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-edge bg-white">
                       <img
                         src={iconPreview}
                         alt="Service icon preview"
@@ -359,9 +359,9 @@ export default function SubscriptionModal({
                       </button>
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-700 bg-gray-900/50 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-lg border-2 border-dashed border-edge bg-panel/50 flex items-center justify-center">
                       <svg
-                        className="w-8 h-8 text-gray-600"
+                        className="w-8 h-8 text-content-faint"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -389,12 +389,12 @@ export default function SubscriptionModal({
                       setShowSuggestions(true)
                     }
                     placeholder="Search: Netflix, Spotify..."
-                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+                    className="w-full px-4 py-2 bg-panel/50 border border-edge rounded-lg text-content text-sm placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
                   />
 
                   {/* Autocomplete Suggestions */}
                   {showSuggestions && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-edge rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
                       {filteredServices
                         .filter((service) => !failedLogos.has(service.domain))
                         .map((service) => (
@@ -402,7 +402,7 @@ export default function SubscriptionModal({
                             key={service.domain}
                             type="button"
                             onClick={() => handleSelectService(service)}
-                            className="w-full px-3 py-2.5 text-left text-sm text-white hover:bg-emerald-600 flex items-center gap-3 transition-colors cursor-pointer"
+                            className="w-full px-3 py-2.5 text-left text-sm text-content hover:bg-emerald-600 hover:text-white flex items-center gap-3 transition-colors cursor-pointer"
                           >
                             <img
                               src={getLogoUrl(service.domain)}
@@ -430,7 +430,7 @@ export default function SubscriptionModal({
                               <span className="font-medium">
                                 {service.name}
                               </span>
-                              <span className="text-gray-400 text-xs block">
+                              <span className="text-content-dim text-xs block">
                                 {service.domain}
                               </span>
                             </div>
@@ -439,7 +439,7 @@ export default function SubscriptionModal({
                     </div>
                   )}
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-content-faint mt-1">
                     {logoError
                       ? "Logo not found, try adding .com"
                       : "Type a service name or domain (e.g. netflix.com)"}
@@ -452,12 +452,12 @@ export default function SubscriptionModal({
             <div>
               <label
                 htmlFor="service-price"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Price *
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-content-dim text-base font-medium">
                   €
                 </span>
                 <input
@@ -474,9 +474,9 @@ export default function SubscriptionModal({
                     e.target.setCustomValidity("Please enter a valid price")
                   }
                   onInput={(e) => e.target.setCustomValidity("")}
-                  className={`w-full pl-9 pr-4 py-3 bg-gray-900/50 border ${
-                    errors.price ? "border-red-500" : "border-gray-700"
-                  } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                  className={`w-full pl-9 pr-4 py-3 bg-panel/50 border ${
+                    errors.price ? "border-red-500" : "border-edge"
+                  } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
                 />
               </div>
               {errors.price && (
@@ -488,7 +488,7 @@ export default function SubscriptionModal({
             <div>
               <label
                 htmlFor="service-billing"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Billing Cycle
               </label>
@@ -503,7 +503,7 @@ export default function SubscriptionModal({
                   }}
                   onClick={() => setSelectOpen(!selectOpen)}
                   onBlur={() => setTimeout(() => setSelectOpen(false), 100)}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-panel/50 border border-edge rounded-lg text-content focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
                 >
                   <option value="Monthly">Monthly</option>
                   <option value="Yearly">Yearly</option>
@@ -515,7 +515,7 @@ export default function SubscriptionModal({
             <div>
               <label
                 htmlFor="service-dueDate"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Date Created *
               </label>
@@ -530,14 +530,14 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please select a date")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-gray-900/50 border ${
-                  errors.dueDate ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`w-full px-4 py-3 bg-panel/50 border ${
+                  errors.dueDate ? "border-red-500" : "border-edge"
+                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.dueDate ? (
                 <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
               ) : (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-content-faint mt-1">
                   When did this subscription start?
                 </p>
               )}
@@ -547,7 +547,7 @@ export default function SubscriptionModal({
             <div>
               <label
                 htmlFor="service-category"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Category *
               </label>
@@ -563,9 +563,9 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please enter a category")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-gray-900/50 border ${
-                  errors.category ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`w-full px-4 py-3 bg-panel/50 border ${
+                  errors.category ? "border-red-500" : "border-edge"
+                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.category && (
                 <p className="text-red-400 text-xs mt-1">{errors.category}</p>
@@ -577,13 +577,13 @@ export default function SubscriptionModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium border border-gray-700"
+                className="flex-1 px-4 py-3 bg-surface hover:bg-control text-content rounded-lg transition-all duration-200 font-medium border border-edge"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-emerald-500/25"
+                className="flex-1 px-4 py-3 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-emerald-500/25"
               >
                 {subscription ? "Save Changes" : "Add Subscription"}
               </button>

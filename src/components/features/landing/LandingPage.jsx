@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "../../common/ThemeToggle";
 
 export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-canvas via-panel to-canvas overflow-hidden">
       {/* Ambient glow effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl" />
@@ -17,9 +18,10 @@ export default function LandingPage() {
           SubTracker
         </h1>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <button
             onClick={() => navigate("/login")}
-            className="px-5 py-2 text-sm text-gray-300 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg transition-all duration-200"
+            className="px-5 py-2 text-sm text-content-dim hover:text-content border border-edge hover:border-edge rounded-lg transition-all duration-200"
           >
             Sign In
           </button>
@@ -34,12 +36,12 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-gray-700/50 bg-gray-800/30 backdrop-blur-sm text-sm text-gray-400">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-edge/50 bg-surface/30 backdrop-blur-sm text-sm text-content-dim">
           <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
           Track every subscription in one place
         </div>
 
-        <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
+        <h2 className="text-5xl md:text-7xl font-bold text-content mb-6 leading-tight tracking-tight">
           Know where your
           <br />
           <span className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
@@ -47,7 +49,7 @@ export default function LandingPage() {
           </span>
         </h2>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+        <p className="text-lg md:text-xl text-content-dim max-w-2xl mx-auto mb-12 leading-relaxed">
           Stop losing track of recurring payments. SubTracker gives you a
           clear overview of all your subscriptions, spending insights, and
           timely renewal reminders.
@@ -62,7 +64,7 @@ export default function LandingPage() {
           </button>
           <button
             onClick={() => navigate("/login")}
-            className="px-8 py-3.5 border border-gray-700 hover:border-gray-500 text-gray-300 hover:text-white rounded-xl transition-all duration-200 font-medium text-lg"
+            className="px-8 py-3.5 border border-edge hover:border-edge text-content-dim hover:text-content rounded-xl transition-all duration-200 font-medium text-lg"
           >
             Sign In
           </button>
@@ -71,18 +73,18 @@ export default function LandingPage() {
 
       {/* Dashboard Preview */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 mb-32">
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div className="bg-linear-to-br from-surface/50 to-surface/30 backdrop-blur-sm border border-edge/50 rounded-2xl p-6 md:p-8 shadow-2xl">
           {/* Mock header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-lg font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                 SubTracker
               </div>
-              <div className="text-xs text-gray-500 mt-0.5">
+              <div className="text-xs text-content-faint mt-0.5">
                 user@example.com
               </div>
             </div>
-            <div className="w-8 h-8 rounded-lg bg-gray-700/50" />
+            <div className="w-8 h-8 rounded-lg bg-control/50" />
           </div>
 
           {/* Mock stat cards */}
@@ -94,12 +96,12 @@ export default function LandingPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-gradient-to-br from-gray-800/80 to-gray-800/40 border border-gray-700/30 rounded-xl p-4"
+                className="bg-linear-to-br from-surface/80 to-surface/40 border border-edge/30 rounded-xl p-4"
               >
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                <div className="text-xs text-content-faint uppercase tracking-wider mb-1">
                   {stat.label}
                 </div>
-                <div className="text-xl md:text-2xl font-bold text-white">
+                <div className="text-xl md:text-2xl font-bold text-content">
                   {stat.value}
                 </div>
               </div>
@@ -109,27 +111,27 @@ export default function LandingPage() {
           {/* Mock subscription rows */}
           <div className="space-y-3">
             {[
-              { name: "Netflix", price: "€13.99", cycle: "Monthly", days: "5 days", color: "text-teal-400" },
-              { name: "Spotify", price: "€9.99", cycle: "Monthly", days: "12 days", color: "text-teal-400" },
-              { name: "iCloud+", price: "€5.99", cycle: "Monthly", days: "Today", color: "text-red-400" },
+              { name: "Netflix", price: "€13.99", cycle: "Monthly", days: "5 days", color: "text-accent-teal" },
+              { name: "Spotify", price: "€9.99", cycle: "Monthly", days: "12 days", color: "text-accent-teal" },
+              { name: "iCloud+", price: "€5.99", cycle: "Monthly", days: "Today", color: "text-red-500" },
             ].map((sub) => (
               <div
                 key={sub.name}
-                className="flex items-center justify-between bg-gray-800/40 border border-gray-700/30 rounded-xl px-5 py-3.5"
+                className="flex items-center justify-between bg-surface/40 border border-edge/30 rounded-xl px-5 py-3.5"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gray-700/50 flex items-center justify-center text-xs font-bold text-gray-400">
+                  <div className="w-8 h-8 rounded-lg bg-control/50 flex items-center justify-center text-xs font-bold text-content-dim">
                     {sub.name[0]}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-white">
+                    <div className="text-sm font-medium text-content">
                       {sub.name}
                     </div>
-                    <div className="text-xs text-gray-500">{sub.cycle}</div>
+                    <div className="text-xs text-content-faint">{sub.cycle}</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-white">
+                  <div className="text-sm font-semibold text-content">
                     {sub.price}
                   </div>
                   <div className={`text-xs ${sub.color}`}>{sub.days}</div>
@@ -143,10 +145,10 @@ export default function LandingPage() {
       {/* Features */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 mb-32">
         <div className="text-center mb-16">
-          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h3 className="text-3xl md:text-4xl font-bold text-content mb-4">
             Everything you need
           </h3>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          <p className="text-content-dim text-lg max-w-xl mx-auto">
             Simple tools to take control of your recurring expenses.
           </p>
         </div>
@@ -194,9 +196,9 @@ export default function LandingPage() {
               lime: "bg-lime-500/10",
             };
             const textMap = {
-              emerald: "text-emerald-400",
-              teal: "text-teal-400",
-              lime: "text-lime-400",
+              emerald: "text-accent-emerald",
+              teal: "text-accent-teal",
+              lime: "text-accent-lime",
             };
             const borderMap = {
               emerald: "hover:border-emerald-500/30",
@@ -207,17 +209,17 @@ export default function LandingPage() {
             return (
               <div
                 key={feature.title}
-                className={`bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 ${borderMap[feature.color]} rounded-2xl p-8 transition-all duration-300`}
+                className={`bg-linear-to-br from-surface/50 to-surface/30 backdrop-blur-sm border border-edge/50 ${borderMap[feature.color]} rounded-2xl p-8 transition-all duration-300`}
               >
                 <div
                   className={`w-12 h-12 rounded-xl ${bgMap[feature.color]} ${textMap[feature.color]} flex items-center justify-center mb-5`}
                 >
                   {feature.icon}
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-3">
+                <h4 className="text-lg font-semibold text-content mb-3">
                   {feature.title}
                 </h4>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-content-dim text-sm leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -228,11 +230,11 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="relative z-10 max-w-3xl mx-auto px-6 mb-20">
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12 text-center">
-          <h3 className="text-3xl font-bold text-white mb-4">
+        <div className="bg-linear-to-br from-surface/50 to-surface/30 backdrop-blur-sm border border-edge/50 rounded-2xl p-12 text-center">
+          <h3 className="text-3xl font-bold text-content mb-4">
             Ready to take control?
           </h3>
-          <p className="text-gray-400 mb-8 max-w-md mx-auto">
+          <p className="text-content-dim mb-8 max-w-md mx-auto">
             Join SubTracker and stop letting forgotten subscriptions drain your
             wallet.
           </p>
@@ -246,12 +248,12 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-800/50 py-8">
+      <footer className="relative z-10 border-t border-edge/50 py-8">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <span className="text-sm bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent font-semibold">
             SubTracker
           </span>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-content-faint">
             &copy; {new Date().getFullYear()} All rights reserved.
           </span>
         </div>

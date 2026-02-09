@@ -1,6 +1,103 @@
 @import "tailwindcss";
 
-/* Transparent scrollbar track with visible thumb */
+/* ── Semantic color tokens ── */
+@theme {
+  --color-canvas: var(--th-canvas);
+  --color-panel: var(--th-panel);
+  --color-surface: var(--th-surface);
+  --color-control: var(--th-control);
+  --color-overlay: var(--th-overlay);
+  --color-content: var(--th-content);
+  --color-content-dim: var(--th-content-dim);
+  --color-content-faint: var(--th-content-faint);
+  --color-edge: var(--th-edge);
+
+  /* Accent colors — adapt between dark (pastel) and light (saturated) */
+  --color-accent-emerald: var(--th-accent-emerald);
+  --color-accent-green: var(--th-accent-green);
+  --color-accent-teal: var(--th-accent-teal);
+  --color-accent-lime: var(--th-accent-lime);
+  --color-accent-yellow: var(--th-accent-yellow);
+
+  /* Stat card value colors — lighter in dark, bolder in light */
+  --color-stat-emerald: var(--th-stat-emerald);
+  --color-stat-green: var(--th-stat-green);
+  --color-stat-teal: var(--th-stat-teal);
+
+  /* Interactive link colors */
+  --color-link: var(--th-link);
+  --color-link-hover: var(--th-link-hover);
+}
+
+/* ── Dark theme (default) ── */
+:root {
+  --th-canvas: #030712;
+  --th-panel: #111827;
+  --th-surface: #1f2937;
+  --th-control: #374151;
+  --th-overlay: rgba(0, 0, 0, 0.6);
+  --th-content: #ffffff;
+  --th-content-dim: #9ca3af;
+  --th-content-faint: #6b7280;
+  --th-edge: #374151;
+
+  --th-accent-emerald: #34d399;
+  --th-accent-green: #4ade80;
+  --th-accent-teal: #2dd4bf;
+  --th-accent-lime: #a3e635;
+  --th-accent-yellow: #facc15;
+  --th-stat-emerald: #6ee7b7;
+  --th-stat-green: #86efac;
+  --th-stat-teal: #5eead4;
+  --th-link: #34d399;
+  --th-link-hover: #6ee7b7;
+
+  /* Toast colors (consumed by App.jsx) */
+  --toast-bg: #1f2937;
+  --toast-text: #ffffff;
+  --toast-border: #374151;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Light theme ── */
+:root.light {
+  --th-canvas: #f8fafc;
+  --th-panel: #ffffff;
+  --th-surface: #f1f5f9;
+  --th-control: #e2e8f0;
+  --th-overlay: rgba(0, 0, 0, 0.4);
+  --th-content: #0f172a;
+  --th-content-dim: #475569;
+  --th-content-faint: #64748b;
+  --th-edge: #cbd5e1;
+
+  --th-accent-emerald: #059669;
+  --th-accent-green: #16a34a;
+  --th-accent-teal: #0d9488;
+  --th-accent-lime: #65a30d;
+  --th-accent-yellow: #ca8a04;
+  --th-stat-emerald: #059669;
+  --th-stat-green: #16a34a;
+  --th-stat-teal: #0d9488;
+  --th-link: #059669;
+  --th-link-hover: #047857;
+
+  --toast-bg: #ffffff;
+  --toast-text: #0f172a;
+  --toast-border: #cbd5e1;
+
+  color-scheme: light;
+}
+
+/* ── Scrollbar ── */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
@@ -23,7 +120,19 @@
   background: rgba(120, 120, 120, 0.7);
 }
 
-/* Date input calendar icon styling */
+:root.light {
+  scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+
+:root.light *::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+:root.light *::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
+}
+
+/* ── Date input calendar icon ── */
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: brightness(0) invert(1);
   cursor: pointer;
@@ -34,18 +143,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-right: 0;
 }
 
+:root.light input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 0.8;
 }
 
-/* Select dropdown styling */
+/* ── Select dropdown styling ── */
 .select-wrapper {
   position: relative;
   display: inline-block;
   width: 100%;
 }
 
-/* Expand more icon (down arrow) - visible by default */
 .select-wrapper::after {
   content: "";
   position: absolute;
@@ -62,7 +174,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   pointer-events: none;
 }
 
-/* Expand less icon (up arrow) - hidden by default */
+:root.light .select-wrapper::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+}
+
 .select-wrapper::before {
   content: "";
   position: absolute;
@@ -79,7 +194,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   pointer-events: none;
 }
 
-/* On open: fade out expand more, fade in expand less */
+:root.light .select-wrapper::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 15l7-7 7 7'/%3E%3C/svg%3E");
+}
+
 .select-wrapper.open::after {
   opacity: 0;
   transform: translateY(-50%) scale(0.8);
@@ -98,21 +216,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 select option {
-  background-color: #1f2937;
-  color: white;
-}
-
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--th-surface);
+  color: var(--th-content);
 }

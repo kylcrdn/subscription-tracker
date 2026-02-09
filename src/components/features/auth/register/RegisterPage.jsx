@@ -23,6 +23,7 @@ import {
   doSignInWithGoogle,
   doSignOut,
 } from "../../../../firebase/auth";
+import ThemeToggle from "../../../common/ThemeToggle";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -107,16 +108,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-panel relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-white mb-2">
+          <h1 className="text-3xl font-semibold text-content mb-2">
             Create Account
           </h1>
-          <p className="text-gray-400">Sign up to get started</p>
+          <p className="text-content-dim">Sign up to get started</p>
         </div>
 
-        <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-8">
+        <div className="bg-surface rounded-lg shadow-xl border border-edge p-8">
           {/* Display error message */}
           {errorMessage && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
@@ -128,7 +132,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Email
               </label>
@@ -139,7 +143,7 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="you@example.com"
               />
             </div>
@@ -147,7 +151,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Password
               </label>
@@ -158,10 +162,10 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-content-dim">
                 Must be at least 6 characters
               </p>
             </div>
@@ -169,7 +173,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-content-dim mb-2"
               >
                 Confirm Password
               </label>
@@ -180,7 +184,7 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
             </div>
@@ -196,17 +200,17 @@ export default function RegisterPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-600"></div>
+              <div className="w-full border-t border-edge"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-gray-800 text-gray-400">or</span>
+              <span className="px-4 bg-surface text-content-dim">or</span>
             </div>
           </div>
 
           <button
             onClick={onGoogleSignIn}
             disabled={isRegistering}
-            className="w-full flex items-center justify-center gap-3 bg-gray-700 border border-gray-600 text-white py-2.5 rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 bg-control border border-edge text-content py-2.5 rounded-lg font-medium hover:bg-control/80 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -229,13 +233,13 @@ export default function RegisterPage() {
             {isRegistering ? "Creating account..." : "Continue with Google"}
           </button>
 
-          <div className="mt-6 text-center text-sm text-gray-400">
+          <div className="mt-6 text-center text-sm text-content-dim">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/login")}
               type="button"
               disabled={isRegistering}
-              className="text-emerald-400 font-medium hover:text-emerald-300 disabled:opacity-50"
+              className="text-link font-medium hover:text-link-hover disabled:opacity-50"
             >
               Sign in
             </button>
