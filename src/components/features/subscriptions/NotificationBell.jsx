@@ -184,7 +184,7 @@ export default function NotificationBell({ userId }) {
             <div className="max-h-96 overflow-y-auto">
               {loading ? (
                 <div className="px-4 py-8 text-center text-gray-400">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-3" />
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500 mx-auto mb-3" />
                   <p className="text-sm text-gray-400">
                     Checking for notifications...
                   </p>
@@ -208,7 +208,7 @@ export default function NotificationBell({ userId }) {
                     <div
                       key={notification.id}
                       className={`px-4 py-3 border-b border-gray-700/30 hover:bg-gray-700/30 transition-colors ${
-                        !notification.read ? "bg-blue-500/5" : ""
+                        !notification.read ? "bg-emerald-500/5" : ""
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">

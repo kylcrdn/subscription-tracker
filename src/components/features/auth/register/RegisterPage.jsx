@@ -139,7 +139,7 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="you@example.com"
               />
             </div>
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
               <p className="mt-1 text-xs text-gray-400">
@@ -180,7 +180,7 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="••••••••"
               />
             </div>
@@ -188,7 +188,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isRegistering}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRegistering ? "Creating account..." : "Create account"}
             </button>
@@ -235,7 +235,7 @@ export default function RegisterPage() {
               onClick={() => navigate("/login")}
               type="button"
               disabled={isRegistering}
-              className="text-blue-400 font-medium hover:text-blue-300 disabled:opacity-50"
+              className="text-emerald-400 font-medium hover:text-emerald-300 disabled:opacity-50"
             >
               Sign in
             </button>

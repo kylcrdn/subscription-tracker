@@ -39,7 +39,7 @@ export default function ConfirmDialog({
   const confirmButtonStyles =
     confirmStyle === "danger"
       ? "bg-red-600 hover:bg-red-500 text-white"
-      : "bg-blue-600 hover:bg-blue-500 text-white";
+      : "bg-emerald-600 hover:bg-emerald-500 text-white";
 
   return (
     <div
@@ -62,7 +62,7 @@ export default function ConfirmDialog({
               className={`w-12 h-12 rounded-full flex items-center justify-center ${
                 confirmStyle === "danger"
                   ? "bg-red-500/10 text-red-500"
-                  : "bg-blue-500/10 text-blue-500"
+                  : "bg-emerald-500/10 text-emerald-500"
               }`}
             >
               <svg

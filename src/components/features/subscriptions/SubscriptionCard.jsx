@@ -155,7 +155,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                     ? "text-orange-400"
                     : daysRemaining <= 7
                       ? "text-yellow-400"
-                      : "text-cyan-400"
+                      : "text-teal-400"
               }`}
             >
               {daysRemaining === 0
@@ -217,8 +217,8 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
             onClick={() => onToggleSelect(subscription.id)}
             className="ml-2 flex items-center justify-center w-6 h-6 rounded border-2 transition-colors shrink-0"
             style={{
-              borderColor: selected ? "#3b82f6" : "#4b5563",
-              backgroundColor: selected ? "#3b82f6" : "transparent",
+              borderColor: selected ? "#10b981" : "#4b5563",
+              backgroundColor: selected ? "#10b981" : "transparent",
             }}
             aria-label={selected ? "Deselect subscription" : "Select subscription"}
           >

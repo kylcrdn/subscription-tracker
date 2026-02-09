@@ -263,7 +263,7 @@ export default function SubscriptionModal({
           <div className="flex items-center justify-between mb-6">
             <h2
               id="modal-title"
-              className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"
+              className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"
             >
               {subscription ? "Edit Subscription" : "Add Subscription"}
             </h2>
@@ -312,7 +312,7 @@ export default function SubscriptionModal({
                 onInput={(e) => e.target.setCustomValidity("")}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.name ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
+                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.name && (
                 <p className="text-red-400 text-xs mt-1">{errors.name}</p>
@@ -389,7 +389,7 @@ export default function SubscriptionModal({
                       setShowSuggestions(true)
                     }
                     placeholder="Search: Netflix, Spotify..."
-                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                    className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
                   />
 
                   {/* Autocomplete Suggestions */}
@@ -402,7 +402,7 @@ export default function SubscriptionModal({
                             key={service.domain}
                             type="button"
                             onClick={() => handleSelectService(service)}
-                            className="w-full px-3 py-2.5 text-left text-sm text-white hover:bg-blue-600 flex items-center gap-3 transition-colors cursor-pointer"
+                            className="w-full px-3 py-2.5 text-left text-sm text-white hover:bg-emerald-600 flex items-center gap-3 transition-colors cursor-pointer"
                           >
                             <img
                               src={getLogoUrl(service.domain)}
@@ -476,7 +476,7 @@ export default function SubscriptionModal({
                   onInput={(e) => e.target.setCustomValidity("")}
                   className={`w-full pl-9 pr-4 py-3 bg-gray-900/50 border ${
                     errors.price ? "border-red-500" : "border-gray-700"
-                  } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
+                  } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
                 />
               </div>
               {errors.price && (
@@ -503,7 +503,7 @@ export default function SubscriptionModal({
                   }}
                   onClick={() => setSelectOpen(!selectOpen)}
                   onBlur={() => setTimeout(() => setSelectOpen(false), 100)}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
                 >
                   <option value="Monthly">Monthly</option>
                   <option value="Yearly">Yearly</option>
@@ -532,7 +532,7 @@ export default function SubscriptionModal({
                 onInput={(e) => e.target.setCustomValidity("")}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.dueDate ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
+                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.dueDate ? (
                 <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
@@ -565,7 +565,7 @@ export default function SubscriptionModal({
                 onInput={(e) => e.target.setCustomValidity("")}
                 className={`w-full px-4 py-3 bg-gray-900/50 border ${
                   errors.category ? "border-red-500" : "border-gray-700"
-                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all`}
+                } rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
               />
               {errors.category && (
                 <p className="text-red-400 text-xs mt-1">{errors.category}</p>
@@ -583,7 +583,7 @@ export default function SubscriptionModal({
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-blue-500/25"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-emerald-500/25"
               >
                 {subscription ? "Save Changes" : "Add Subscription"}
               </button>
