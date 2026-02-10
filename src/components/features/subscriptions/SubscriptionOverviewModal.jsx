@@ -102,12 +102,6 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
   const total = subscriptions.length;
   const monthlyPct = stats ? (stats.monthlyCount / total) * 100 : 0;
 
-  const urgencyColor = (days) => {
-    if (days === 0) return "text-red-500";
-    if (days <= 3) return "text-orange-500";
-    return "text-accent-yellow";
-  };
-
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto"

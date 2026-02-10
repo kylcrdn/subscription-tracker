@@ -20,6 +20,7 @@ import { createUserProfile } from "../../firebase/firestore";
 const AuthContext = React.createContext();
 
 /** Hook to access auth state from any component. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }
