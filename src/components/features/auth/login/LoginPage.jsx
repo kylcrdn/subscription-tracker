@@ -86,6 +86,7 @@ export default function LoginPage() {
         await doSignInWithGoogle();
         // Don't manually navigate - useEffect will handle it
       } catch (error) {
+        console.error("Google sign-in error:", error.code, error.message);
         let message = "Failed to sign in with Google.";
 
         if (error.code === "auth/popup-closed-by-user") {
