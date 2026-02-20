@@ -10,21 +10,8 @@
  * Note: All dates use the Europe/Madrid timezone for consistency.
  */
 import { useState } from "react";
-
-const Icon = ({ children, className = "w-5 h-5", ...props }) => (
-  <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    {children}
-  </svg>
-);
+import Icon from "../../common/Icon";
+import { calculateNextRenewal, getSpainDate, TIMEZONE } from "../../../utils/dateUtils";
 
 const MoreIcon = () => (
   <Icon className="w-5 h-5">
@@ -61,15 +48,6 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
       .slice(0, 2);
   };
 
-  const TIMEZONE = "Europe/Madrid";
-
-  /** Converts a Date to midnight in Europe/Madrid, avoiding UTC offset issues. */
-  const getSpainDate = (date = new Date()) => {
-    const spainDateStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-    const [year, month, day] = spainDateStr.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -83,29 +61,9 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
 
   const getDaysUntilRenewal = () => {
     if (!subscription.dueDate) return null;
-
     const today = getSpainDate();
-    const startDate = getSpainDate(new Date(subscription.dueDate));
-
-    // Calculate the next renewal date based on billing cycle
-    let nextRenewal = new Date(startDate);
-
-    if (subscription.billing === "Monthly") {
-      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-      while (nextRenewal <= today) {
-        nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-      }
-    } else if (subscription.billing === "Yearly") {
-      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-      while (nextRenewal <= today) {
-        nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-      }
-    }
-
-    const diffTime = nextRenewal - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
+    const nextRenewal = calculateNextRenewal(subscription.dueDate, subscription.billing);
+    return Math.ceil((nextRenewal - today) / (1000 * 60 * 60 * 24));
   };
 
   const daysRemaining = getDaysUntilRenewal();

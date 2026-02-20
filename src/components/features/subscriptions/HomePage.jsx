@@ -32,27 +32,11 @@ const MonthlyExpensesChartModal = lazy(() => import("./MonthlyExpensesChartModal
 const SubscriptionOverviewModal = lazy(() => import("./SubscriptionOverviewModal"));
 import NotificationBell from "./NotificationBell";
 import ThemeToggle from "../../common/ThemeToggle";
+import Icon from "../../common/Icon";
 import toast from "react-hot-toast";
 
-// ---- Inline SVG icon components (avoids an icon library dependency) ----
-
-const Icon = ({ children, className = "w-4 h-4", ...props }) => (
-  <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    {children}
-  </svg>
-);
-
 const SearchIcon = () => (
-  <Icon>
+  <Icon className="w-4 h-4">
     <circle cx="11" cy="11" r="7" />
     <path d="M21 21l-4.35-4.35" />
   </Icon>

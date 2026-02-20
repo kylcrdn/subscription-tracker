@@ -15,26 +15,13 @@
  */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import Icon from "../../common/Icon";
 import {
   subscribeToNotifications,
   dismissNotification,
   markNotificationAsRead,
+  calculateNextRenewal,
 } from "../../../firebase/firestore";
-
-const Icon = ({ children, className = "w-5 h-5", ...props }) => (
-  <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    {children}
-  </svg>
-);
 
 const BellIcon = () => (
   <Icon>
@@ -84,29 +71,6 @@ export default function NotificationBell({ userId }) {
       day: "numeric",
       year: "numeric",
     });
-  };
-
-  const calculateNextRenewal = (dueDate, billing) => {
-    const startDate = new Date(dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    startDate.setHours(0, 0, 0, 0);
-
-    let nextRenewal = new Date(startDate);
-
-    if (billing === "Monthly") {
-      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-      while (nextRenewal <= today) {
-        nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-      }
-    } else if (billing === "Yearly") {
-      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-      while (nextRenewal <= today) {
-        nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-      }
-    }
-
-    return nextRenewal;
   };
 
   const getDaysUntilRenewal = (notification) => {

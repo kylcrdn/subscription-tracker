@@ -32,6 +32,9 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./Firebase";
+import { calculateNextRenewal } from "../utils/dateUtils";
+
+export { calculateNextRenewal };
 
 // ============= USER PROFILE FUNCTIONS =============
 
@@ -49,68 +52,25 @@ export const createUserProfile = async (userId, userData) => {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      // Create new user profile
       await setDoc(userRef, {
         email: userData.email || null,
         displayName: userData.displayName || null,
         photoURL: userData.photoURL || null,
-        emailNotifications: true, // Enable email notifications by default
-        reminderDays: 3, // Default to 3 days before renewal
+        emailNotifications: true,
+        reminderDays: 3,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      console.log(`User profile created for ${userId}`);
     } else {
-      // Update existing user profile with latest data
       await updateDoc(userRef, {
         email: userData.email || userSnap.data().email,
         displayName: userData.displayName || userSnap.data().displayName,
         photoURL: userData.photoURL || userSnap.data().photoURL,
         updatedAt: serverTimestamp(),
       });
-      console.log(`User profile updated for ${userId}`);
     }
   } catch (error) {
     console.error("Error creating/updating user profile:", error);
-    throw error;
-  }
-};
-
-/**
- * Get user profile from Firestore
- * @param {string} userId - The authenticated user's ID
- * @returns {Object|null} User profile data or null if not found
- */
-export const getUserProfile = async (userId) => {
-  try {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      return { id: userSnap.id, ...userSnap.data() };
-    }
-    return null;
-  } catch (error) {
-    console.error("Error getting user profile:", error);
-    throw error;
-  }
-};
-
-/**
- * Update user notification preferences
- * @param {string} userId - The authenticated user's ID
- * @param {Object} preferences - Notification preferences
- */
-export const updateUserPreferences = async (userId, preferences) => {
-  try {
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      ...preferences,
-      updatedAt: serverTimestamp(),
-    });
-    console.log(`User preferences updated for ${userId}`);
-  } catch (error) {
-    console.error("Error updating user preferences:", error);
     throw error;
   }
 };
@@ -254,41 +214,10 @@ const getUserNotificationsRef = (userId) => {
 };
 
 /**
- * Calculate the next renewal date for a subscription
- * @param {string} dueDate - The subscription start date
- * @param {string} billing - Monthly or Yearly
- * @returns {Date} The next renewal date
- */
-export const calculateNextRenewal = (dueDate, billing) => {
-  const startDate = new Date(dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  startDate.setHours(0, 0, 0, 0);
-
-  // Start from the subscription's original start date and keep advancing
-  // by one billing period until the renewal date is in the future.
-  let nextRenewal = new Date(startDate);
-
-  if (billing === "Monthly") {
-    nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-    while (nextRenewal <= today) {
-      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-    }
-  } else if (billing === "Yearly") {
-    nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-    while (nextRenewal <= today) {
-      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-    }
-  }
-
-  return nextRenewal;
-};
-
-/**
  * Generate notification for a subscription
  * @param {string} userId - The authenticated user's ID
  * @param {Object} subscription - The subscription data
- * @param {number} notifyDaysBefore - Days before renewal to notify (default: 3)
+ * @param {number} notifyDaysBefore - Days before renewal to notify (default: 7)
  */
 export const generateNotification = async (
   userId,
@@ -309,8 +238,8 @@ export const generateNotification = async (
   await addDoc(notificationsRef, {
     subscriptionId: subscription.id,
     subscriptionName: subscription.name,
-    dueDate: subscription.dueDate, // Store for recalculation
-    billing: subscription.billing, // Store for recalculation
+    dueDate: subscription.dueDate,
+    billing: subscription.billing,
     renewalDate: renewalDate.toISOString(),
     sendAt: sendAt.toISOString(),
     notifyDaysBefore,
@@ -403,7 +332,7 @@ const deleteNotificationsBySubscription = async (userId, subscriptionId) => {
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
-      return; // No notifications to delete
+      return;
     }
 
     const batch = writeBatch(db);
@@ -413,7 +342,6 @@ const deleteNotificationsBySubscription = async (userId, subscriptionId) => {
     await batch.commit();
   } catch (error) {
     console.error("Error deleting notifications:", error);
-    // Re-throw to be handled by caller if needed
     throw error;
   }
 };

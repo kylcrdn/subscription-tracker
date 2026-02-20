@@ -13,36 +13,7 @@
  */
 import { useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-
-const TIMEZONE = "Europe/Madrid";
-
-/** Converts a Date to midnight in Europe/Madrid, avoiding UTC offset issues. */
-const getSpainDate = (date = new Date()) => {
-  const spainDateStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-  const [year, month, day] = spainDateStr.split("-").map(Number);
-  return new Date(year, month - 1, day);
-};
-
-/** Calculates the next renewal date from a start date and billing cycle. */
-const getNextRenewal = (dueDate, billing) => {
-  const today = getSpainDate();
-  const startDate = getSpainDate(new Date(dueDate));
-  let nextRenewal = new Date(startDate);
-
-  if (billing === "Monthly") {
-    nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-    while (nextRenewal <= today) {
-      nextRenewal.setMonth(nextRenewal.getMonth() + 1);
-    }
-  } else if (billing === "Yearly") {
-    nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-    while (nextRenewal <= today) {
-      nextRenewal.setFullYear(nextRenewal.getFullYear() + 1);
-    }
-  }
-
-  return nextRenewal;
-};
+import { calculateNextRenewal, getSpainDate, TIMEZONE } from "../../../utils/dateUtils";
 
 const formatDate = (date) =>
   date.toLocaleDateString("en-GB", {
@@ -87,7 +58,7 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
     const today = getSpainDate();
     const upcoming = subscriptions
       .map((s) => {
-        const renewal = getNextRenewal(s.dueDate, s.billing);
+        const renewal = calculateNextRenewal(s.dueDate, s.billing);
         const diffDays = Math.ceil((renewal - today) / (1000 * 60 * 60 * 24));
         return { ...s, renewal, daysUntil: diffDays };
       })
