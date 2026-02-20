@@ -4,7 +4,7 @@
  * When a Discord webhook URL is configured in .env (VITE_DISCORD_WEBHOOK_URL),
  * this service sends renewal reminders as rich embeds to a Discord channel.
  *
- * Notification thresholds: messages are sent at 7, 3, 1, and 0 days before renewal.
+ * Notification thresholds: messages are sent at 7, 3, and 1 days before renewal.
  *
  * Deduplication strategy:
  *  - A "discord_sent" object in localStorage tracks which notifications were already
@@ -21,7 +21,7 @@ import { calculateNextRenewal } from "../firebase/firestore";
 const WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL;
 
 /** Days before renewal when Discord notifications should be sent */
-const NOTIFY_AT_DAYS = [7, 3, 1, 0];
+const NOTIFY_AT_DAYS = [7, 3, 1];
 
 /**
  * Get today's date as a string key for localStorage dedup
@@ -68,13 +68,13 @@ function markAsSent(sentKey) {
  */
 async function sendDiscordEmbed(subscription, daysUntil, renewalDate) {
   const urgencyColor =
-    daysUntil === 0 ? 0xff0000 : daysUntil === 1 ? 0xff9900 : 0x667eea;
+    daysUntil === 1 ? 0xff0000 : daysUntil === 3 ? 0xff9900 : 0x3b82f6;
 
   const title =
-    daysUntil === 0
-      ? `🔴 ${subscription.name} renews today!`
-      : daysUntil === 1
-        ? `🟠 ${subscription.name} renews tomorrow`
+    daysUntil === 1
+      ? `🔴 ${subscription.name} renews tomorrow`
+      : daysUntil === 3
+        ? `🟠 ${subscription.name} renews in ${daysUntil} days`
         : `🔵 ${subscription.name} renews in ${daysUntil} days`;
 
   const embed = {
