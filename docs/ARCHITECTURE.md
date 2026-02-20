@@ -36,7 +36,7 @@ HomePage delegates all data logic to hooks, keeping the component focused on ren
 - Notifications stored in `users/{userId}/notifications/` subcollection
 - Generated client-side in `firestore.js` when subscriptions are added or updated
 - `NotificationBell` component subscribes via `onSnapshot`
-- Composite index on `[dismissed ASC, sendAt ASC]` (equality filter before range filter)
+- Composite index on `[dismissed ASC, sendAt ASC]` required for the equality + range query (`where dismissed == false` + `where sendAt <= today`); `orderBy` is intentionally omitted from the Firestore query — results are sorted client-side by `sendAt` descending
 - User can mark as read or dismiss; badge count updates in real-time
 
 ### Discord (Client-Side Webhooks)

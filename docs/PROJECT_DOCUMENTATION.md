@@ -16,7 +16,7 @@ The application is entirely client-side rendered (SPA) and uses Firebase as its 
 | **Tailwind CSS** | 4 | Utility-first CSS framework (via `@tailwindcss/vite` plugin) |
 | **Firebase Authentication** | 12 | User authentication (email/password + Google OAuth) |
 | **Cloud Firestore** | 12 | NoSQL document database with real-time listeners |
-| **Firebase Hosting** | 12 | Static site deployment |
+| **Vercel** | — | Static site hosting with SPA rewrites |
 | **react-hot-toast** | 2.6 | Toast notification system for user feedback |
 | **prop-types** | 15 | Runtime type checking for React component props |
 | **Vitest** | 4 | Unit testing framework |
@@ -78,7 +78,8 @@ subscription-tracker/
 ├── docs/                            # Project documentation
 ├── firestore.rules                  # Firestore security rules
 ├── firestore.indexes.json           # Firestore composite index definitions
-├── firebase.json                    # Firebase project configuration
+├── firebase.json                    # Firebase project configuration (Firestore rules + indexes)
+├── vercel.json                      # Vercel deployment config (SPA rewrites)
 ├── vite.config.js                   # Vite build configuration
 ├── vitest.config.js                 # Test runner configuration
 ├── eslint.config.js                 # Linting configuration
@@ -296,14 +297,22 @@ The application will be available at `http://localhost:5173`.
 
 ### Production Deployment
 
+The frontend is hosted on **Vercel**. Firestore rules and indexes are still deployed via the Firebase CLI.
+
 1. Build the project:
 
    ```bash
    npm run build
    ```
 
-2. Deploy to Firebase Hosting:
+2. Deploy the frontend to Vercel (push to the connected Git branch, or use the CLI):
 
    ```bash
-   npx firebase deploy
+   npx vercel --prod
+   ```
+
+3. Deploy Firestore security rules and indexes:
+
+   ```bash
+   npx firebase deploy --only firestore
    ```
