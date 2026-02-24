@@ -15,14 +15,16 @@ export function useSubscriptionStats(subscriptions) {
   // Monthly view: yearly subs contribute price/12.  Yearly view: monthly subs contribute price*12.
   const { totalMonthly, totalYearly } = useMemo(() => {
     const monthly = subscriptions.reduce((sum, sub) => {
-      if (sub.billing === "Monthly") return sum + sub.price;
-      if (sub.billing === "Yearly") return sum + sub.price / 12;
+      const price = parseFloat(sub.price) || 0;
+      if (sub.billing === "Monthly") return sum + price;
+      if (sub.billing === "Yearly") return sum + price / 12;
       return sum;
     }, 0);
 
     const yearly = subscriptions.reduce((sum, sub) => {
-      if (sub.billing === "Monthly") return sum + sub.price * 12;
-      if (sub.billing === "Yearly") return sum + sub.price;
+      const price = parseFloat(sub.price) || 0;
+      if (sub.billing === "Monthly") return sum + price * 12;
+      if (sub.billing === "Yearly") return sum + price;
       return sum;
     }, 0);
 
@@ -35,7 +37,8 @@ export function useSubscriptionStats(subscriptions) {
     const categoryMap = {};
     subscriptions.forEach((sub) => {
       const category = sub.category?.trim() || "Uncategorized";
-      const monthlyCost = sub.billing === "Yearly" ? sub.price / 12 : sub.price;
+      const price = parseFloat(sub.price) || 0;
+      const monthlyCost = sub.billing === "Yearly" ? price / 12 : price;
       categoryMap[category] = (categoryMap[category] || 0) + monthlyCost;
     });
     return Object.entries(categoryMap)
@@ -55,7 +58,7 @@ export function useSubscriptionStats(subscriptions) {
       // Determine from which month (0-11) this subscription is active in the current year
       const activeFrom =
         startYear < currentYear ? 0 : startYear === currentYear ? startMonth : 12;
-      return { price: sub.price, billing: sub.billing, activeFrom };
+      return { price: parseFloat(sub.price) || 0, billing: sub.billing, activeFrom };
     });
     return Array.from({ length: 12 }, (_, month) => ({
       month,

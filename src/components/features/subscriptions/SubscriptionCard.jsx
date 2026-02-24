@@ -97,7 +97,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
       <div className="flex items-center gap-4">
         <div className="text-right">
           <p className="text-content font-semibold">
-            €{subscription.price.toFixed(2)}
+            €{(parseFloat(subscription.price) || 0).toFixed(2)}
           </p>
           <p className="text-content-faint text-sm">{subscription.billing}</p>
         </div>

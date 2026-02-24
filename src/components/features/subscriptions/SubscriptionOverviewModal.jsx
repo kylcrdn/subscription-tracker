@@ -38,10 +38,10 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
     const yearlyCount = subscriptions.filter((s) => s.billing === "Yearly").length;
 
     // Normalize all prices to monthly for fair comparison
-    const withMonthly = subscriptions.map((s) => ({
-      ...s,
-      monthlyCost: s.billing === "Yearly" ? s.price / 12 : s.price,
-    }));
+    const withMonthly = subscriptions.map((s) => {
+      const price = parseFloat(s.price) || 0;
+      return { ...s, monthlyCost: s.billing === "Yearly" ? price / 12 : price };
+    });
 
     const sorted = [...withMonthly].sort((a, b) => b.monthlyCost - a.monthlyCost);
     const mostExpensive = sorted[0];
