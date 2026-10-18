@@ -24,7 +24,7 @@ export function getFirebaseConfig(env = import.meta.env) {
 
   if (missing.length > 0) {
     throw new Error(
-      `Missing required Firebase environment variables: ${missing.join(", ")}. Copy .env.example to .env and fill in your Firebase values before starting the app.`,
+      `Missing required Firebase environment variables: ${missing.join(", ")}. Create a .env file in the project root and add your Firebase values before starting the app.`,
     );
   }
 
