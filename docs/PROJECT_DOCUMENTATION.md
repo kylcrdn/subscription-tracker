@@ -8,20 +8,20 @@ The application is entirely client-side rendered (SPA) and uses Firebase as its 
 
 ## 2. Technologies Used
 
-| Technology | Version | Purpose |
-|---|---|---|
-| **React** | 19 | UI library — component-based architecture with hooks |
-| **React Router** | 7 | Client-side routing with protected/public route guards |
-| **Vite** | 5 | Build tool and development server |
-| **Tailwind CSS** | 4 | Utility-first CSS framework (via `@tailwindcss/vite` plugin) |
-| **Firebase Authentication** | 12 | User authentication (email/password + Google OAuth) |
-| **Cloud Firestore** | 12 | NoSQL document database with real-time listeners |
-| **Vercel** | — | Static site hosting with SPA rewrites |
-| **react-hot-toast** | 2.6 | Toast notification system for user feedback |
-| **prop-types** | 15 | Runtime type checking for React component props |
-| **Vitest** | 4 | Unit testing framework |
-| **Testing Library** | 16 | React component testing utilities |
-| **ESLint** | 9 | Code linting and style enforcement |
+| Technology                  | Version | Purpose                                                      |
+| --------------------------- | ------- | ------------------------------------------------------------ |
+| **React**                   | 19      | UI library — component-based architecture with hooks         |
+| **React Router**            | 7       | Client-side routing with protected/public route guards       |
+| **Vite**                    | 5       | Build tool and development server                            |
+| **Tailwind CSS**            | 4       | Utility-first CSS framework (via `@tailwindcss/vite` plugin) |
+| **Firebase Authentication** | 12      | User authentication (email/password + Google OAuth)          |
+| **Cloud Firestore**         | 12      | NoSQL document database with real-time listeners             |
+| **Vercel**                  | —       | Static site hosting with SPA rewrites                        |
+| **react-hot-toast**         | 2.6     | Toast notification system for user feedback                  |
+| **prop-types**              | 15      | Runtime type checking for React component props              |
+| **Vitest**                  | 4       | Unit testing framework                                       |
+| **Testing Library**         | 16      | React component testing utilities                            |
+| **ESLint**                  | 9       | Code linting and style enforcement                           |
 
 ### Notable Technical Decisions
 
@@ -200,9 +200,9 @@ A composite index is defined for the notifications subcollection on `(dismissed 
 
 ### 5.8 Discord Webhook Integration
 
-- **Optional** — Enabled by setting `VITE_DISCORD_WEBHOOK_URL` in the `.env` file.
-- **Rich embeds** — Sends color-coded Discord messages at 7, 3, 1, and 0 days before renewal with subscription details.
-- **Deduplication** — Uses `localStorage` to prevent duplicate messages on the same day; old entries are cleaned up automatically.
+- **Secure-by-default** — Webhook secrets are not stored in the browser bundle.
+- **Backend required** — Discord delivery should be implemented in a server-side service such as Firebase Cloud Functions.
+- **Client app safety** — The frontend intentionally avoids exposing webhook credentials to end users.
 
 ### 5.9 Theming (Light/Dark Mode)
 
@@ -261,11 +261,7 @@ A composite index is defined for the notifications subcollection on `(dismissed 
    VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
    ```
 
-   Optional (for Discord notifications):
-
-   ```env
-   VITE_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
-   ```
+   No browser secret is required for Discord notifications. If you enable that feature, keep the webhook behind a secure backend service.
 
 4. **Deploy Firestore rules and indexes**
 
@@ -285,15 +281,15 @@ The application will be available at `http://localhost:5173`.
 
 ### Available Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start Vite development server with hot reload |
-| `npm run build` | Create optimized production build in `dist/` |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint on all source files |
-| `npm test` | Run unit tests with Vitest |
-| `npm run test:ui` | Run tests with Vitest's browser UI |
-| `npm run test:coverage` | Run tests with code coverage report |
+| Command                 | Description                                   |
+| ----------------------- | --------------------------------------------- |
+| `npm run dev`           | Start Vite development server with hot reload |
+| `npm run build`         | Create optimized production build in `dist/`  |
+| `npm run preview`       | Preview the production build locally          |
+| `npm run lint`          | Run ESLint on all source files                |
+| `npm test`              | Run unit tests with Vitest                    |
+| `npm run test:ui`       | Run tests with Vitest's browser UI            |
+| `npm run test:coverage` | Run tests with code coverage report           |
 
 ### Production Deployment
 

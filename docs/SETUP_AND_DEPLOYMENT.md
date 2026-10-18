@@ -25,12 +25,11 @@ VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 VITE_FIREBASE_APP_ID=your-app-id
 VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
-
-# Optional: Discord webhook for renewal alerts
-VITE_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 ```
 
 Add the same variables as **Environment Variables** in the Vercel project settings so they are available in production builds.
+
+> Store any Discord webhook or other privileged secrets on a backend, not in the browser bundle.
 
 ## 3. Deploy
 
@@ -70,13 +69,13 @@ firebase emulators:start     # Local Firebase emulators
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| "The query requires an index" | Run `firebase deploy --only firestore:indexes` and wait 1-5 minutes for the index to build. |
-| Notifications not appearing | Check Firestore indexes are "Enabled". Verify notification `sendAt` is not in the future. Check `dismissed` is `false`. |
-| Discord notifications not sending | Verify `VITE_DISCORD_WEBHOOK_URL` is set in `.env` and in Vercel environment variables. Check browser console for errors. |
-| Google sign-in not working | Enable Google as a sign-in provider in Firebase Console > Authentication > Sign-in method. |
-| Vercel build fails | Confirm all `VITE_*` environment variables are set in the Vercel project settings. |
+| Problem                           | Solution                                                                                                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "The query requires an index"     | Run `firebase deploy --only firestore:indexes` and wait 1-5 minutes for the index to build.                                                                                      |
+| Notifications not appearing       | Check Firestore indexes are "Enabled". Verify notification `sendAt` is not in the future. Check `dismissed` is `false`.                                                          |
+| Discord notifications not sending | This feature is intentionally disabled in the browser for security reasons. Use a backend webhook endpoint (for example, a Firebase Function) to send Discord messages securely. |
+| Google sign-in not working        | Enable Google as a sign-in provider in Firebase Console > Authentication > Sign-in method.                                                                                       |
+| Vercel build fails                | Confirm all `VITE_*` environment variables are set in the Vercel project settings.                                                                                               |
 
 ## Useful Commands
 
@@ -91,6 +90,7 @@ npx vercel --prod                         # Deploy frontend to Vercel (manual)
 ## Cost
 
 Entirely within free tiers for typical usage:
+
 - Firestore: 1M reads/month free
 - Firebase Auth: free for email/password and Google sign-in
 - Vercel: free tier includes unlimited personal projects, 100 GB bandwidth/month

@@ -23,27 +23,29 @@ User opens app
 
 HomePage delegates all data logic to hooks, keeping the component focused on rendering.
 
-| Hook | Responsibility |
-|------|---------------|
-| `useSubscriptions` | Real-time Firestore listener, CRUD handlers (add/update/delete/bulk-delete), Discord webhook checks |
-| `useSubscriptionFilters` | Client-side search by name and category filtering (memoized) |
-| `useSubscriptionStats` | Monthly/yearly totals, category breakdown for pie chart, monthly expenses for trend chart (memoized) |
-| `useScrollToTop` | Floating "back to top" button visibility and scroll logic |
+| Hook                     | Responsibility                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `useSubscriptions`       | Real-time Firestore listener, CRUD handlers (add/update/delete/bulk-delete), Discord webhook checks  |
+| `useSubscriptionFilters` | Client-side search by name and category filtering (memoized)                                         |
+| `useSubscriptionStats`   | Monthly/yearly totals, category breakdown for pie chart, monthly expenses for trend chart (memoized) |
+| `useScrollToTop`         | Floating "back to top" button visibility and scroll logic                                            |
 
 ## Notification Channels
 
 ### In-App (Firestore + Real-time Listener)
+
 - Notifications stored in `users/{userId}/notifications/` subcollection
 - Generated client-side in `firestore.js` when subscriptions are added or updated
 - `NotificationBell` component subscribes via `onSnapshot`
 - Composite index on `[dismissed ASC, sendAt ASC]` required for the equality + range query (`where dismissed == false` + `where sendAt <= today`); `orderBy` is intentionally omitted from the Firestore query — results are sorted client-side by `sendAt` descending
 - User can mark as read or dismiss; badge count updates in real-time
 
-### Discord (Client-Side Webhooks)
-- `services/discord.js` sends rich embed messages at 7, 3, 1, and 0 days before renewal
-- Color-coded urgency: red (today), orange (tomorrow), blue (upcoming)
-- Deduplication via `localStorage` keyed by `{subscriptionId}_{daysUntil}_{renewalDate}`
-- Only active when `VITE_DISCORD_WEBHOOK_URL` is configured
+### Discord (Server-Side Webhooks)
+
+- Browser code intentionally does not hold a Discord webhook secret.
+- A secure backend (for example, Firebase Cloud Functions) should send rich embeds at 7, 3, 1, and 0 days before renewal.
+- The app keeps the notification checks disabled client-side to avoid exposing secrets in the browser bundle.
+- If the feature is restored, it should be behind a trusted server endpoint with proper validation and rate limiting.
 
 ## Firestore Data Model
 
@@ -98,18 +100,18 @@ The `firestore.rules` file enforces:
 
 ## Feature Matrix
 
-| Feature | Client | Status |
-|---------|--------|--------|
-| Auth (register, login, Google OAuth, password reset) | x | Complete |
-| Subscription CRUD + bulk delete | x | Complete |
-| In-app notifications (bell icon) | x | Complete |
-| Discord webhook alerts | x | Complete |
-| Category pie chart | x | Complete |
-| Monthly expenses chart | x | Complete |
-| Subscription overview stats | x | Complete |
-| Search + category filter | x | Complete |
-| Dark / light theme | x | Complete |
-| Landing page | x | Complete |
-| Error boundary | x | Complete |
-| Lazy-loaded chart modals | x | Complete |
-| Firestore security rules | x | Complete |
+| Feature                                              | Client | Status   |
+| ---------------------------------------------------- | ------ | -------- |
+| Auth (register, login, Google OAuth, password reset) | x      | Complete |
+| Subscription CRUD + bulk delete                      | x      | Complete |
+| In-app notifications (bell icon)                     | x      | Complete |
+| Discord webhook alerts                               | x      | Complete |
+| Category pie chart                                   | x      | Complete |
+| Monthly expenses chart                               | x      | Complete |
+| Subscription overview stats                          | x      | Complete |
+| Search + category filter                             | x      | Complete |
+| Dark / light theme                                   | x      | Complete |
+| Landing page                                         | x      | Complete |
+| Error boundary                                       | x      | Complete |
+| Lazy-loaded chart modals                             | x      | Complete |
+| Firestore security rules                             | x      | Complete |
