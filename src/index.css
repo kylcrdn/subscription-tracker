@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* ── Semantic color tokens ── */
+/* ── Semantic color tokens ──
+   Same class names your components already use (bg-canvas, text-content,
+   text-accent-emerald, ...). Only the values changed: they now point at the
+   Material theme below. */
 @theme {
   --color-canvas: var(--th-canvas);
   --color-panel: var(--th-panel);
@@ -12,14 +15,14 @@
   --color-content-faint: var(--th-content-faint);
   --color-edge: var(--th-edge);
 
-  /* Accent colors — adapt between dark (pastel) and light (saturated) */
-  --color-accent-emerald: var(--th-accent-emerald);
-  --color-accent-green: var(--th-accent-green);
-  --color-accent-teal: var(--th-accent-teal);
-  --color-accent-lime: var(--th-accent-lime);
-  --color-accent-yellow: var(--th-accent-yellow);
+  /* Accent colors (names kept for compatibility) */
+  --color-accent-emerald: var(--th-accent-emerald); /* primary   */
+  --color-accent-green: var(--th-accent-green); /* tertiary  */
+  --color-accent-teal: var(--th-accent-teal); /* secondary */
+  --color-accent-lime: var(--th-accent-lime); /* tertiary (lighter) */
+  --color-accent-yellow: var(--th-accent-yellow); /* primary (lighter)  */
 
-  /* Stat card value colors — lighter in dark, bolder in light */
+  /* Stat card value colors */
   --color-stat-emerald: var(--th-stat-emerald);
   --color-stat-green: var(--th-stat-green);
   --color-stat-teal: var(--th-stat-teal);
@@ -27,35 +30,121 @@
   /* Interactive link colors */
   --color-link: var(--th-link);
   --color-link-hover: var(--th-link-hover);
+
+  /* NEW: text/icon color to put ON TOP of an accent-colored background
+     (buttons, badges). Use e.g. "bg-accent-emerald text-on-accent". */
+  --color-on-accent: var(--th-on-accent);
+
+  /* NEW: error colors */
+  --color-danger: var(--th-danger);
+  --color-danger-container: var(--th-danger-container);
+  --color-on-danger-container: var(--th-on-danger-container);
+
+  /* Raw Material tokens, available as bg-md-primary, text-md-on-surface, etc. */
+  --color-md-primary: var(--md-sys-color-primary);
+  --color-md-on-primary: var(--md-sys-color-on-primary);
+  --color-md-primary-container: var(--md-sys-color-primary-container);
+  --color-md-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-md-secondary: var(--md-sys-color-secondary);
+  --color-md-on-secondary: var(--md-sys-color-on-secondary);
+  --color-md-secondary-container: var(--md-sys-color-secondary-container);
+  --color-md-on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --color-md-tertiary: var(--md-sys-color-tertiary);
+  --color-md-on-tertiary: var(--md-sys-color-on-tertiary);
+  --color-md-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-md-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+  --color-md-surface: var(--md-sys-color-surface);
+  --color-md-on-surface: var(--md-sys-color-on-surface);
+  --color-md-surface-variant: var(--md-sys-color-surface-variant);
+  --color-md-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-md-outline: var(--md-sys-color-outline);
+  --color-md-outline-variant: var(--md-sys-color-outline-variant);
 }
 
 /* ── Dark theme (default) ── */
 :root {
-  --th-canvas: #030712;
-  --th-panel: #111827;
-  --th-surface: #1f2937;
-  --th-control: #374151;
-  --th-overlay: rgba(0, 0, 0, 0.6);
-  --th-content: #ffffff;
-  --th-content-dim: #9ca3af;
-  --th-content-faint: #6b7280;
-  --th-edge: #374151;
+  /* Material Theme Builder export: dark */
+  --md-sys-color-primary: rgb(230 194 108);
+  --md-sys-color-surface-tint: rgb(230 194 108);
+  --md-sys-color-on-primary: rgb(62 46 0);
+  --md-sys-color-primary-container: rgb(90 67 0);
+  --md-sys-color-on-primary-container: rgb(255 223 151);
+  --md-sys-color-secondary: rgb(215 197 160);
+  --md-sys-color-on-secondary: rgb(58 47 21);
+  --md-sys-color-secondary-container: rgb(81 69 42);
+  --md-sys-color-on-secondary-container: rgb(243 225 187);
+  --md-sys-color-tertiary: rgb(175 207 171);
+  --md-sys-color-on-tertiary: rgb(27 54 29);
+  --md-sys-color-tertiary-container: rgb(50 77 50);
+  --md-sys-color-on-tertiary-container: rgb(202 235 198);
+  --md-sys-color-error: rgb(255 180 171);
+  --md-sys-color-on-error: rgb(105 0 5);
+  --md-sys-color-error-container: rgb(147 0 10);
+  --md-sys-color-on-error-container: rgb(255 218 214);
+  --md-sys-color-background: rgb(23 19 11);
+  --md-sys-color-on-background: rgb(234 225 212);
+  --md-sys-color-surface: rgb(23 19 11);
+  --md-sys-color-on-surface: rgb(234 225 212);
+  --md-sys-color-surface-variant: rgb(77 70 57);
+  --md-sys-color-on-surface-variant: rgb(208 197 180);
+  --md-sys-color-outline: rgb(153 144 128);
+  --md-sys-color-outline-variant: rgb(77 70 57);
+  --md-sys-color-shadow: rgb(0 0 0);
+  --md-sys-color-scrim: rgb(0 0 0);
+  --md-sys-color-inverse-surface: rgb(234 225 212);
+  --md-sys-color-inverse-on-surface: rgb(52 48 39);
+  --md-sys-color-inverse-primary: rgb(118 91 11);
+  --md-sys-color-primary-fixed: rgb(255 223 151);
+  --md-sys-color-on-primary-fixed: rgb(37 26 0);
+  --md-sys-color-primary-fixed-dim: rgb(230 194 108);
+  --md-sys-color-on-primary-fixed-variant: rgb(90 67 0);
+  --md-sys-color-secondary-fixed: rgb(243 225 187);
+  --md-sys-color-on-secondary-fixed: rgb(35 26 4);
+  --md-sys-color-secondary-fixed-dim: rgb(215 197 160);
+  --md-sys-color-on-secondary-fixed-variant: rgb(81 69 42);
+  --md-sys-color-tertiary-fixed: rgb(202 235 198);
+  --md-sys-color-on-tertiary-fixed: rgb(6 33 10);
+  --md-sys-color-tertiary-fixed-dim: rgb(175 207 171);
+  --md-sys-color-on-tertiary-fixed-variant: rgb(50 77 50);
+  --md-sys-color-surface-dim: rgb(23 19 11);
+  --md-sys-color-surface-bright: rgb(61 57 47);
+  --md-sys-color-surface-container-lowest: rgb(17 14 7);
+  --md-sys-color-surface-container-low: rgb(31 27 19);
+  --md-sys-color-surface-container: rgb(35 31 23);
+  --md-sys-color-surface-container-high: rgb(46 41 33);
+  --md-sys-color-surface-container-highest: rgb(57 52 43);
 
-  --th-accent-emerald: #34d399;
-  --th-accent-green: #4ade80;
-  --th-accent-teal: #2dd4bf;
-  --th-accent-lime: #a3e635;
-  --th-accent-yellow: #facc15;
-  --th-stat-emerald: #6ee7b7;
-  --th-stat-green: #86efac;
-  --th-stat-teal: #5eead4;
-  --th-link: #34d399;
-  --th-link-hover: #6ee7b7;
+  /* App tokens mapped onto the Material palette */
+  --th-canvas: var(--md-sys-color-surface-container-lowest);
+  --th-panel: var(--md-sys-color-surface-container-low);
+  --th-surface: var(--md-sys-color-surface-container);
+  --th-control: var(--md-sys-color-surface-container-highest);
+  --th-overlay: rgb(0 0 0 / 0.6);
+  --th-content: var(--md-sys-color-on-surface);
+  --th-content-dim: var(--md-sys-color-on-surface-variant);
+  --th-content-faint: var(--md-sys-color-outline);
+  --th-edge: var(--md-sys-color-outline-variant);
+
+  --th-accent-emerald: var(--md-sys-color-primary);
+  --th-accent-green: var(--md-sys-color-tertiary);
+  --th-accent-teal: var(--md-sys-color-secondary);
+  --th-accent-lime: var(--md-sys-color-tertiary-fixed-dim);
+  --th-accent-yellow: var(--md-sys-color-primary-fixed);
+  --th-stat-emerald: var(--md-sys-color-primary);
+  --th-stat-green: var(--md-sys-color-tertiary);
+  --th-stat-teal: var(--md-sys-color-secondary);
+  --th-link: var(--md-sys-color-primary);
+  --th-link-hover: var(--md-sys-color-primary-fixed);
+
+  --th-on-accent: var(--md-sys-color-on-primary);
+  --th-danger: var(--md-sys-color-error);
+  --th-danger-container: var(--md-sys-color-error-container);
+  --th-on-danger-container: var(--md-sys-color-on-error-container);
 
   /* Toast colors (consumed by App.jsx) */
-  --toast-bg: #1f2937;
-  --toast-text: #ffffff;
-  --toast-border: #374151;
+  --toast-bg: var(--md-sys-color-surface-container-high);
+  --toast-text: var(--md-sys-color-on-surface);
+  --toast-border: var(--md-sys-color-outline-variant);
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -69,30 +158,66 @@
 
 /* ── Light theme ── */
 :root.light {
-  --th-canvas: #f8fafc;
-  --th-panel: #ffffff;
-  --th-surface: #f1f5f9;
-  --th-control: #e2e8f0;
-  --th-overlay: rgba(0, 0, 0, 0.4);
-  --th-content: #0f172a;
-  --th-content-dim: #475569;
-  --th-content-faint: #64748b;
-  --th-edge: #cbd5e1;
+  /* Material Theme Builder export: light */
+  --md-sys-color-primary: rgb(118 91 11);
+  --md-sys-color-surface-tint: rgb(118 91 11);
+  --md-sys-color-on-primary: rgb(255 255 255);
+  --md-sys-color-primary-container: rgb(255 223 151);
+  --md-sys-color-on-primary-container: rgb(90 67 0);
+  --md-sys-color-secondary: rgb(106 93 63);
+  --md-sys-color-on-secondary: rgb(255 255 255);
+  --md-sys-color-secondary-container: rgb(243 225 187);
+  --md-sys-color-on-secondary-container: rgb(81 69 42);
+  --md-sys-color-tertiary: rgb(73 101 72);
+  --md-sys-color-on-tertiary: rgb(255 255 255);
+  --md-sys-color-tertiary-container: rgb(202 235 198);
+  --md-sys-color-on-tertiary-container: rgb(50 77 50);
+  --md-sys-color-error: rgb(186 26 26);
+  --md-sys-color-on-error: rgb(255 255 255);
+  --md-sys-color-error-container: rgb(255 218 214);
+  --md-sys-color-on-error-container: rgb(147 0 10);
+  --md-sys-color-background: rgb(255 248 241);
+  --md-sys-color-on-background: rgb(31 27 19);
+  --md-sys-color-surface: rgb(255 248 241);
+  --md-sys-color-on-surface: rgb(31 27 19);
+  --md-sys-color-surface-variant: rgb(236 225 207);
+  --md-sys-color-on-surface-variant: rgb(77 70 57);
+  --md-sys-color-outline: rgb(126 118 103);
+  --md-sys-color-outline-variant: rgb(208 197 180);
+  --md-sys-color-shadow: rgb(0 0 0);
+  --md-sys-color-scrim: rgb(0 0 0);
+  --md-sys-color-inverse-surface: rgb(52 48 39);
+  --md-sys-color-inverse-on-surface: rgb(249 239 226);
+  --md-sys-color-inverse-primary: rgb(230 194 108);
+  --md-sys-color-primary-fixed: rgb(255 223 151);
+  --md-sys-color-on-primary-fixed: rgb(37 26 0);
+  --md-sys-color-primary-fixed-dim: rgb(230 194 108);
+  --md-sys-color-on-primary-fixed-variant: rgb(90 67 0);
+  --md-sys-color-secondary-fixed: rgb(243 225 187);
+  --md-sys-color-on-secondary-fixed: rgb(35 26 4);
+  --md-sys-color-secondary-fixed-dim: rgb(215 197 160);
+  --md-sys-color-on-secondary-fixed-variant: rgb(81 69 42);
+  --md-sys-color-tertiary-fixed: rgb(202 235 198);
+  --md-sys-color-on-tertiary-fixed: rgb(6 33 10);
+  --md-sys-color-tertiary-fixed-dim: rgb(175 207 171);
+  --md-sys-color-on-tertiary-fixed-variant: rgb(50 77 50);
+  --md-sys-color-surface-dim: rgb(226 217 204);
+  --md-sys-color-surface-bright: rgb(255 248 241);
+  --md-sys-color-surface-container-lowest: rgb(255 255 255);
+  --md-sys-color-surface-container-low: rgb(252 242 229);
+  --md-sys-color-surface-container: rgb(246 237 223);
+  --md-sys-color-surface-container-high: rgb(240 231 217);
+  --md-sys-color-surface-container-highest: rgb(234 225 212);
 
-  --th-accent-emerald: #059669;
-  --th-accent-green: #16a34a;
-  --th-accent-teal: #0d9488;
-  --th-accent-lime: #65a30d;
-  --th-accent-yellow: #ca8a04;
-  --th-stat-emerald: #059669;
-  --th-stat-green: #16a34a;
-  --th-stat-teal: #0d9488;
-  --th-link: #059669;
-  --th-link-hover: #047857;
+  --th-canvas: var(--md-sys-color-surface);
+  --th-panel: var(--md-sys-color-surface-container-lowest);
+  --th-surface: var(--md-sys-color-surface-container-low);
+  --th-control: var(--md-sys-color-surface-container-high);
+  --th-overlay: rgb(0 0 0 / 0.4);
 
-  --toast-bg: #ffffff;
-  --toast-text: #0f172a;
-  --toast-border: #cbd5e1;
+  --th-accent-lime: var(--md-sys-color-tertiary);
+  --th-accent-yellow: var(--md-sys-color-on-primary-container);
+  --th-link-hover: var(--md-sys-color-on-primary-container);
 
   color-scheme: light;
 }
@@ -100,7 +225,7 @@
 /* ── Scrollbar ── */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+  scrollbar-color: var(--md-sys-color-outline) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -112,24 +237,12 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(100, 100, 100, 0.5);
+  background: var(--md-sys-color-outline-variant);
   border-radius: 4px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 120, 120, 0.7);
-}
-
-:root.light {
-  scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
-}
-
-:root.light *::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.5);
-}
-
-:root.light *::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.7);
+  background: var(--md-sys-color-outline);
 }
 
 /* ── Date input calendar icon ── */
@@ -158,6 +271,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   width: 100%;
 }
 
+/* Chevron colors: dark = #d0c5b4 (on-surface-variant), light = #4d4639 */
 .select-wrapper::after {
   content: "";
   position: absolute;
@@ -165,17 +279,19 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   top: 50%;
   width: 1rem;
   height: 1rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23d0c5b4' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
   transform: translateY(-50%) scale(1);
   opacity: 1;
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 :root.light .select-wrapper::after {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234d4639' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
 }
 
 .select-wrapper::before {
@@ -185,17 +301,19 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   top: 50%;
   width: 1rem;
   height: 1rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 15l7-7 7 7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23d0c5b4' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 15l7-7 7 7'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
   transform: translateY(-50%) scale(0.8);
   opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 :root.light .select-wrapper::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 15l7-7 7 7'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234d4639' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 15l7-7 7 7'/%3E%3C/svg%3E");
 }
 
 .select-wrapper.open::after {
