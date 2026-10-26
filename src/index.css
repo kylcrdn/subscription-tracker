@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./styles/material-light.css";
+@import "./styles/material-dark.css";
 
 /* ── Semantic color tokens ── */
 @theme {
@@ -12,14 +14,14 @@
   --color-content-faint: var(--th-content-faint);
   --color-edge: var(--th-edge);
 
-  /* Accent colors — adapt between dark (pastel) and light (saturated) */
+  /* Accent colors */
   --color-accent-emerald: var(--th-accent-emerald);
   --color-accent-green: var(--th-accent-green);
   --color-accent-teal: var(--th-accent-teal);
   --color-accent-lime: var(--th-accent-lime);
   --color-accent-yellow: var(--th-accent-yellow);
 
-  /* Stat card value colors — lighter in dark, bolder in light */
+  /* Stat card value colors */
   --color-stat-emerald: var(--th-stat-emerald);
   --color-stat-green: var(--th-stat-green);
   --color-stat-teal: var(--th-stat-teal);
@@ -31,31 +33,34 @@
 
 /* ── Dark theme (default) ── */
 :root {
-  --th-canvas: #030712;
-  --th-panel: #111827;
-  --th-surface: #1f2937;
-  --th-control: #374151;
+  --th-canvas: var(--md-sys-color-background);
+  --th-panel: var(--md-sys-color-surface-container-low);
+  --th-surface: var(--md-sys-color-surface-container);
+  --th-control: var(--md-sys-color-surface-container-high);
   --th-overlay: rgba(0, 0, 0, 0.6);
-  --th-content: #ffffff;
-  --th-content-dim: #9ca3af;
-  --th-content-faint: #6b7280;
-  --th-edge: #374151;
 
-  --th-accent-emerald: #34d399;
-  --th-accent-green: #4ade80;
-  --th-accent-teal: #2dd4bf;
-  --th-accent-lime: #a3e635;
-  --th-accent-yellow: #facc15;
-  --th-stat-emerald: #6ee7b7;
-  --th-stat-green: #86efac;
-  --th-stat-teal: #5eead4;
-  --th-link: #34d399;
-  --th-link-hover: #6ee7b7;
+  --th-content: var(--md-sys-color-on-background);
+  --th-content-dim: var(--md-sys-color-on-surface-variant);
+  --th-content-faint: var(--md-sys-color-outline);
+  --th-edge: var(--md-sys-color-outline-variant);
+
+  --th-accent-emerald: var(--md-sys-color-tertiary);
+  --th-accent-green: var(--md-sys-color-tertiary);
+  --th-accent-teal: var(--md-sys-color-secondary);
+  --th-accent-lime: var(--md-sys-color-primary);
+  --th-accent-yellow: var(--md-sys-color-primary);
+
+  --th-stat-emerald: var(--md-sys-color-tertiary);
+  --th-stat-green: var(--md-sys-color-tertiary);
+  --th-stat-teal: var(--md-sys-color-secondary);
+
+  --th-link: var(--md-sys-color-primary);
+  --th-link-hover: var(--md-sys-color-inverse-primary);
 
   /* Toast colors (consumed by App.jsx) */
-  --toast-bg: #1f2937;
-  --toast-text: #ffffff;
-  --toast-border: #374151;
+  --toast-bg: var(--md-sys-color-surface-container-high);
+  --toast-text: var(--md-sys-color-on-surface);
+  --toast-border: var(--md-sys-color-outline-variant);
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -69,30 +74,33 @@
 
 /* ── Light theme ── */
 :root.light {
-  --th-canvas: #f8fafc;
-  --th-panel: #ffffff;
-  --th-surface: #f1f5f9;
-  --th-control: #e2e8f0;
+  --th-canvas: var(--md-sys-color-background);
+  --th-panel: var(--md-sys-color-surface-container-lowest);
+  --th-surface: var(--md-sys-color-surface-container-low);
+  --th-control: var(--md-sys-color-surface-container-high);
   --th-overlay: rgba(0, 0, 0, 0.4);
-  --th-content: #0f172a;
-  --th-content-dim: #475569;
-  --th-content-faint: #64748b;
-  --th-edge: #cbd5e1;
 
-  --th-accent-emerald: #059669;
-  --th-accent-green: #16a34a;
-  --th-accent-teal: #0d9488;
-  --th-accent-lime: #65a30d;
-  --th-accent-yellow: #ca8a04;
-  --th-stat-emerald: #059669;
-  --th-stat-green: #16a34a;
-  --th-stat-teal: #0d9488;
-  --th-link: #059669;
-  --th-link-hover: #047857;
+  --th-content: var(--md-sys-color-on-background);
+  --th-content-dim: var(--md-sys-color-on-surface-variant);
+  --th-content-faint: var(--md-sys-color-outline);
+  --th-edge: var(--md-sys-color-outline-variant);
 
-  --toast-bg: #ffffff;
-  --toast-text: #0f172a;
-  --toast-border: #cbd5e1;
+  --th-accent-emerald: var(--md-sys-color-tertiary);
+  --th-accent-green: var(--md-sys-color-tertiary);
+  --th-accent-teal: var(--md-sys-color-secondary);
+  --th-accent-lime: var(--md-sys-color-primary);
+  --th-accent-yellow: var(--md-sys-color-primary);
+
+  --th-stat-emerald: var(--md-sys-color-tertiary);
+  --th-stat-green: var(--md-sys-color-tertiary);
+  --th-stat-teal: var(--md-sys-color-secondary);
+
+  --th-link: var(--md-sys-color-primary);
+  --th-link-hover: var(--md-sys-color-secondary);
+
+  --toast-bg: var(--md-sys-color-surface-container-lowest);
+  --toast-text: var(--md-sys-color-on-surface);
+  --toast-border: var(--md-sys-color-outline-variant);
 
   color-scheme: light;
 }
@@ -170,7 +178,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-repeat: no-repeat;
   transform: translateY(-50%) scale(1);
   opacity: 1;
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -190,7 +200,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-repeat: no-repeat;
   transform: translateY(-50%) scale(0.8);
   opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 

@@ -13,6 +13,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@material/web": "^2.5.0",
     "firebase": "^12.8.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
