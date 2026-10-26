@@ -13,6 +13,9 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@iconify-icons/codicon": "^2.0.8",
+    "@iconify-react/codicon": "gitlab:iconify-icons/react#codicon",
+    "@iconify/react": "^6.0.3",
     "@material/web": "^2.5.0",
     "firebase": "^12.8.0",
     "prop-types": "^15.8.1",

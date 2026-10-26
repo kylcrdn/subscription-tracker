@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../common/ThemeToggle";
+import { Icon } from "@iconify/react";
+import pieChart from "@iconify-icons/codicon/pie-chart";
+import bellDot from "@iconify-icons/codicon/bell-dot";
+import lineGraph from "@iconify-icons/codicon/graph-line";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -10,68 +14,21 @@ export default function LandingPage() {
       description:
         "See your monthly and yearly totals at a glance with real-time stat cards and a clean subscription list.",
       color: "emerald",
-      icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
-          />
-        </svg>
-      ),
+      icon: <Icon icon={lineGraph} className="h-6 w-6" />,
     },
     {
       title: "Spending Analytics",
       description:
         "Interactive pie charts and monthly trend lines help you understand where your money goes over time.",
       color: "teal",
-      icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"
-          />
-        </svg>
-      ),
+      icon: <Icon icon={pieChart} className="h-6 w-6" />,
     },
     {
       title: "Renewal Reminders",
       description:
         "Get notified before subscriptions renew — in-app, by email, or through Discord so you never miss a date.",
       color: "lime",
-      icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-          />
-        </svg>
-      ),
+      icon: <Icon icon={bellDot} className="h-6 w-6" />,
     },
   ];
 
