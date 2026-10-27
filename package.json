@@ -38,10 +38,10 @@
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
     "tailwindcss": "^4.1.18",
-    "vite": "^5.0.0",
-    "vitest": "^3.2.4"
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
   },
   "overrides": {
-    "vite": "^5.0.0"
+    "@grpc/grpc-js": "^1.14.6"
   }
 }
