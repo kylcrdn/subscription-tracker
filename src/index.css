@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./styles/material-light.css";
+@import "./styles/material-dark.css";
 
 /* ── Semantic color tokens ──
    Same class names your components already use (bg-canvas, text-content,
@@ -15,12 +17,21 @@
   --color-content-faint: var(--th-content-faint);
   --color-edge: var(--th-edge);
 
+<<<<<<< HEAD
   /* Accent colors (names kept for compatibility) */
   --color-accent-emerald: var(--th-accent-emerald); /* primary   */
   --color-accent-green: var(--th-accent-green); /* tertiary  */
   --color-accent-teal: var(--th-accent-teal); /* secondary */
   --color-accent-lime: var(--th-accent-lime); /* tertiary (lighter) */
   --color-accent-yellow: var(--th-accent-yellow); /* primary (lighter)  */
+=======
+  /* Accent colors */
+  --color-accent-emerald: var(--th-accent-emerald);
+  --color-accent-green: var(--th-accent-green);
+  --color-accent-teal: var(--th-accent-teal);
+  --color-accent-lime: var(--th-accent-lime);
+  --color-accent-yellow: var(--th-accent-yellow);
+>>>>>>> e094eda7c7daf7ba921d207b9416cbe3628914dc
 
   /* Stat card value colors */
   --color-stat-emerald: var(--th-stat-emerald);
@@ -63,6 +74,7 @@
 
 /* ── Dark theme (default) ── */
 :root {
+<<<<<<< HEAD
   /* Material Theme Builder export: dark */
   --md-sys-color-primary: rgb(230 194 108);
   --md-sys-color-surface-tint: rgb(230 194 108);
@@ -121,10 +133,20 @@
   --th-control: var(--md-sys-color-surface-container-highest);
   --th-overlay: rgb(0 0 0 / 0.6);
   --th-content: var(--md-sys-color-on-surface);
+=======
+  --th-canvas: var(--md-sys-color-background);
+  --th-panel: var(--md-sys-color-surface-container-low);
+  --th-surface: var(--md-sys-color-surface-container);
+  --th-control: var(--md-sys-color-surface-container-high);
+  --th-overlay: rgba(0, 0, 0, 0.6);
+
+  --th-content: var(--md-sys-color-on-background);
+>>>>>>> e094eda7c7daf7ba921d207b9416cbe3628914dc
   --th-content-dim: var(--md-sys-color-on-surface-variant);
   --th-content-faint: var(--md-sys-color-outline);
   --th-edge: var(--md-sys-color-outline-variant);
 
+<<<<<<< HEAD
   --th-accent-emerald: var(--md-sys-color-primary);
   --th-accent-green: var(--md-sys-color-tertiary);
   --th-accent-teal: var(--md-sys-color-secondary);
@@ -140,6 +162,20 @@
   --th-danger: var(--md-sys-color-error);
   --th-danger-container: var(--md-sys-color-error-container);
   --th-on-danger-container: var(--md-sys-color-on-error-container);
+=======
+  --th-accent-emerald: var(--md-sys-color-tertiary);
+  --th-accent-green: var(--md-sys-color-tertiary);
+  --th-accent-teal: var(--md-sys-color-secondary);
+  --th-accent-lime: var(--md-sys-color-primary);
+  --th-accent-yellow: var(--md-sys-color-primary);
+
+  --th-stat-emerald: var(--md-sys-color-tertiary);
+  --th-stat-green: var(--md-sys-color-tertiary);
+  --th-stat-teal: var(--md-sys-color-secondary);
+
+  --th-link: var(--md-sys-color-primary);
+  --th-link-hover: var(--md-sys-color-inverse-primary);
+>>>>>>> e094eda7c7daf7ba921d207b9416cbe3628914dc
 
   /* Toast colors (consumed by App.jsx) */
   --toast-bg: var(--md-sys-color-surface-container-high);
@@ -158,6 +194,7 @@
 
 /* ── Light theme ── */
 :root.light {
+<<<<<<< HEAD
   /* Material Theme Builder export: light */
   --md-sys-color-primary: rgb(118 91 11);
   --md-sys-color-surface-tint: rgb(118 91 11);
@@ -218,6 +255,35 @@
   --th-accent-lime: var(--md-sys-color-tertiary);
   --th-accent-yellow: var(--md-sys-color-on-primary-container);
   --th-link-hover: var(--md-sys-color-on-primary-container);
+=======
+  --th-canvas: var(--md-sys-color-background);
+  --th-panel: var(--md-sys-color-surface-container-lowest);
+  --th-surface: var(--md-sys-color-surface-container-low);
+  --th-control: var(--md-sys-color-surface-container-high);
+  --th-overlay: rgba(0, 0, 0, 0.4);
+
+  --th-content: var(--md-sys-color-on-background);
+  --th-content-dim: var(--md-sys-color-on-surface-variant);
+  --th-content-faint: var(--md-sys-color-outline);
+  --th-edge: var(--md-sys-color-outline-variant);
+
+  --th-accent-emerald: var(--md-sys-color-tertiary);
+  --th-accent-green: var(--md-sys-color-tertiary);
+  --th-accent-teal: var(--md-sys-color-secondary);
+  --th-accent-lime: var(--md-sys-color-primary);
+  --th-accent-yellow: var(--md-sys-color-primary);
+
+  --th-stat-emerald: var(--md-sys-color-tertiary);
+  --th-stat-green: var(--md-sys-color-tertiary);
+  --th-stat-teal: var(--md-sys-color-secondary);
+
+  --th-link: var(--md-sys-color-primary);
+  --th-link-hover: var(--md-sys-color-secondary);
+
+  --toast-bg: var(--md-sys-color-surface-container-lowest);
+  --toast-text: var(--md-sys-color-on-surface);
+  --toast-border: var(--md-sys-color-outline-variant);
+>>>>>>> e094eda7c7daf7ba921d207b9416cbe3628914dc
 
   color-scheme: light;
 }
