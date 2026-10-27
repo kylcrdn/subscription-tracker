@@ -1,8 +1,90 @@
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../common/ThemeToggle";
+import { Icon } from "@iconify/react";
+import pieChart from "@iconify-icons/codicon/pie-chart";
+import bellDot from "@iconify-icons/codicon/bell-dot";
+import lineGraph from "@iconify-icons/codicon/graph-line";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+
+  const features = [
+    {
+      title: "Dashboard Overview",
+      description:
+        "See your monthly and yearly totals at a glance with real-time stat cards and a clean subscription list.",
+      color: "emerald",
+      icon: <Icon icon={lineGraph} className="h-6 w-6" />,
+    },
+    {
+      title: "Spending Analytics",
+      description:
+        "Interactive pie charts and monthly trend lines help you understand where your money goes over time.",
+      color: "teal",
+      icon: <Icon icon={pieChart} className="h-6 w-6" />,
+    },
+    {
+      title: "Renewal Reminders",
+      description:
+        "Get notified before subscriptions renew — in-app, by email, or through Discord so you never miss a date.",
+      color: "lime",
+      icon: <Icon icon={bellDot} className="h-6 w-6" />,
+    },
+  ];
+
+  const featureStyles = {
+    emerald: {
+      background: "bg-accent-emerald/10",
+      text: "text-accent-emerald",
+      border: "hover:border-accent-emerald/50",
+    },
+    teal: {
+      background: "bg-accent-teal/10",
+      text: "text-accent-teal",
+      border: "hover:border-accent-teal/50",
+    },
+    lime: {
+      background: "bg-accent-lime/10",
+      text: "text-accent-lime",
+      border: "hover:border-accent-lime/50",
+    },
+  };
+
+  const subscriptions = [
+    {
+      name: "Netflix",
+      price: "€13.99",
+      cycle: "Monthly",
+      days: "5 days",
+      color: "text-content-dim",
+    },
+    {
+      name: "Spotify",
+      price: "€9.99",
+      cycle: "Monthly",
+      days: "12 days",
+      color: "text-content-dim",
+    },
+    {
+      name: "iCloud+",
+      price: "€5.99",
+      cycle: "Monthly",
+      days: "Today",
+      color: "text-[var(--md-sys-color-error)]",
+    },
+  ];
+
+  const stats = [
+    { label: "Monthly", value: "€29.97" },
+    { label: "Yearly", value: "€359.64" },
+    { label: "Active Subs", value: "3" },
+  ];
+
+  const primaryButton =
+    "rounded-xl bg-accent-lime text-[var(--md-sys-color-on-primary)] font-medium transition-all duration-200 hover:brightness-110 active:scale-[0.98]";
+
+  const brandGradient =
+    "bg-linear-to-r from-accent-lime to-accent-teal bg-clip-text text-transparent";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-canvas via-panel to-canvas">
