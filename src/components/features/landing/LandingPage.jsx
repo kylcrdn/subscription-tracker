@@ -36,19 +36,17 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page">
-      {/* <div className="landing-page__ambient" aria-hidden="true">
-        <div className="landing-page__glow landing-page__glow--emerald" />
-        <div className="landing-page__glow landing-page__glow--teal" />
-      </div> */}
+      <div className="landing-page__theme">
+        <ThemeToggle />
+      </div>
 
-      <nav className="landing-nav">
+      <nav className="landing-nav" aria-label="Main navigation">
         <h1 className="landing-brand">SubTracker</h1>
 
         <div className="landing-nav__actions">
-          <ThemeToggle />
           <button
             onClick={() => navigate("/login")}
-            className="ui-button ui-button--quiet landing-button--small"
+            className="landing-nav__signin"
           >
             Sign In
           </button>
@@ -61,7 +59,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <main>
+      <main id="home">
         <section className="landing-hero">
           <h2 className="landing-hero__title">
             Manage money with
@@ -84,6 +82,7 @@ export default function LandingPage() {
         </section>
 
         <section
+          id="showcase"
           className="landing-showcase landing-content-width"
           aria-label="Subscription tracking in everyday life"
         >
@@ -128,7 +127,7 @@ export default function LandingPage() {
           </article>
         </section>
 
-        <section className="landing-features landing-content-width">
+        <section id="features" className="landing-features landing-content-width">
           <div className="landing-section-heading">
             <span className="landing-section-heading__rule" aria-hidden="true" />
             <h3>Why<br />choose us</h3>
