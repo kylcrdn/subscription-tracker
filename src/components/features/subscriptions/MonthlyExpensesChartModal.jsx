@@ -13,6 +13,7 @@
  */
 import { useEffect } from "react";
 import PropTypes from "prop-types";
+import "./subscriptions.css";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -77,23 +78,23 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
 
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="expenses-title">
-      <div className="fixed inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+    <div className="ui-overlay" role="dialog" aria-modal="true" aria-labelledby="expenses-title">
+      <div className="ui-overlay__backdrop" onClick={onClose} aria-hidden="true" />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-2xl p-8">
-          <button onClick={onClose} className="absolute top-4 right-4 text-content-dim hover:text-content transition-colors" aria-label="Close">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="ui-overlay__alignment">
+        <div className="ui-dialog chart-dialog chart-dialog--wide">
+          <button onClick={onClose} className="ui-icon-button ui-dialog__close" aria-label="Close">
+            <svg className="ui-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          <div className="text-center mb-6">
-            <h2 id="expenses-title" className="text-xl font-bold text-content">Monthly Expenses</h2>
-            <p className="text-sm text-content-dim">(Jan &ndash; Dec {currentYear})</p>
+          <div className="chart-dialog__heading">
+            <h2 id="expenses-title" className="chart-dialog__title">Monthly Expenses</h2>
+            <p className="chart-dialog__subtitle">(Jan &ndash; Dec {currentYear})</p>
           </div>
 
-          <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+          <svg viewBox={`0 0 ${W} ${H}`} className="chart-dialog__line-chart">
             <defs>
               <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.25" />
@@ -145,9 +146,9 @@ export default function MonthlyExpensesChartModal({ isOpen, onClose, monthlyData
             ))}
           </svg>
 
-          <div className="text-center mt-6">
-            <p className="text-sm text-content-dim">Projected Yearly Total</p>
-            <p className="text-2xl font-bold text-content">€{totalYearly.toFixed(2)}</p>
+          <div className="chart-dialog__total">
+            <p>Projected Yearly Total</p>
+            <p className="chart-dialog__total-value">€{totalYearly.toFixed(2)}</p>
           </div>
         </div>
       </div>

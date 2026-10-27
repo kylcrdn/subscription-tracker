@@ -12,9 +12,10 @@
 import { useState } from "react";
 import Icon from "../../common/Icon";
 import { calculateNextRenewal, getSpainDate, TIMEZONE } from "../../../utils/dateUtils";
+import "./subscriptions.css";
 
 const MoreIcon = () => (
-  <Icon className="w-5 h-5">
+  <Icon className="ui-icon">
     <circle cx="12" cy="5" r="1" fill="currentColor" stroke="none" />
     <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
     <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
@@ -22,14 +23,14 @@ const MoreIcon = () => (
 );
 
 const EditIcon = () => (
-  <Icon className="w-4 h-4">
+  <Icon className="ui-icon">
     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
   </Icon>
 );
 
 const TrashIcon = () => (
-  <Icon className="w-4 h-4">
+  <Icon className="ui-icon">
     <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
     <path d="M10 11v6M14 11v6" />
   </Icon>
@@ -67,54 +68,54 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
   };
 
   const daysRemaining = getDaysUntilRenewal();
+  const renewalTone =
+    daysRemaining === 0
+      ? "subscription-card__renewal--today"
+      : daysRemaining <= 3
+        ? "subscription-card__renewal--soon"
+        : daysRemaining <= 7
+          ? "subscription-card__renewal--upcoming"
+          : "subscription-card__renewal--later";
 
   return (
-    <div className="bg-surface/60 border border-edge/40 rounded-xl p-4 flex items-center justify-between hover:bg-surface/90 hover:border-edge/50 transition-all duration-200">
+    <article className="subscription-card">
       {/* Left side */}
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl w-11 h-11 flex items-center justify-center overflow-hidden bg-surface shrink-0">
+      <div className="subscription-card__identity">
+        <div className="subscription-card__logo">
           {subscription.icon && !imageError ? (
             <img
               src={subscription.icon}
               alt={`${subscription.name} icon`}
-              className="w-full h-full object-cover"
+              className="subscription-card__image"
               onError={() => setImageError(true)}
             />
           ) : (
-            <span className="text-content-dim font-semibold text-sm">
+            <span className="subscription-card__initials">
               {getInitials(subscription.name)}
             </span>
           )}
         </div>
 
         <div>
-          <h3 className="text-content font-medium">{subscription.name}</h3>
-          <p className="text-content-faint text-sm">{formatDate(subscription.dueDate)}</p>
+          <h3 className="subscription-card__name">{subscription.name}</h3>
+          <p className="subscription-card__date">{formatDate(subscription.dueDate)}</p>
         </div>
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <p className="text-content font-semibold">
+      <div className="subscription-card__details">
+        <div className="subscription-card__price-block">
+          <p className="subscription-card__price">
             €{(parseFloat(subscription.price) || 0).toFixed(2)}
           </p>
-          <p className="text-content-faint text-sm">{subscription.billing}</p>
+          <p className="subscription-card__billing">{subscription.billing}</p>
         </div>
 
         {/* Color-coded urgency: red (today), orange (<=3d), yellow (<=7d), cyan (>7d) */}
         {daysRemaining !== null && (
-          <div className="text-right min-w-25">
+          <div className="subscription-card__renewal">
             <p
-              className={`text-sm font-medium ${
-                daysRemaining === 0
-                  ? "text-red-500"
-                  : daysRemaining <= 3
-                    ? "text-orange-500"
-                    : daysRemaining <= 7
-                      ? "text-accent-yellow"
-                      : "text-accent-teal"
-              }`}
+              className={`subscription-card__renewal-label ${renewalTone}`}
             >
               {daysRemaining === 0
                 ? "Renews today"
@@ -122,15 +123,15 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                   ? "Tomorrow"
                   : `${daysRemaining} days`}
             </p>
-            <p className="text-content-faint text-xs">until renewal</p>
+            <p className="subscription-card__renewal-caption">until renewal</p>
           </div>
         )}
 
         {/* Menu */}
-        <div className="relative">
+        <div className="subscription-card__menu">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="text-content-dim hover:text-content p-2 rounded-lg hover:bg-control/50 transition-colors"
+            className="ui-icon-button"
             aria-label="Menu"
           >
             <MoreIcon />
@@ -140,16 +141,16 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
           {showMenu && (
             <>
               <div
-                className="fixed inset-0 z-10"
+                className="subscription-card__menu-backdrop"
                 onClick={() => setShowMenu(false)}
               />
-              <div className="absolute right-0 mt-1 w-36 bg-surface border border-edge/50 rounded-xl shadow-xl z-20 overflow-hidden">
+              <div className="subscription-card__menu-list">
                 <button
                   onClick={() => {
                     onEdit(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-content-dim hover:text-content hover:bg-control/50 transition-colors"
+                  className="subscription-card__menu-item"
                 >
                   <EditIcon />
                   Edit
@@ -159,7 +160,7 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
                     onDelete(subscription);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-red-500 hover:text-red-400 hover:bg-control/50 transition-colors"
+                  className="subscription-card__menu-item subscription-card__menu-item--danger"
                 >
                   <TrashIcon />
                   Delete
@@ -173,21 +174,17 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete, selec
         {selectionMode && (
           <button
             onClick={() => onToggleSelect(subscription.id)}
-            className="ml-2 flex items-center justify-center w-6 h-6 rounded border-2 transition-colors shrink-0"
-            style={{
-              borderColor: selected ? "#10b981" : "#4b5563",
-              backgroundColor: selected ? "#10b981" : "transparent",
-            }}
+            className={`subscription-card__checkbox${selected ? " subscription-card__checkbox--selected" : ""}`}
             aria-label={selected ? "Deselect subscription" : "Select subscription"}
           >
             {selected && (
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <svg className="subscription-card__check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
           </button>
         )}
       </div>
-    </div>
+    </article>
   );
 }

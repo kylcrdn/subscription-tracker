@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import pieChart from "@iconify-icons/codicon/pie-chart";
 import bellDot from "@iconify-icons/codicon/bell-dot";
 import lineGraph from "@iconify-icons/codicon/graph-line";
+import "./LandingPage.css";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -14,63 +15,33 @@ export default function LandingPage() {
       description:
         "See your monthly and yearly totals at a glance with real-time stat cards and a clean subscription list.",
       color: "emerald",
-      icon: <Icon icon={lineGraph} className="h-6 w-6" />,
+      icon: <Icon icon={lineGraph} />,
     },
     {
       title: "Spending Analytics",
       description:
         "Interactive pie charts and monthly trend lines help you understand where your money goes over time.",
       color: "teal",
-      icon: <Icon icon={pieChart} className="h-6 w-6" />,
+      icon: <Icon icon={pieChart} />,
     },
     {
       title: "Renewal Reminders",
       description:
         "Get notified before subscriptions renew — in-app, by email, or through Discord so you never miss a date.",
       color: "lime",
-      icon: <Icon icon={bellDot} className="h-6 w-6" />,
+      icon: <Icon icon={bellDot} />,
     },
   ];
 
-  const featureStyles = {
-    emerald: {
-      background: "bg-accent-emerald/10",
-      text: "text-accent-emerald",
-      border: "hover:border-accent-emerald/50",
-    },
-    teal: {
-      background: "bg-accent-teal/10",
-      text: "text-accent-teal",
-      border: "hover:border-accent-teal/50",
-    },
-    lime: {
-      background: "bg-accent-lime/10",
-      text: "text-accent-lime",
-      border: "hover:border-accent-lime/50",
-    },
-  };
-
   const subscriptions = [
-    {
-      name: "Netflix",
-      price: "€13.99",
-      cycle: "Monthly",
-      days: "5 days",
-      color: "text-content-dim",
-    },
-    {
-      name: "Spotify",
-      price: "€9.99",
-      cycle: "Monthly",
-      days: "12 days",
-      color: "text-content-dim",
-    },
+    { name: "Netflix", price: "€13.99", cycle: "Monthly", days: "5 days" },
+    { name: "Spotify", price: "€9.99", cycle: "Monthly", days: "12 days" },
     {
       name: "iCloud+",
       price: "€5.99",
       cycle: "Monthly",
       days: "Today",
-      color: "text-[var(--md-sys-color-error)]",
+      isOverdue: true,
     },
   ];
 
@@ -80,210 +51,170 @@ export default function LandingPage() {
     { label: "Active Subs", value: "3" },
   ];
 
-  const primaryButton =
-    "rounded-xl bg-accent-lime text-[var(--md-sys-color-on-primary)] font-medium transition-all duration-200 hover:brightness-110 active:scale-[0.98]";
-
-  const brandGradient =
-    "bg-linear-to-r from-accent-lime to-accent-teal bg-clip-text text-transparent";
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-canvas via-panel to-canvas">
-      {/* Ambient Material color glows */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-accent-emerald/10 blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-accent-teal/10 blur-3xl" />
+    <div className="landing-page">
+      <div className="landing-page__ambient" aria-hidden="true">
+        <div className="landing-page__glow landing-page__glow--emerald" />
+        <div className="landing-page__glow landing-page__glow--teal" />
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6">
-        <h1 className={`text-2xl font-bold ${brandGradient}`}>SubTracker</h1>
+      <nav className="landing-nav">
+        <h1 className="landing-brand">SubTracker</h1>
 
-        <div className="flex items-center gap-3">
+        <div className="landing-nav__actions">
           <ThemeToggle />
-
           <button
             onClick={() => navigate("/login")}
-            className="rounded-lg border border-edge px-5 py-2 text-sm text-content-dim transition-all duration-200 hover:border-accent-lime/50 hover:text-content"
+            className="ui-button ui-button--quiet landing-button--small"
           >
             Sign In
           </button>
-
           <button
             onClick={() => navigate("/register")}
-            className={`${primaryButton} rounded-lg px-5 py-2 text-sm`}
+            className="ui-button ui-button--primary landing-button--small"
           >
             Get Started
           </button>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-20 text-center">
-        <div className="mb-8 inline-flex items-center rounded-full border border-edge/50 bg-surface/30 px-4 py-1.5 text-sm text-content-dim backdrop-blur-sm">
-          Track every subscription in one place
-        </div>
+      <main>
+        <section className="landing-hero">
+          <div className="landing-hero__eyebrow">
+            Track every subscription in one place
+          </div>
 
-        <h2 className="mb-6 text-5xl font-bold leading-tight tracking-tight text-content md:text-7xl">
-          Know where your
-          <br />
-          <span className={brandGradient}>money goes</span>
-        </h2>
-        <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-content-dim md:text-xl">
-          Stop losing track of recurring payments. SubTracker gives you a clear
-          overview of all your subscriptions, spending insights, and timely
-          renewal reminders.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={() => navigate("/register")}
-            className={`${primaryButton} px-8 py-3.5 text-lg hover:scale-[1.02]`}
-          >
-            Start Tracking Free
-          </button>
+          <h2 className="landing-hero__title">
+            Know where your
+            <br />
+            <span className="landing-brand">money goes</span>
+          </h2>
+          <p className="landing-hero__description">
+            Stop losing track of recurring payments. SubTracker gives you a
+            clear overview of all your subscriptions, spending insights, and
+            timely renewal reminders.
+          </p>
+          <div className="landing-hero__actions">
+            <button
+              onClick={() => navigate("/register")}
+              className="ui-button ui-button--primary landing-button--large"
+            >
+              Start Tracking Free
+            </button>
 
-          <button
-            onClick={() => navigate("/login")}
-            className="rounded-xl border border-edge px-8 py-3.5 text-lg font-medium text-content-dim transition-all duration-200 hover:border-accent-lime/50 hover:text-content"
-          >
-            Sign In
-          </button>
-        </div>
-      </section>
+            <button
+              onClick={() => navigate("/login")}
+              className="ui-button ui-button--quiet landing-button--large"
+            >
+              Sign In
+            </button>
+          </div>
+        </section>
 
-      {/* Dashboard Preview */}
-      <section className="relative z-10 mx-auto mb-32 max-w-5xl px-6">
-        <div className="rounded-2xl border border-edge/50 bg-linear-to-br from-surface/50 to-surface/30 p-6 shadow-2xl backdrop-blur-sm md:p-8">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <div className={`text-lg font-bold ${brandGradient}`}>
-                SubTracker
+        <section
+          className="landing-dashboard landing-content-width"
+          aria-label="Subscription dashboard preview"
+        >
+          <div className="landing-panel landing-dashboard__panel">
+            <div className="landing-dashboard__header">
+              <div>
+                <div className="landing-brand landing-dashboard__brand">
+                  SubTracker
+                </div>
+                <div className="landing-caption">user@example.com</div>
               </div>
-              <div className="mt-0.5 text-xs text-content-faint">
-                user@example.com
-              </div>
+              <div className="landing-dashboard__avatar" aria-hidden="true" />
             </div>
-            <div className="h-8 w-8 rounded-lg bg-control/50" />
-          </div>
 
-          {/* Stats */}
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-xl border border-edge/30 bg-linear-to-br from-surface/80 to-surface/40 p-4"
-              >
-                <div className="mb-1 text-xs uppercase tracking-wider text-content-faint">
-                  {stat.label}
+            <div className="landing-stats">
+              {stats.map((stat) => (
+                <div className="landing-stat" key={stat.label}>
+                  <div className="landing-caption landing-stat__label">
+                    {stat.label}
+                  </div>
+                  <div className="landing-stat__value">{stat.value}</div>
                 </div>
-                <div className="text-xl font-bold text-content md:text-2xl">
-                  {stat.value}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Subscription rows */}
-          <div className="space-y-3">
-            {subscriptions.map((sub) => (
-              <div
-                key={sub.name}
-                className="flex items-center justify-between rounded-xl border border-edge/30 bg-surface/40 px-5 py-3.5"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-control/50 text-xs font-bold text-content-dim">
-                    {sub.name[0]}
+            <div className="landing-subscriptions">
+              {subscriptions.map((sub) => (
+                <div className="landing-subscription" key={sub.name}>
+                  <div className="landing-subscription__identity">
+                    <div className="landing-subscription__avatar">
+                      {sub.name[0]}
+                    </div>
+
+                    <div>
+                      <div className="landing-subscription__name">
+                        {sub.name}
+                      </div>
+                      <div className="landing-caption">{sub.cycle}</div>
+                    </div>
                   </div>
 
-                  <div>
-                    <div className="text-sm font-medium text-content">
-                      {sub.name}
+                  <div className="landing-subscription__details">
+                    <div className="landing-subscription__price">
+                      {sub.price}
                     </div>
-                    <div className="text-xs text-content-faint">
-                      {sub.cycle}
+                    <div
+                      className={`landing-caption landing-subscription__renewal${sub.isOverdue ? " landing-subscription__renewal--today" : ""}`}
+                    >
+                      {sub.days}
                     </div>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-content">
-                    {sub.price}
-                  </div>
-                  <div className={`text-xs ${sub.color}`}>{sub.days}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="relative z-10 mx-auto mb-32 max-w-7xl px-6">
-        <div className="mb-16 text-center">
-          <h3 className="mb-4 text-3xl font-bold text-content md:text-4xl">
-            Everything you need
-          </h3>
-          <p className="mx-auto max-w-xl text-lg text-content-dim">
-            Simple tools to take control of your recurring expenses.
-          </p>
-        </div>
+        <section className="landing-features landing-content-width">
+          <div className="landing-section-heading">
+            <h3>Everything you need</h3>
+            <p>Simple tools to take control of your recurring expenses.</p>
+          </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {features.map((feature) => {
-            const style = featureStyles[feature.color];
-
-            return (
-              <div
+          <div className="landing-feature-grid">
+            {features.map((feature) => (
+              <article
                 key={feature.title}
-                className={`rounded-2xl border border-edge/50 bg-linear-to-br from-surface/50 to-surface/30 p-8 backdrop-blur-sm transition-all duration-300 ${style.border}`}
+                className={`landing-panel landing-feature landing-feature--${feature.color}`}
               >
-                <div
-                  className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl ${style.background} ${style.text}`}
-                >
-                  {feature.icon}
-                </div>
+                <div className="landing-feature__icon">{feature.icon}</div>
 
-                <h4 className="mb-3 text-lg font-semibold text-content">
-                  {feature.title}
-                </h4>
+                <h4>{feature.title}</h4>
 
-                <p className="text-sm leading-relaxed text-content-dim">
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+                <p>{feature.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      {/* Call to action */}
-      <section className="relative z-10 mx-auto mb-20 max-w-3xl px-6">
-        <div className="rounded-2xl border border-edge/50 bg-linear-to-br from-surface/50 to-surface/30 p-8 text-center backdrop-blur-sm md:p-12">
-          <h3 className="mb-4 text-3xl font-bold text-content">
-            Ready to take control?
-          </h3>
+        <section className="landing-cta">
+          <div className="landing-panel landing-cta__panel">
+            <h3>Ready to take control?</h3>
 
-          <p className="mx-auto mb-8 max-w-md text-content-dim">
-            Join SubTracker and stop letting forgotten subscriptions drain your
-            wallet.
-          </p>
+            <p>
+              Join SubTracker and stop letting forgotten subscriptions drain
+              your wallet.
+            </p>
 
-          <button
-            onClick={() => navigate("/register")}
-            className={`${primaryButton} px-8 py-3.5 text-lg hover:scale-[1.02]`}
-          >
-            Create Free Account
-          </button>
-        </div>
-      </section>
+            <button
+              onClick={() => navigate("/register")}
+              className="ui-button ui-button--primary landing-button--large"
+            >
+              Create Free Account
+            </button>
+          </div>
+        </section>
+      </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-edge/50 py-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6">
-          <span className={`text-sm font-semibold ${brandGradient}`}>
-            SubTracker
-          </span>
+      <footer className="landing-footer">
+        <div className="landing-footer__content">
+          <span className="landing-brand landing-footer__brand">SubTracker</span>
 
-          <span className="text-right text-sm text-content-faint">
+          <span className="landing-footer__copyright">
             &copy; {new Date().getFullYear()} All rights reserved.
           </span>
         </div>

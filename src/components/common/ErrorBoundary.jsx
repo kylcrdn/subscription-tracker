@@ -31,25 +31,25 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-panel">
-          <div className="text-center p-8 max-w-md">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-content mb-2">
+        <div className="error-boundary">
+          <div className="error-boundary__content">
+            <div className="error-boundary__icon">⚠️</div>
+            <h1>
               Something went wrong
             </h1>
-            <p className="text-content-dim mb-6">
+            <p>
               An unexpected error occurred. Please try again.
             </p>
-            <div className="flex gap-3 justify-center">
+            <div className="error-boundary__actions">
               <button
                 onClick={this.handleReset}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
+                className="ui-button ui-button--primary"
               >
                 Try Again
               </button>
               <button
                 onClick={() => (window.location.href = "/home")}
-                className="px-6 py-3 bg-control hover:bg-surface text-content rounded-lg transition-colors"
+                className="ui-button ui-button--secondary"
               >
                 Go Home
               </button>

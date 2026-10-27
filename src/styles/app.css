@@ -1,0 +1,49 @@
+.app-loading,
+.app-not-found,
+.error-boundary {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem;
+  color: var(--th-content);
+  background: var(--th-canvas);
+}
+
+.app-loading > div {
+  font-size: 1.125rem;
+}
+
+.app-not-found__content,
+.error-boundary__content {
+  width: min(100%, 28rem);
+  text-align: center;
+}
+
+.app-not-found__content h1 {
+  margin: 0 0 1rem;
+  font-size: 2.5rem;
+}
+
+.app-not-found__content p,
+.error-boundary__content p {
+  margin: 0 0 1.5rem;
+  color: var(--th-content-dim);
+}
+
+.error-boundary__icon {
+  margin-bottom: 1rem;
+  color: var(--md-sys-color-error);
+  font-size: 3.75rem;
+}
+
+.error-boundary__content h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.error-boundary__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+

@@ -19,6 +19,7 @@ import {
 } from "../../../../firebase/auth";
 import ThemeToggle from "../../../common/ThemeToggle";
 import GoogleLogo from "../../../common/GoogleLogo";
+import "../auth.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -128,32 +129,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-panel relative">
-      <div className="absolute top-4 right-4">
+    <div className="auth-page">
+      <div className="auth-page__theme">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-content mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-content-dim">Sign in to your account</p>
+      <div className="auth-page__content">
+        <div className="auth-page__heading">
+          <h1 className="auth-page__title">Welcome Back</h1>
+          <p className="ui-muted">Sign in to your account</p>
         </div>
 
-        <div className="bg-surface rounded-lg shadow-xl border border-edge p-8">
+        <div className="auth-page__card ui-panel">
           {/* Error Message */}
           {errorMessage && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+            <div className="ui-error auth-page__error">
               {errorMessage}
             </div>
           )}
 
           {/* Login Form */}
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div>
+          <form onSubmit={onSubmit} className="auth-page__form">
+            <div className="ui-field">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Email
               </label>
@@ -164,15 +163,15 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isSigningIn}
-                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ui-input"
                 placeholder="you@example.com"
               />
             </div>
 
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Password
               </label>
@@ -183,7 +182,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isSigningIn}
-                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ui-input"
                 placeholder="••••••••"
               />
               <button
@@ -193,7 +192,7 @@ export default function LoginPage() {
                   setResetEmail(email);
                   setResetMessage("");
                 }}
-                className="mt-2 text-sm text-link hover:text-link-hover"
+                className="ui-link-button auth-page__forgot"
               >
                 Forgot password?
               </button>
@@ -202,37 +201,30 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSigningIn}
-              className="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ui-button ui-button--primary auth-page__submit"
             >
               {isSigningIn ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-edge"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-surface text-content-dim">or</span>
-            </div>
-          </div>
+          <div className="ui-divider auth-page__divider">or</div>
 
           <button
             onClick={onGoogleSignIn}
             disabled={isSigningIn}
-            className="w-full flex items-center justify-center gap-3 bg-control border border-edge text-content py-2.5 rounded-lg font-medium hover:bg-control/80 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ui-button ui-button--secondary auth-page__google"
           >
             <GoogleLogo />
             {isSigningIn ? "Signing in..." : "Continue with Google"}
           </button>
 
-          <div className="mt-6 text-center text-sm text-content-dim">
+          <div className="auth-page__footer ui-muted">
             Don't have an account?{" "}
             <button
               onClick={() => navigate("/register")}
               type="button"
               disabled={isSigningIn}
-              className="text-link font-medium hover:text-link-hover disabled:opacity-50"
+              className="ui-link-button"
             >
               Sign up
             </button>
@@ -242,36 +234,36 @@ export default function LoginPage() {
 
       {/* Password Reset Modal */}
       {showResetPassword && (
-        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50">
-          <div className="bg-surface rounded-lg p-6 w-full max-w-md mx-4 border border-edge">
-            <h2 className="text-xl font-semibold text-content mb-4">
+        <div className="auth-reset-overlay">
+          <div className="auth-reset-dialog ui-panel">
+            <h2 className="auth-reset-dialog__title">
               Reset Password
             </h2>
 
             {resetMessage === "success" ? (
               <div>
-                <p className="text-accent-green mb-4">
+                <p className="auth-reset-dialog__success">
                   If an account exists with this email, you'll receive a password reset link.
                 </p>
-                <p className="text-content-dim text-sm mb-4">
+                <p className="auth-reset-dialog__note ui-muted">
                   Note: If you signed up with Google, use "Continue with Google" instead - no password reset needed.
                 </p>
                 <button
                   onClick={() => setShowResetPassword(false)}
-                  className="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition"
+                  className="ui-button ui-button--primary auth-page__submit"
                 >
                   Back to Login
                 </button>
               </div>
             ) : (
               <form onSubmit={onPasswordReset}>
-                <p className="text-content-dim text-sm mb-4">
+                <p className="auth-reset-dialog__description ui-muted">
                   Enter your email and we'll send you a link to reset your
                   password.
                 </p>
 
                 {resetMessage && resetMessage !== "success" && (
-                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                  <div className="ui-error auth-page__error">
                     {resetMessage}
                   </div>
                 )}
@@ -282,23 +274,23 @@ export default function LoginPage() {
                   onChange={(e) => setResetEmail(e.target.value)}
                   required
                   disabled={isResetting}
-                  className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 mb-4"
+                  className="ui-input auth-reset-dialog__email"
                   placeholder="you@example.com"
                 />
 
-                <div className="flex gap-3">
+                <div className="auth-reset-dialog__actions">
                   <button
                     type="button"
                     onClick={() => setShowResetPassword(false)}
                     disabled={isResetting}
-                    className="flex-1 bg-control text-content py-2.5 rounded-lg font-medium hover:bg-control/80 transition disabled:opacity-50"
+                    className="ui-button ui-button--secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isResetting}
-                    className="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50"
+                    className="ui-button ui-button--primary"
                   >
                     {isResetting ? "Sending..." : "Send Reset Link"}
                   </button>

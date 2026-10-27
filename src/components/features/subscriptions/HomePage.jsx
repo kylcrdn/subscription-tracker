@@ -34,22 +34,23 @@ import NotificationBell from "./NotificationBell";
 import ThemeToggle from "../../common/ThemeToggle";
 import Icon from "../../common/Icon";
 import toast from "react-hot-toast";
+import "./subscriptions.css";
 
 const SearchIcon = () => (
-  <Icon className="w-4 h-4">
+  <Icon className="ui-icon">
     <circle cx="11" cy="11" r="7" />
     <path d="M21 21l-4.35-4.35" />
   </Icon>
 );
 
-const PlusIcon = ({ className = "w-4 h-4" }) => (
+const PlusIcon = ({ className = "ui-icon" }) => (
   <Icon className={className}>
     <path d="M12 5v14M5 12h14" />
   </Icon>
 );
 
 const CurrencyIcon = () => (
-  <Icon className="w-4 h-4 text-accent-emerald">
+  <Icon className="ui-icon dashboard-icon--emerald">
     <circle cx="12" cy="12" r="9" />
     <path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-3 1-3 2.5s1.5 2 3 2.5c1.5.5 3 1 3 2.5s-1.5 2.5-3 2.5c-1 0-2-.5-2.5-1.5" />
     <path d="M12 6v2M12 16v2" />
@@ -57,47 +58,47 @@ const CurrencyIcon = () => (
 );
 
 const ChartIcon = () => (
-  <Icon className="w-4 h-4 text-accent-green">
+  <Icon className="ui-icon dashboard-icon--green">
     <path d="M4 20h16" />
     <path d="M4 20V10l4-6 4 8 4-4 4 6v6" />
   </Icon>
 );
 
 const DocumentIcon = () => (
-  <Icon className="w-4 h-4 text-accent-teal">
+  <Icon className="ui-icon dashboard-icon--teal">
     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
     <path d="M14 2v6h6M8 13h8M8 17h8" />
   </Icon>
 );
 
 const InboxIcon = () => (
-  <Icon className="w-8 h-8 text-content-faint">
+  <Icon className="dashboard-empty-state__icon">
     <path d="M22 12h-6l-2 3h-4l-2-3H2" />
     <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z" />
   </Icon>
 );
 
 const ArrowUpIcon = () => (
-  <Icon className="w-5 h-5">
+  <Icon className="ui-icon">
     <path d="M12 19V5M5 12l7-7 7 7" />
   </Icon>
 );
 
 const colorStyles = {
   emerald: {
-    accent: "bg-emerald-500",
-    iconText: "text-accent-emerald",
-    valueText: "text-stat-emerald",
+    accent: "dashboard-stat-card__accent--emerald",
+    iconText: "dashboard-stat-card__icon--emerald",
+    valueText: "dashboard-stat-card__value--emerald",
   },
   green: {
-    accent: "bg-green-500",
-    iconText: "text-accent-green",
-    valueText: "text-stat-green",
+    accent: "dashboard-stat-card__accent--green",
+    iconText: "dashboard-stat-card__icon--green",
+    valueText: "dashboard-stat-card__value--green",
   },
   teal: {
-    accent: "bg-teal-500",
-    iconText: "text-accent-teal",
-    valueText: "text-stat-teal",
+    accent: "dashboard-stat-card__accent--teal",
+    iconText: "dashboard-stat-card__icon--teal",
+    valueText: "dashboard-stat-card__value--teal",
   },
 };
 
@@ -111,21 +112,21 @@ const StatCard = ({ label, value, subtitle, icon, hoverColor, onClick }) => {
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
-      className={`relative bg-surface/50 border border-edge/40 rounded-xl p-5 transition-all duration-200 ${onClick ? "cursor-pointer hover:bg-surface/80 hover:border-edge/50" : ""}`}
+      className={`dashboard-stat-card${onClick ? " dashboard-stat-card--interactive" : ""}`}
     >
-      <div className={`absolute top-0 left-6 right-6 h-px ${colors.accent} opacity-40`} />
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-[11px] text-content-faint uppercase tracking-wider font-medium">
+      <div className={`dashboard-stat-card__accent ${colors.accent}`} />
+      <div className="dashboard-stat-card__header">
+        <span className="dashboard-stat-card__label">
           {label}
         </span>
         <div className={colors.iconText}>
           {icon}
         </div>
       </div>
-      <div className={`text-2xl font-semibold ${colors.valueText} mb-0.5`}>
+      <div className={`dashboard-stat-card__value ${colors.valueText}`}>
         {value}
       </div>
-      {subtitle && <div className="text-[11px] text-content-faint">{subtitle}</div>}
+      {subtitle && <div className="dashboard-stat-card__subtitle">{subtitle}</div>}
     </div>
   );
 };
@@ -250,25 +251,25 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-canvas via-panel to-canvas">
+    <div className="dashboard-page">
       {/* Header */}
-      <header className="border-b border-edge/50 bg-canvas sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+      <header className="dashboard-header">
+        <div className="dashboard-header__content">
+          <div className="dashboard-header__row">
             <div>
-              <h1 className="text-2xl font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="dashboard-brand">
                 SubTracker
               </h1>
-              <p className="text-sm text-content-dim mt-0.5">
+              <p className="dashboard-header__email">
                 {currentUser?.email}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="dashboard-header__actions">
               <NotificationBell userId={currentUser?.uid} />
               <ThemeToggle />
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm text-content-dim hover:text-content border border-emerald-500/50 hover:border-teal-400 rounded-lg transition-all duration-200 hover:bg-surface/50"
+                className="ui-button ui-button--quiet"
               >
                 Sign Out
               </button>
@@ -277,13 +278,13 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="dashboard-main">
         {/* Search Bar, Category Filter and Add Button */}
-        <div className="flex justify-end gap-3 mb-8">
+        <div className="dashboard-toolbar">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 bg-surface/50 border border-edge rounded-lg text-content text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all cursor-pointer"
+            className="ui-select dashboard-toolbar__select"
           >
             <option value="all">All Categories</option>
             {uniqueCategories.map((category) => (
@@ -292,8 +293,8 @@ export default function HomePage() {
               </option>
             ))}
           </select>
-          <div className="relative w-64">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-content-dim">
+          <div className="dashboard-search">
+            <div className="dashboard-search__icon">
               <SearchIcon />
             </div>
             <input
@@ -301,12 +302,12 @@ export default function HomePage() {
               placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface/50 border border-edge rounded-lg text-content placeholder-content-faint text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+              className="ui-input dashboard-search__input"
             />
           </div>
           <button
             onClick={() => openModal()}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
+            className="ui-button ui-button--primary dashboard-toolbar__add"
           >
             <PlusIcon />
             Add
@@ -314,7 +315,7 @@ export default function HomePage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="dashboard-stats">
           <StatCard
             label="Monthly"
             value={`€${totalMonthly.toFixed(2)}`}
@@ -342,37 +343,37 @@ export default function HomePage() {
         </div>
 
         {/* Subscriptions List */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-content">
+        <div className="dashboard-list-heading">
+          <h2>
             Your Subscriptions
           </h2>
           {!selectionMode && filteredSubscriptions.length > 0 && (
             <button
               onClick={() => setSelectionMode(true)}
-              className="text-content-dim hover:text-red-400 p-2 rounded-lg hover:bg-surface/50 transition-colors"
+              className="ui-icon-button dashboard-list-heading__select"
               aria-label="Select subscriptions to delete"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+              <svg className="ui-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
                 <path d="M10 11v6M14 11v6" />
               </svg>
             </button>
           )}
           {selectionMode && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-content-dim">
+            <div className="dashboard-list-heading__selection-actions">
+              <span className="ui-muted">
                 {selectedIds.size} selected
               </span>
               <button
                 onClick={openBulkDeleteDialog}
                 disabled={selectedIds.size === 0}
-                className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
+                className="ui-button ui-button--danger dashboard-selection-button"
               >
                 Delete
               </button>
               <button
                 onClick={exitSelectionMode}
-                className="px-3 py-1.5 text-sm text-content-dim hover:text-content border border-edge hover:border-edge rounded-lg transition-colors font-medium"
+                className="ui-button ui-button--quiet dashboard-selection-button"
               >
                 Cancel
               </button>
@@ -381,20 +382,20 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+          <div className="dashboard-loading">
+            <div className="ui-spinner" />
           </div>
         ) : filteredSubscriptions.length === 0 ? (
-          <div className="bg-surface/30 border border-edge/50 rounded-2xl p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-control/50 flex items-center justify-center mx-auto mb-4">
+          <div className="dashboard-empty-state">
+            <div className="dashboard-empty-state__illustration">
               <InboxIcon />
             </div>
-            <h3 className="text-lg font-semibold text-content mb-2">
+            <h3 className="dashboard-empty-state__title">
               {searchQuery
                 ? "No matching subscriptions"
                 : "No subscriptions yet"}
             </h3>
-            <p className="text-content-dim mb-6">
+            <p className="dashboard-empty-state__description">
               {searchQuery
                 ? "Try a different search term"
                 : "Start tracking your subscriptions to see your spending insights"}
@@ -402,15 +403,15 @@ export default function HomePage() {
             {!searchQuery && (
               <button
                 onClick={() => openModal()}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors inline-flex items-center gap-2"
+                className="ui-button ui-button--primary"
               >
-                <PlusIcon className="w-5 h-5" />
+                <PlusIcon className="ui-icon dashboard-add-first__icon" />
                 Add Your First Subscription
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="dashboard-subscription-list">
             {filteredSubscriptions.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
@@ -478,7 +479,7 @@ export default function HomePage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 bg-surface hover:bg-control border border-emerald-500/50 hover:border-teal-400 text-content rounded-full shadow-lg transition-all duration-200 z-50"
+          className="ui-icon-button dashboard-scroll-top"
           aria-label="Scroll to top"
         >
           <ArrowUpIcon />

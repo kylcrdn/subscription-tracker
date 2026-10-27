@@ -14,6 +14,7 @@
  */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import "./subscriptions.css";
 
 /** Well-known services for autocomplete suggestions. Add new entries here to expand the list. */
 const POPULAR_SERVICES = [
@@ -247,23 +248,23 @@ export default function SubscriptionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto"
+      className="ui-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
       <div
-        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
+        className="ui-overlay__backdrop"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
-          <div className="flex items-center justify-between mb-6">
+      <div className="ui-overlay__alignment">
+        <div className="ui-dialog subscription-modal">
+          <div className="subscription-modal__header">
             <h2
               id="modal-title"
-              className="text-2xl font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent"
+              className="subscription-modal__title"
             >
               {subscription ? "Edit Subscription" : "Add Subscription"}
             </h2>
@@ -271,10 +272,10 @@ export default function SubscriptionModal({
               type="button"
               onClick={onClose}
               aria-label="Close modal"
-              className="text-content-dim hover:text-content transition-colors p-1 hover:bg-control/50 rounded-lg"
+              className="ui-icon-button"
             >
               <svg
-                className="w-6 h-6"
+                className="ui-icon"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -289,12 +290,12 @@ export default function SubscriptionModal({
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="subscription-modal__form">
             {/* Name */}
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="service-name"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Service Name *
               </label>
@@ -310,41 +311,39 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please fill out this field")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-panel/50 border ${
-                  errors.name ? "border-red-500" : "border-edge"
-                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`ui-input${errors.name ? " ui-input--invalid" : ""}`}
               />
               {errors.name && (
-                <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                <p className="subscription-modal__field-error">{errors.name}</p>
               )}
             </div>
 
             {/* Service Icon */}
-            <div>
-              <label className="block text-sm font-medium text-content-dim mb-2">
+            <div className="ui-field">
+              <label className="ui-label">
                 Service Icon (optional)
               </label>
 
-              <div className="flex items-center gap-4">
+              <div className="subscription-modal__icon-field">
                 {/* Preview */}
-                <div className="flex-shrink-0">
+                <div className="subscription-modal__preview">
                   {iconPreview && !logoError ? (
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-edge bg-white">
+                    <div className="subscription-modal__preview-image">
                       <img
                         src={iconPreview}
                         alt="Service icon preview"
-                        className="w-full h-full object-contain p-1"
+                        className="subscription-modal__service-image"
                         onError={handleLogoError}
                         onLoad={handleLogoLoad}
                       />
                       <button
                         type="button"
                         onClick={handleRemoveIcon}
-                        className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+                        className="subscription-modal__remove-icon"
                         aria-label="Remove icon"
                       >
                         <svg
-                          className="w-3 h-3"
+                          className="subscription-modal__remove-icon-svg"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -359,9 +358,9 @@ export default function SubscriptionModal({
                       </button>
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-lg border-2 border-dashed border-edge bg-panel/50 flex items-center justify-center">
+                    <div className="subscription-modal__empty-preview">
                       <svg
-                        className="w-8 h-8 text-content-faint"
+                        className="subscription-modal__empty-preview-icon"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -378,7 +377,7 @@ export default function SubscriptionModal({
                 </div>
 
                 {/* Search Input */}
-                <div className="flex-1 relative">
+                <div className="subscription-modal__brand-search">
                   <input
                     type="text"
                     value={brandSearch}
@@ -389,12 +388,12 @@ export default function SubscriptionModal({
                       setShowSuggestions(true)
                     }
                     placeholder="Search: Netflix, Spotify..."
-                    className="w-full px-4 py-2 bg-panel/50 border border-edge rounded-lg text-content text-sm placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+                    className="ui-input subscription-modal__brand-input"
                   />
 
                   {/* Autocomplete Suggestions */}
                   {showSuggestions && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-edge rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+                    <div className="subscription-modal__suggestions">
                       {filteredServices
                         .filter((service) => !failedLogos.has(service.domain))
                         .map((service) => (
@@ -402,12 +401,12 @@ export default function SubscriptionModal({
                             key={service.domain}
                             type="button"
                             onClick={() => handleSelectService(service)}
-                            className="w-full px-3 py-2.5 text-left text-sm text-content hover:bg-emerald-600 hover:text-white flex items-center gap-3 transition-colors cursor-pointer"
+                            className="subscription-modal__suggestion"
                           >
                             <img
                               src={getLogoUrl(service.domain)}
                               alt=""
-                              className="w-8 h-8 object-contain bg-white rounded p-0.5"
+                              className="subscription-modal__suggestion-logo"
                               onError={(e) => {
                                 // Try Google fallback if Clearbit fails
                                 if (
@@ -426,11 +425,11 @@ export default function SubscriptionModal({
                                 }
                               }}
                             />
-                            <div className="flex-1">
-                              <span className="font-medium">
+                            <div className="subscription-modal__suggestion-copy">
+                              <span className="subscription-modal__suggestion-name">
                                 {service.name}
                               </span>
-                              <span className="text-content-dim text-xs block">
+                              <span className="subscription-modal__suggestion-domain">
                                 {service.domain}
                               </span>
                             </div>
@@ -439,7 +438,7 @@ export default function SubscriptionModal({
                     </div>
                   )}
 
-                  <p className="text-xs text-content-faint mt-1">
+                  <p className="subscription-modal__help">
                     {logoError
                       ? "Logo not found, try adding .com"
                       : "Type a service name or domain (e.g. netflix.com)"}
@@ -449,15 +448,15 @@ export default function SubscriptionModal({
             </div>
 
             {/* Price */}
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="service-price"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Price *
               </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-content-dim text-base font-medium">
+              <div className="subscription-modal__price-field">
+                <span className="subscription-modal__currency">
                   €
                 </span>
                 <input
@@ -474,21 +473,19 @@ export default function SubscriptionModal({
                     e.target.setCustomValidity("Please enter a valid price")
                   }
                   onInput={(e) => e.target.setCustomValidity("")}
-                  className={`w-full pl-9 pr-4 py-3 bg-panel/50 border ${
-                    errors.price ? "border-red-500" : "border-edge"
-                  } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                  className={`ui-input subscription-modal__price-input${errors.price ? " ui-input--invalid" : ""}`}
                 />
               </div>
               {errors.price && (
-                <p className="text-red-400 text-xs mt-1">{errors.price}</p>
+                <p className="subscription-modal__field-error">{errors.price}</p>
               )}
             </div>
 
             {/* Billing */}
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="service-billing"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Billing Cycle
               </label>
@@ -503,7 +500,7 @@ export default function SubscriptionModal({
                   }}
                   onClick={() => setSelectOpen(!selectOpen)}
                   onBlur={() => setTimeout(() => setSelectOpen(false), 100)}
-                  className="w-full px-4 py-3 bg-panel/50 border border-edge rounded-lg text-content focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all"
+                  className="ui-select"
                 >
                   <option value="Monthly">Monthly</option>
                   <option value="Yearly">Yearly</option>
@@ -512,10 +509,10 @@ export default function SubscriptionModal({
             </div>
 
             {/* Date Created */}
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="service-dueDate"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Date Created *
               </label>
@@ -530,24 +527,22 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please select a date")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-panel/50 border ${
-                  errors.dueDate ? "border-red-500" : "border-edge"
-                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`ui-input${errors.dueDate ? " ui-input--invalid" : ""}`}
               />
               {errors.dueDate ? (
-                <p className="text-red-400 text-xs mt-1">{errors.dueDate}</p>
+                <p className="subscription-modal__field-error">{errors.dueDate}</p>
               ) : (
-                <p className="text-xs text-content-faint mt-1">
+                <p className="subscription-modal__help">
                   When did this subscription start?
                 </p>
               )}
             </div>
 
             {/* Category */}
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="service-category"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Category *
               </label>
@@ -563,27 +558,25 @@ export default function SubscriptionModal({
                   e.target.setCustomValidity("Please enter a category")
                 }
                 onInput={(e) => e.target.setCustomValidity("")}
-                className={`w-full px-4 py-3 bg-panel/50 border ${
-                  errors.category ? "border-red-500" : "border-edge"
-                } rounded-lg text-content placeholder-content-faint focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent transition-all`}
+                className={`ui-input${errors.category ? " ui-input--invalid" : ""}`}
               />
               {errors.category && (
-                <p className="text-red-400 text-xs mt-1">{errors.category}</p>
+                <p className="subscription-modal__field-error">{errors.category}</p>
               )}
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="subscription-modal__actions">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 bg-surface hover:bg-control text-content rounded-lg transition-all duration-200 font-medium border border-edge"
+                className="ui-button ui-button--secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-emerald-500/25"
+                className="ui-button ui-button--primary"
               >
                 {subscription ? "Save Changes" : "Add Subscription"}
               </button>
@@ -595,7 +588,7 @@ export default function SubscriptionModal({
       {/* Click outside to close suggestions */}
       {showSuggestions && (
         <div
-          className="fixed inset-0 z-40"
+          className="subscription-modal__suggestions-backdrop"
           onClick={() => setShowSuggestions(false)}
         />
       )}

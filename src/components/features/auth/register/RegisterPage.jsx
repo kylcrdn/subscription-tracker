@@ -25,6 +25,7 @@ import {
 } from "../../../../firebase/auth";
 import ThemeToggle from "../../../common/ThemeToggle";
 import GoogleLogo from "../../../common/GoogleLogo";
+import "../auth.css";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -109,31 +110,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-panel relative">
-      <div className="absolute top-4 right-4">
+    <div className="auth-page">
+      <div className="auth-page__theme">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-content mb-2">
-            Create Account
-          </h1>
-          <p className="text-content-dim">Sign up to get started</p>
+      <div className="auth-page__content">
+        <div className="auth-page__heading">
+          <h1 className="auth-page__title">Create Account</h1>
+          <p className="ui-muted">Sign up to get started</p>
         </div>
 
-        <div className="bg-surface rounded-lg shadow-xl border border-edge p-8">
+        <div className="auth-page__card ui-panel">
           {/* Display error message */}
           {errorMessage && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+            <div className="ui-error auth-page__error">
               {errorMessage}
             </div>
           )}
 
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div>
+          <form onSubmit={onSubmit} className="auth-page__form">
+            <div className="ui-field">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Email
               </label>
@@ -144,15 +143,15 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ui-input"
                 placeholder="you@example.com"
               />
             </div>
 
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Password
               </label>
@@ -163,18 +162,18 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ui-input"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-content-dim">
+              <p className="auth-page__hint ui-muted">
                 Must be at least 6 characters
               </p>
             </div>
 
-            <div>
+            <div className="ui-field">
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-content-dim mb-2"
+                className="ui-label"
               >
                 Confirm Password
               </label>
@@ -185,7 +184,7 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isRegistering}
-                className="w-full px-4 py-2 bg-control border border-edge text-content rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-content-faint disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ui-input"
                 placeholder="••••••••"
               />
             </div>
@@ -193,37 +192,30 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isRegistering}
-              className="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ui-button ui-button--primary auth-page__submit"
             >
               {isRegistering ? "Creating account..." : "Create account"}
             </button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-edge"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-surface text-content-dim">or</span>
-            </div>
-          </div>
+          <div className="ui-divider auth-page__divider">or</div>
 
           <button
             onClick={onGoogleSignIn}
             disabled={isRegistering}
-            className="w-full flex items-center justify-center gap-3 bg-control border border-edge text-content py-2.5 rounded-lg font-medium hover:bg-control/80 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ui-button ui-button--secondary auth-page__google"
           >
             <GoogleLogo />
             {isRegistering ? "Creating account..." : "Continue with Google"}
           </button>
 
-          <div className="mt-6 text-center text-sm text-content-dim">
+          <div className="auth-page__footer ui-muted">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/login")}
               type="button"
               disabled={isRegistering}
-              className="text-link font-medium hover:text-link-hover disabled:opacity-50"
+              className="ui-link-button"
             >
               Sign in
             </button>

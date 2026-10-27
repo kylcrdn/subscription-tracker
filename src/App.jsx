@@ -24,6 +24,7 @@ import HomePage from "./components/features/subscriptions/HomePage";
 import LandingPage from "./components/features/landing/LandingPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
+import "./styles/app.css";
 
 /** Renders children only if the user is logged in; otherwise redirects to /login. */
 function ProtectedRoute({ children }) {
@@ -31,8 +32,8 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-canvas">
-        <div className="text-content text-lg">Loading...</div>
+      <div className="app-loading">
+        <div>Loading...</div>
       </div>
     );
   }
@@ -46,8 +47,8 @@ function PublicRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-canvas">
-        <div className="text-content text-lg">Loading...</div>
+      <div className="app-loading">
+        <div>Loading...</div>
       </div>
     );
   }
@@ -121,13 +122,13 @@ function App() {
               <Route
                 path="*"
                 element={
-                  <div className="min-h-screen flex items-center justify-center bg-canvas">
-                    <div className="text-center">
-                      <h1 className="text-4xl font-bold text-content mb-4">404</h1>
-                      <p className="text-content-dim mb-6">Page not found</p>
+                  <div className="app-not-found">
+                    <div className="app-not-found__content">
+                      <h1>404</h1>
+                      <p>Page not found</p>
                       <a
                         href="/home"
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors inline-block"
+                        className="ui-button ui-button--primary"
                       >
                         Go Home
                       </a>

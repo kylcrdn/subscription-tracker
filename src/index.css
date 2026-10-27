@@ -1,37 +1,7 @@
-@import "tailwindcss";
 @import "./styles/material-light.css";
 @import "./styles/material-dark.css";
+@import "./styles/design-system.css";
 
-/* ── Semantic color tokens ── */
-@theme {
-  --color-canvas: var(--th-canvas);
-  --color-panel: var(--th-panel);
-  --color-surface: var(--th-surface);
-  --color-control: var(--th-control);
-  --color-overlay: var(--th-overlay);
-  --color-content: var(--th-content);
-  --color-content-dim: var(--th-content-dim);
-  --color-content-faint: var(--th-content-faint);
-  --color-edge: var(--th-edge);
-
-  /* Accent colors */
-  --color-accent-emerald: var(--th-accent-emerald);
-  --color-accent-green: var(--th-accent-green);
-  --color-accent-teal: var(--th-accent-teal);
-  --color-accent-lime: var(--th-accent-lime);
-  --color-accent-yellow: var(--th-accent-yellow);
-
-  /* Stat card value colors */
-  --color-stat-emerald: var(--th-stat-emerald);
-  --color-stat-green: var(--th-stat-green);
-  --color-stat-teal: var(--th-stat-teal);
-
-  /* Interactive link colors */
-  --color-link: var(--th-link);
-  --color-link-hover: var(--th-link-hover);
-}
-
-/* ── Dark theme (default) ── */
 :root {
   --th-canvas: var(--md-sys-color-background);
   --th-panel: var(--md-sys-color-surface-container-low);
@@ -72,7 +42,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Light theme ── */
 :root.light {
   --th-canvas: var(--md-sys-color-background);
   --th-panel: var(--md-sys-color-surface-container-lowest);
@@ -103,6 +72,45 @@
   --toast-border: var(--md-sys-color-outline-variant);
 
   color-scheme: light;
+}
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    min-height: 100%;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    color: var(--th-content);
+    background: var(--th-canvas);
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    color: inherit;
+  }
 }
 
 /* ── Scrollbar ── */

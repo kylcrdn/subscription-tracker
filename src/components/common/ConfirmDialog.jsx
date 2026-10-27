@@ -36,37 +36,28 @@ export default function ConfirmDialog({
     onClose();
   };
 
-  const confirmButtonStyles =
-    confirmStyle === "danger"
-      ? "bg-red-600 hover:bg-red-500 text-white"
-      : "bg-emerald-600 hover:bg-emerald-500 text-white";
-
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto"
+      className="ui-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
+        className="ui-overlay__backdrop"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all">
+      <div className="ui-overlay__alignment">
+        <div className="ui-dialog confirm-dialog">
           {/* Icon */}
-          <div className="flex items-center justify-center mb-4">
+          <div className="confirm-dialog__icon-wrap">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                confirmStyle === "danger"
-                  ? "bg-red-500/10 text-red-500"
-                  : "bg-emerald-500/10 text-emerald-500"
-              }`}
+              className={`confirm-dialog__icon confirm-dialog__icon--${confirmStyle}`}
             >
               <svg
-                className="w-6 h-6"
+                className="ui-icon confirm-dialog__symbol"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -84,27 +75,27 @@ export default function ConfirmDialog({
           {/* Title */}
           <h2
             id="confirm-dialog-title"
-            className="text-xl font-bold text-content text-center mb-2"
+            className="confirm-dialog__title"
           >
             {title}
           </h2>
 
           {/* Message */}
-          <p className="text-content-dim text-center mb-6">{message}</p>
+          <p className="confirm-dialog__message">{message}</p>
 
           {/* Buttons */}
-          <div className="flex gap-3">
+          <div className="confirm-dialog__actions">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-surface hover:bg-control text-content rounded-lg transition-all duration-200 font-medium border border-edge"
+              className="ui-button ui-button--secondary"
             >
               {cancelText}
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className={`flex-1 px-4 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg ${confirmButtonStyles}`}
+              className={`ui-button ${confirmStyle === "danger" ? "ui-button--danger" : "ui-button--primary"}`}
             >
               {confirmText}
             </button>

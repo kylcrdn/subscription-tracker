@@ -11,6 +11,7 @@
  */
 import { useEffect } from "react";
 import PropTypes from "prop-types";
+import "./subscriptions.css";
 
 /** Color palette for pie slices — cycles if there are more categories than colors */
 const COLORS = [
@@ -79,27 +80,27 @@ export default function CategoryPieChartModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto"
+      className="ui-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="category-chart-title"
     >
       <div
-        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
+        className="ui-overlay__backdrop"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-lg p-8 transform transition-all">
+      <div className="ui-overlay__alignment">
+        <div className="ui-dialog chart-dialog">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-content-dim hover:text-content transition-colors"
+            className="ui-icon-button ui-dialog__close"
             aria-label="Close"
           >
             <svg
-              className="w-5 h-5"
+              className="ui-icon"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -114,25 +115,25 @@ export default function CategoryPieChartModal({
           </button>
 
           {/* Title */}
-          <div className="text-center mb-6">
+          <div className="chart-dialog__heading">
             <h2
               id="category-chart-title"
-              className="text-xl font-bold text-content"
+              className="chart-dialog__title"
             >
               Category Split
             </h2>
-            <p className="text-sm text-content-dim">(Monthly Cost)</p>
+            <p className="chart-dialog__subtitle">(Monthly Cost)</p>
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-6">
+          <div className="chart-dialog__legend">
             {slices.map((slice, i) => (
-              <div key={i} className="flex items-center gap-1.5">
+              <div key={i} className="chart-dialog__legend-item">
                 <div
-                  className="w-3 h-3 rounded-sm flex-shrink-0"
+                  className="chart-dialog__legend-swatch"
                   style={{ backgroundColor: slice.color }}
                 />
-                <span className="text-xs text-content-dim">
+                <span>
                   {slice.name} (€{slice.value.toFixed(2)})
                 </span>
               </div>
@@ -140,12 +141,12 @@ export default function CategoryPieChartModal({
           </div>
 
           {/* Pie Chart */}
-          <div className="flex justify-center">
+          <div className="chart-dialog__chart">
             <svg
               width={size}
               height={size}
               viewBox={`0 0 ${size} ${size}`}
-              className="drop-shadow-lg"
+              className="chart-dialog__pie"
             >
               {categoryData.length === 1 ? (
                 <circle cx={cx} cy={cy} r={radius} fill={COLORS[0]} />
@@ -164,9 +165,9 @@ export default function CategoryPieChartModal({
           </div>
 
           {/* Total */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-content-dim">Total Monthly</p>
-            <p className="text-2xl font-bold text-content">
+          <div className="chart-dialog__total">
+            <p>Total Monthly</p>
+            <p className="chart-dialog__total-value">
               €{total.toFixed(2)}
             </p>
           </div>

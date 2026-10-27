@@ -22,6 +22,7 @@ import {
   markNotificationAsRead,
   calculateNextRenewal,
 } from "../../../firebase/firestore";
+import "./subscriptions.css";
 
 const BellIcon = () => (
   <Icon>
@@ -31,7 +32,7 @@ const BellIcon = () => (
 );
 
 const CloseIcon = () => (
-  <Icon className="w-4 h-4">
+  <Icon className="ui-icon">
     <path d="M18 6L6 18M6 6l12 12" />
   </Icon>
 );
@@ -107,15 +108,15 @@ export default function NotificationBell({ userId }) {
   };
 
   return (
-    <div className="relative">
+    <div className="notification-bell">
       <button
         onClick={handleToggleDropdown}
-        className="relative p-2 text-content-dim hover:text-content hover:bg-surface/50 rounded-lg transition-colors"
+        className="ui-icon-button notification-bell__trigger"
         aria-label="Notifications"
       >
         <BellIcon />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full">
+          <span className="notification-bell__count">
             {unreadCount}
           </span>
         )}
@@ -124,33 +125,33 @@ export default function NotificationBell({ userId }) {
       {showDropdown && (
         <>
           <div
-            className="fixed inset-0 z-10"
+            className="notification-bell__backdrop"
             onClick={() => setShowDropdown(false)}
           />
-          <div className="absolute right-0 mt-2 w-80 bg-surface border border-edge/50 rounded-xl shadow-2xl z-20 overflow-hidden">
-            <div className="px-4 py-3 border-b border-edge/50">
-              <h3 className="text-content font-semibold">Notifications</h3>
+          <div className="notification-bell__dropdown">
+            <div className="notification-bell__header">
+              <h3>Notifications</h3>
               {unreadCount > 0 && (
-                <p className="text-xs text-content-dim mt-0.5">
+                <p className="notification-bell__unread">
                   {unreadCount} unread
                 </p>
               )}
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
+            <div className="notification-bell__list">
               {loading ? (
-                <div className="px-4 py-8 text-center text-content-dim">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500 mx-auto mb-3" />
-                  <p className="text-sm text-content-dim">
+                <div className="notification-bell__empty">
+                  <div className="ui-spinner notification-bell__spinner" />
+                  <p>
                     Checking for notifications...
                   </p>
                 </div>
               ) : visibleNotifications.length === 0 ? (
-                <div className="px-4 py-8 text-center text-content-dim">
-                  <p className="text-sm font-medium text-content mb-1">
+                <div className="notification-bell__empty">
+                  <p className="notification-bell__empty-title">
                     No notifications
                   </p>
-                  <p className="text-xs text-content-faint">
+                  <p className="notification-bell__empty-note">
                     You&apos;ll be notified 7 days before renewals
                   </p>
                 </div>
@@ -163,29 +164,27 @@ export default function NotificationBell({ userId }) {
                   .map(({ notification, daysUntil }) => (
                     <div
                       key={notification.id}
-                      className={`px-4 py-3 border-b border-edge/30 hover:bg-control/30 transition-colors ${
-                        !notification.read ? "bg-emerald-500/5" : ""
-                      }`}
+                      className={`notification-bell__notification${!notification.read ? " notification-bell__notification--unread" : ""}`}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-content font-medium text-sm truncate">
+                      <div className="notification-bell__notification-content">
+                        <div className="notification-bell__notification-copy">
+                          <p className="notification-bell__subscription">
                             {notification.subscriptionName}
                           </p>
-                          <p className="text-content-dim text-xs mt-1">
+                          <p className="notification-bell__renewal">
                             {daysUntil === 0
                               ? "Renews today!"
                               : daysUntil === 1
                                 ? "Renews tomorrow"
                                 : `Renews in ${daysUntil} days`}
                           </p>
-                          <p className="text-content-faint text-xs mt-0.5">
+                          <p className="notification-bell__date">
                             {formatRenewalDate(notification)}
                           </p>
                         </div>
                         <button
                           onClick={(e) => handleDismiss(e, notification.id)}
-                          className="text-content-faint hover:text-content p-1 rounded hover:bg-control/50 transition-colors shrink-0"
+                          className="ui-icon-button notification-bell__dismiss"
                           aria-label="Dismiss"
                         >
                           <CloseIcon />

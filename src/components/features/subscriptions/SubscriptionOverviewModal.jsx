@@ -14,6 +14,7 @@
 import { useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { calculateNextRenewal, getSpainDate, TIMEZONE } from "../../../utils/dateUtils";
+import "./subscriptions.css";
 
 const formatDate = (date) =>
   date.toLocaleDateString("en-GB", {
@@ -75,59 +76,59 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto"
+      className="ui-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="overview-title"
     >
       <div
-        className="fixed inset-0 bg-overlay backdrop-blur-sm transition-opacity"
+        className="ui-overlay__backdrop"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-linear-to-br from-surface to-panel border border-edge/50 rounded-2xl shadow-2xl w-full max-w-lg p-8 transform transition-all">
+      <div className="ui-overlay__alignment">
+        <div className="ui-dialog overview-dialog">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-content-dim hover:text-content transition-colors"
+            className="ui-icon-button ui-dialog__close"
             aria-label="Close"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="ui-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
           {/* Title */}
-          <div className="text-center mb-8">
-            <h2 id="overview-title" className="text-xl font-bold text-content">
+          <div className="overview-dialog__heading">
+            <h2 id="overview-title" className="overview-dialog__title">
               Subscription Overview
             </h2>
-            <p className="text-sm text-content-dim mt-1">
+            <p className="overview-dialog__subtitle">
               A snapshot of your {total} active subscription{total !== 1 ? "s" : ""}
             </p>
           </div>
 
           {!stats ? (
-            <p className="text-center text-content-dim">No subscriptions to analyze.</p>
+            <p className="overview-dialog__empty">No subscriptions to analyze.</p>
           ) : (
-            <div className="space-y-8">
+            <div className="overview-dialog__sections">
               {/* Billing Cycle Split */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-4 h-4 text-accent-emerald shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                <div className="overview-dialog__section-heading">
+                  <svg className="ui-icon overview-dialog__icon--emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-sm font-medium text-content-dim">Billing Cycle</span>
+                  <span>Billing Cycle</span>
                 </div>
-                <p className="text-xs text-content-faint mb-3">
+                <p className="overview-dialog__help">
                   How your subscriptions are billed — monthly vs yearly plans.
                 </p>
-                <div className="flex gap-1 h-3 rounded-full overflow-hidden bg-control/50">
+                <div className="overview-dialog__billing-bar">
                   {stats.monthlyCount > 0 && (
                     <div
-                      className="bg-emerald-500 transition-all duration-500"
+                      className="overview-dialog__billing-segment overview-dialog__billing-segment--monthly"
                       style={{
                         width: `${monthlyPct}%`,
                         borderRadius: stats.yearlyCount === 0 ? "9999px" : "9999px 0 0 9999px",
@@ -136,7 +137,7 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
                   )}
                   {stats.yearlyCount > 0 && (
                     <div
-                      className="bg-teal-500 transition-all duration-500"
+                      className="overview-dialog__billing-segment overview-dialog__billing-segment--yearly"
                       style={{
                         width: `${100 - monthlyPct}%`,
                         borderRadius: stats.monthlyCount === 0 ? "9999px" : "0 9999px 9999px 0",
@@ -144,16 +145,16 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
                     />
                   )}
                 </div>
-                <div className="flex justify-between mt-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
-                    <span className="text-xs text-content-dim">
+                <div className="overview-dialog__billing-legend">
+                  <div className="overview-dialog__legend-item">
+                    <div className="overview-dialog__swatch overview-dialog__swatch--monthly" />
+                    <span>
                       {stats.monthlyCount} Monthly
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-sm bg-teal-500" />
-                    <span className="text-xs text-content-dim">
+                  <div className="overview-dialog__legend-item">
+                    <div className="overview-dialog__swatch overview-dialog__swatch--yearly" />
+                    <span>
                       {stats.yearlyCount} Yearly
                     </span>
                   </div>
@@ -162,43 +163,43 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
 
               {/* Cost Highlights */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-4 h-4 text-accent-teal shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                <div className="overview-dialog__section-heading">
+                  <svg className="ui-icon overview-dialog__icon--teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="9" />
                     <path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-3 1-3 2.5s1.5 2 3 2.5c1.5.5 3 1 3 2.5s-1.5 2.5-3 2.5c-1 0-2-.5-2.5-1.5" />
                     <path d="M12 6v2M12 16v2" />
                   </svg>
-                  <span className="text-sm font-medium text-content-dim">Cost Comparison</span>
+                  <span>Cost Comparison</span>
                 </div>
-                <p className="text-xs text-content-faint mb-3">
+                <p className="overview-dialog__help">
                   All prices shown as monthly cost for easy comparison.
                 </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-surface/60 border border-edge/30 rounded-xl p-3 text-center">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center mx-auto mb-2">
-                      <svg className="w-3.5 h-3.5 text-accent-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <div className="overview-dialog__cost-grid">
+                  <div className="overview-dialog__cost-card">
+                    <div className="overview-dialog__cost-icon overview-dialog__cost-icon--emerald">
+                      <svg className="overview-dialog__small-icon overview-dialog__icon--emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 15l-6-6-6 6" />
                       </svg>
                     </div>
-                    <p className="text-[11px] text-content-faint mb-1">Highest</p>
-                    <p className="text-sm font-bold text-content truncate" title={stats.mostExpensive.name}>
+                    <p className="overview-dialog__caption">Highest</p>
+                    <p className="overview-dialog__cost-name" title={stats.mostExpensive.name}>
                       {stats.mostExpensive.name}
                     </p>
-                    <p className="text-xs text-accent-emerald mt-0.5">
+                    <p className="overview-dialog__cost-value overview-dialog__icon--emerald">
                       €{stats.mostExpensive.monthlyCost.toFixed(2)}/mo
                     </p>
                   </div>
-                  <div className="bg-surface/60 border border-edge/30 rounded-xl p-3 text-center">
-                    <div className="w-7 h-7 rounded-lg bg-teal-500/10 flex items-center justify-center mx-auto mb-2">
-                      <svg className="w-3.5 h-3.5 text-accent-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <div className="overview-dialog__cost-card">
+                    <div className="overview-dialog__cost-icon overview-dialog__cost-icon--teal">
+                      <svg className="overview-dialog__small-icon overview-dialog__icon--teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <path d="M6 9l6 6 6-6" />
                       </svg>
                     </div>
-                    <p className="text-[11px] text-content-faint mb-1">Lowest</p>
-                    <p className="text-sm font-bold text-content truncate" title={stats.cheapest.name}>
+                    <p className="overview-dialog__caption">Lowest</p>
+                    <p className="overview-dialog__cost-name" title={stats.cheapest.name}>
                       {stats.cheapest.name}
                     </p>
-                    <p className="text-xs text-accent-teal mt-0.5">
+                    <p className="overview-dialog__cost-value overview-dialog__icon--teal">
                       €{stats.cheapest.monthlyCost.toFixed(2)}/mo
                     </p>
                   </div>
@@ -208,15 +209,15 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
               {/* Top Category */}
               {stats.topCategory && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <svg className="w-4 h-4 text-accent-lime shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <div className="overview-dialog__section-heading">
+                    <svg className="ui-icon overview-dialog__icon--lime" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    <span className="text-sm font-medium text-content-dim">Most Used Category</span>
+                    <span>Most Used Category</span>
                   </div>
-                  <div className="flex items-center justify-between bg-surface/60 border border-edge/30 rounded-xl px-4 py-3.5">
-                    <span className="text-sm font-semibold text-content">{stats.topCategory[0]}</span>
-                    <span className="text-xs text-content-dim bg-control/50 px-2.5 py-1 rounded-full">
+                  <div className="overview-dialog__category">
+                    <span className="overview-dialog__category-name">{stats.topCategory[0]}</span>
+                    <span className="overview-dialog__category-count">
                       {stats.topCategory[1]} of {total} subscription{total !== 1 ? "s" : ""}
                     </span>
                   </div>
@@ -225,54 +226,54 @@ export default function SubscriptionOverviewModal({ isOpen, onClose, subscriptio
 
               {/* Upcoming Renewals */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-4 h-4 text-accent-yellow shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                <div className="overview-dialog__section-heading">
+                  <svg className="ui-icon overview-dialog__icon--lime" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
                     <path d="M13.73 21a2 2 0 01-3.46 0" />
                   </svg>
-                  <span className="text-sm font-medium text-content-dim">Renewing Soon</span>
+                  <span>Renewing Soon</span>
                 </div>
-                <p className="text-xs text-content-faint mb-3">
+                <p className="overview-dialog__help">
                   Subscriptions renewing within the next 7 days.
                 </p>
                 {stats.upcoming.length === 0 ? (
-                  <div className="bg-surface/60 border border-edge/30 rounded-xl px-4 py-5 text-center">
-                    <svg className="w-6 h-6 text-emerald-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <div className="overview-dialog__no-renewals">
+                    <svg className="overview-dialog__success-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
                       <path d="M22 4L12 14.01l-3-3" />
                     </svg>
-                    <p className="text-sm text-content-dim">No upcoming renewals this week</p>
+                    <p>No upcoming renewals this week</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="overview-dialog__renewals">
                     {stats.upcoming.map((sub) => (
                       <div
                         key={sub.id}
-                        className="flex items-center justify-between bg-surface/60 border border-edge/30 rounded-xl px-4 py-2.5"
+                        className="overview-dialog__renewal"
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="overview-dialog__renewal-identity">
                           {sub.icon ? (
                             <img
                               src={sub.icon}
                               alt=""
-                              className="w-7 h-7 rounded-lg object-cover bg-white p-0.5 shrink-0"
+                              className="overview-dialog__renewal-logo"
                             />
                           ) : (
-                            <div className="w-7 h-7 rounded-lg bg-control flex items-center justify-center text-[10px] font-bold text-content-dim shrink-0">
+                            <div className="overview-dialog__renewal-fallback">
                               {sub.name[0]}
                             </div>
                           )}
-                          <div className="min-w-0">
-                            <p className="text-sm text-content font-medium truncate">{sub.name}</p>
-                            <p className="text-[11px] text-content-faint">{formatDate(sub.renewal)}</p>
+                          <div className="overview-dialog__renewal-copy">
+                            <p className="overview-dialog__renewal-name">{sub.name}</p>
+                            <p className="overview-dialog__renewal-date">{formatDate(sub.renewal)}</p>
                           </div>
                         </div>
-                        <span className={`text-xs font-semibold shrink-0 ml-3 px-2 py-0.5 rounded-full ${
+                        <span className={`overview-dialog__renewal-badge ${
                           sub.daysUntil === 0
-                            ? "bg-red-500/10 text-red-500"
+                            ? "overview-dialog__renewal-badge--today"
                             : sub.daysUntil <= 3
-                              ? "bg-orange-500/10 text-orange-500"
-                              : "bg-yellow-500/10 text-accent-yellow"
+                              ? "overview-dialog__renewal-badge--soon"
+                              : "overview-dialog__renewal-badge--later"
                         }`}>
                           {sub.daysUntil === 0
                             ? "Today"

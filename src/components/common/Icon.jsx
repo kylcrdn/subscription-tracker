@@ -1,4 +1,4 @@
-export default function Icon({ children, className = "w-5 h-5", ...props }) {
+export default function Icon({ children, className = "ui-icon", ...props }) {
   return (
     <svg
       className={className}
