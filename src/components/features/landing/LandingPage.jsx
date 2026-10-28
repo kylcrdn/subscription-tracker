@@ -12,27 +12,57 @@ export default function LandingPage() {
       title: "All in one place",
       description:
         "See every subscription, renewal date, and monthly cost together in one clear dashboard.",
+      visualTitle: "Your subscriptions",
+      visualRows: [
+        ["N", "Netflix", "€13.99"],
+        ["S", "Spotify", "€10.99"],
+        ["C", "Cloud storage", "€4.99"],
+      ],
     },
     {
       title: "Know your spending",
       description:
         "Understand your monthly and yearly totals with simple, easy-to-read spending insights.",
       highlighted: true,
+      visualTitle: "Monthly total",
+      visualRows: [
+        ["↗", "This month", "€42.97"],
+        ["↓", "Compared to last month", "−12%"],
+        ["◎", "Yearly estimate", "€515.64"],
+      ],
     },
     {
       title: "Never miss a renewal",
       description:
         "Get timely reminders before a subscription renews, so upcoming charges are never a surprise.",
+      visualTitle: "Coming up next",
+      visualRows: [
+        ["S", "Spotify Premium", "In 3 days"],
+        ["N", "Netflix", "In 8 days"],
+        ["i", "We'll remind you", "On time"],
+      ],
     },
     {
       title: "Stay organized",
       description:
         "Group subscriptions by category and quickly find the services you want to manage.",
+      visualTitle: "A place for everything",
+      visualRows: [
+        ["01", "Entertainment", "4 services"],
+        ["02", "Productivity", "3 services"],
+        ["03", "Everyday", "2 services"],
+      ],
     },
     {
       title: "You stay in control",
       description:
         "Update or remove subscriptions whenever your needs change, all from one simple place.",
+      visualTitle: "Your account, your call",
+      visualRows: [
+        ["✓", "Change a plan", "Anytime"],
+        ["✓", "Cancel a service", "Anytime"],
+        ["✓", "Update details", "In seconds"],
+      ],
     },
   ];
 
@@ -134,7 +164,10 @@ export default function LandingPage() {
         <section id="features" className="landing-features landing-content-width">
           <div className="landing-section-heading">
             <span className="landing-section-heading__rule" aria-hidden="true" />
-            <h3>Why<br />choose us</h3>
+            <span className="landing-section-heading__eyebrow">
+              A clearer picture
+            </span>
+            <h3>Subscriptions,<br />sorted.</h3>
           </div>
 
           <div
@@ -143,25 +176,66 @@ export default function LandingPage() {
             aria-roledescription="carousel"
             aria-label="SubTracker features"
           >
-            <article
-              className={`landing-feature-card${features[activeFeature].highlighted ? " landing-feature-card--highlighted" : ""}`}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${activeFeature + 1} of ${features.length}`}
-              aria-live="polite"
-            >
-              <span className="landing-feature-card__number" aria-hidden="true">
-                {String(activeFeature + 1).padStart(2, "0")}
-              </span>
-              <div className="landing-feature-card__content">
-                <span className="landing-feature-card__eyebrow">
-                  Feature {String(activeFeature + 1).padStart(2, "0")} /{" "}
-                  {String(features.length).padStart(2, "0")}
-                </span>
-                <h4>{features[activeFeature].title}</h4>
-                <p>{features[activeFeature].description}</p>
-              </div>
-            </article>
+            <div className="landing-feature-carousel__stage">
+              {features.map((feature, index) => {
+                const offset =
+                  (index - activeFeature + features.length) % features.length;
+                const position = offset < 3 ? `stack-${offset}` : "hidden";
+
+                return (
+                  <article
+                    key={feature.title}
+                    className={`landing-feature-card landing-feature-card--${position}${feature.highlighted ? " landing-feature-card--highlighted" : ""}`}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${index + 1} of ${features.length}`}
+                    aria-hidden={position !== "stack-0"}
+                    aria-live={position === "stack-0" ? "polite" : "off"}
+                  >
+                    <div className="landing-feature-card__visual">
+                      <div className="landing-feature-card__visual-top">
+                        <span className="landing-feature-card__visual-label">
+                          SUBTRACKER
+                        </span>
+                        <span className="landing-feature-card__visual-count">
+                          {String(index + 1).padStart(2, "0")} /{" "}
+                          {String(features.length).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <div className="landing-feature-card__mockup">
+                        <div className="landing-feature-card__mockup-heading">
+                          <span>{feature.visualTitle}</span>
+                          <span aria-hidden="true">•••</span>
+                        </div>
+                        <div className="landing-feature-card__mockup-rows">
+                          {feature.visualRows.map(([symbol, label, value]) => (
+                            <div
+                              className="landing-feature-card__mockup-row"
+                              key={label}
+                            >
+                              <span className="landing-feature-card__mockup-icon">
+                                {symbol}
+                              </span>
+                              <span className="landing-feature-card__mockup-label">
+                                {label}
+                              </span>
+                              <strong>{value}</strong>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="landing-feature-card__content">
+                      <span className="landing-feature-card__eyebrow">
+                        FEATURE {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <h4>{feature.title}</h4>
+                      <p>{feature.description}</p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
 
             <div className="landing-feature-carousel__controls">
               <div
