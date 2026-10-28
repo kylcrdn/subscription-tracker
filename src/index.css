@@ -32,7 +32,7 @@
   --toast-text: var(--md-sys-color-on-surface);
   --toast-border: var(--md-sys-color-outline-variant);
 
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "PT Serif", Georgia, serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
@@ -92,7 +92,7 @@
     margin: 0;
     color: var(--th-content);
     background: var(--th-canvas);
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: "PT Serif", Georgia, serif;
     line-height: 1.5;
     font-weight: 400;
     font-synthesis: none;
