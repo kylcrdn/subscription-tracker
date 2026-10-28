@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../common/ThemeToggle";
 import "./LandingPage.css";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [activeFeature, setActiveFeature] = useState(0);
 
   const features = [
     {
@@ -40,26 +42,26 @@ export default function LandingPage() {
         <ThemeToggle />
       </div>
 
-      <nav className="landing-nav" aria-label="Main navigation">
-        <h1 className="landing-brand">SubTracker</h1>
+      <div id="home" className="landing-intro">
+        <nav className="landing-nav" aria-label="Main navigation">
+          <h1 className="landing-brand">SubTracker</h1>
 
-        <div className="landing-nav__actions">
-          <button
-            onClick={() => navigate("/login")}
-            className="landing-nav__signin"
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="ui-button ui-button--primary landing-button--small"
-          >
-            Register
-          </button>
-        </div>
-      </nav>
+          <div className="landing-nav__actions">
+            <button
+              onClick={() => navigate("/login")}
+              className="landing-nav__signin"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => navigate("/register")}
+              className="ui-button ui-button--primary landing-button--small"
+            >
+              Register
+            </button>
+          </div>
+        </nav>
 
-      <main id="home">
         <section className="landing-hero">
           <h2 className="landing-hero__title">
             Manage money with
@@ -80,7 +82,9 @@ export default function LandingPage() {
             </button>
           </div>
         </section>
+      </div>
 
+      <main>
         <section
           id="showcase"
           className="landing-showcase landing-content-width"
@@ -133,20 +137,75 @@ export default function LandingPage() {
             <h3>Why<br />choose us</h3>
           </div>
 
-          <ol className="landing-feature-list">
-            {features.map((feature, index) => (
-              <li
-                key={feature.title}
-                className={`landing-feature${feature.highlighted ? " landing-feature--highlighted" : ""}`}
-              >
-                <span className="landing-feature__number" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
+          <div
+            className="landing-feature-carousel"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="SubTracker features"
+          >
+            <article
+              className={`landing-feature-card${features[activeFeature].highlighted ? " landing-feature-card--highlighted" : ""}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${activeFeature + 1} of ${features.length}`}
+              aria-live="polite"
+            >
+              <span className="landing-feature-card__number" aria-hidden="true">
+                {String(activeFeature + 1).padStart(2, "0")}
+              </span>
+              <div className="landing-feature-card__content">
+                <span className="landing-feature-card__eyebrow">
+                  Feature {String(activeFeature + 1).padStart(2, "0")} /{" "}
+                  {String(features.length).padStart(2, "0")}
                 </span>
-                <h4>{feature.title}</h4>
-                <p>{feature.description}</p>
-              </li>
-            ))}
-          </ol>
+                <h4>{features[activeFeature].title}</h4>
+                <p>{features[activeFeature].description}</p>
+              </div>
+            </article>
+
+            <div className="landing-feature-carousel__controls">
+              <div
+                className="landing-feature-carousel__indicators"
+                role="group"
+                aria-label="Choose a feature"
+              >
+                {features.map((feature, index) => (
+                  <button
+                    key={feature.title}
+                    type="button"
+                    className={`landing-feature-carousel__indicator${index === activeFeature ? " landing-feature-carousel__indicator--active" : ""}`}
+                    aria-label={`Show feature ${index + 1}: ${feature.title}`}
+                    aria-current={index === activeFeature ? "true" : undefined}
+                    onClick={() => setActiveFeature(index)}
+                  />
+                ))}
+              </div>
+              <div className="landing-feature-carousel__arrows">
+                <button
+                  type="button"
+                  className="landing-feature-carousel__arrow"
+                  aria-label="Previous feature"
+                  onClick={() =>
+                    setActiveFeature(
+                      (activeFeature - 1 + features.length) % features.length,
+                    )
+                  }
+                >
+                  <span aria-hidden="true">←</span>
+                </button>
+                <button
+                  type="button"
+                  className="landing-feature-carousel__arrow"
+                  aria-label="Next feature"
+                  onClick={() =>
+                    setActiveFeature((activeFeature + 1) % features.length)
+                  }
+                >
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section className="landing-cta">
