@@ -13,9 +13,6 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
-    "@iconify-icons/codicon": "^2.0.8",
-    "@iconify-react/codicon": "gitlab:iconify-icons/react#codicon",
-    "@iconify/react": "^6.0.3",
     "@material/web": "^2.5.0",
     "firebase": "^12.8.0",
     "prop-types": "^15.8.1",
@@ -41,5 +38,8 @@
   },
   "overrides": {
     "@grpc/grpc-js": "^1.14.6"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
