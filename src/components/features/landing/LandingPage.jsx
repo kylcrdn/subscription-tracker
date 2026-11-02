@@ -123,8 +123,8 @@ export default function LandingPage() {
           <article className="landing-showcase__card landing-showcase__card--portrait">
             <img
               className="landing-showcase__image"
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85"
-              alt="Woman looking confidently toward the camera"
+              src="https://i.pinimg.com/736x/71/14/d8/7114d88641a3c5f5f075d546f6c5ccb3.jpg"
+              alt=""
               loading="lazy"
             />
             <div className="landing-showcase__scrim" aria-hidden="true" />
@@ -140,8 +140,8 @@ export default function LandingPage() {
           <article className="landing-showcase__card landing-showcase__card--wide">
             <img
               className="landing-showcase__image"
-              src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=85"
-              alt="Friends spending time together outdoors"
+              src="https://i.pinimg.com/1200x/08/ec/e5/08ece5eab3b8bc7ffa40fa72e061376c.jpg"
+              alt=""
               loading="lazy"
             />
             <div className="landing-showcase__scrim" aria-hidden="true" />
@@ -152,22 +152,26 @@ export default function LandingPage() {
               <strong>Know what leaves your wallet.</strong>
             </div>
             <div className="landing-showcase__renewal">
-              <span className="landing-showcase__eyebrow">
-                Next renewal
-              </span>
+              <span className="landing-showcase__eyebrow">Next renewal</span>
               <strong>Spotify · €9.99</strong>
               <span className="landing-showcase__caption">In 5 days</span>
             </div>
           </article>
         </section>
 
-        <section id="features" className="landing-features landing-content-width">
+        <section
+          id="features"
+          className="landing-features landing-content-width"
+        >
           <div className="landing-section-heading">
-            <span className="landing-section-heading__rule" aria-hidden="true" />
             <span className="landing-section-heading__eyebrow">
               A clearer picture
             </span>
-            <h3>Subscriptions,<br />sorted.</h3>
+            <h3>
+              Subscriptions,
+              <br />
+              sorted.
+            </h3>
           </div>
 
           <div
@@ -303,7 +307,9 @@ export default function LandingPage() {
 
       <footer className="landing-footer">
         <div className="landing-footer__content">
-          <span className="landing-brand landing-footer__brand">SubTracker</span>
+          <span className="landing-brand landing-footer__brand">
+            SubTracker
+          </span>
 
           <span className="landing-footer__copyright">
             &copy; {new Date().getFullYear()} All rights reserved.
